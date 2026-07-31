@@ -1,19 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { walletService } from '@/services/wallet.service';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/shared/atoms/card';
 import { Button } from '@/components/shared/atoms/button';
 import { Input } from '@/components/shared/atoms/input';
+import { toast } from 'sonner';
 
 export const Wallet: React.FC = () => {
   const queryClient = useQueryClient();
   const [amount, setAmount] = useState('');
   const [depositData, setDepositData] = useState<any>(null);
+  const [previousBalance, setPreviousBalance] = useState<number | null>(null);
 
   const { data: balanceData, isLoading } = useQuery({
     queryKey: ['wallet-balance'],
-    queryFn: walletService.getBalance
+    queryFn: walletService.getBalance,
+    refetchInterval: depositData ? 3000 : false // Poll every 3s when waiting for deposit
   });
+
+  const balance = (balanceData as any)?.balance || 0;
+
+  useEffect(() => {
+    if (depositData && previousBalance !== null && balance > previousBalance) {
+      toast.success('Deposit received successfully!');
+      setDepositData(null);
+    }
+    if (balanceData) {
+      setPreviousBalance(balance);
+    }
+  }, [balance, depositData, balanceData, previousBalance]);
 
   const depositMutation = useMutation({
     mutationFn: (amount: number) => walletService.deposit(amount),
@@ -38,8 +53,6 @@ export const Wallet: React.FC = () => {
   const handleWithdraw = () => {
     if (amount) withdrawMutation.mutate(Number(amount));
   };
-
-  const balance = (balanceData as any)?.balance || 0;
 
   return (
     <div className="space-y-6">

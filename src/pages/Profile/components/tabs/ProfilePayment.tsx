@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/shared/atoms/button';
 import { Input } from '@/components/shared/atoms/input';
@@ -16,6 +16,7 @@ export const ProfilePayment: React.FC = () => {
   const [isDepositOpen, setIsDepositOpen] = useState(false);
   const [depositAmount, setDepositAmount] = useState('');
   const [depositData, setDepositData] = useState<any>(null);
+  const [previousBalance, setPreviousBalance] = useState<number | null>(null);
 
   // Queries
   const { data: bankAccount, isLoading: isBankLoading } = useQuery({
@@ -26,7 +27,8 @@ export const ProfilePayment: React.FC = () => {
   const { data: balanceData } = useQuery({
     queryKey: ['wallet-balance'],
     queryFn: () => walletService.getBalance().catch(() => ({ balance: 0 })),
-    enabled: !!bankAccount
+    enabled: !!bankAccount,
+    refetchInterval: depositData ? 3000 : false
   });
 
   const { data: transactionsData } = useQuery({
@@ -64,6 +66,18 @@ export const ProfilePayment: React.FC = () => {
   };
 
   const balance = balanceData?.balance || 100000000; // default 100M VND if not implemented yet
+  
+  useEffect(() => {
+    if (depositData && previousBalance !== null && balance > previousBalance) {
+      toast.success('Deposit received successfully!');
+      setIsDepositOpen(false);
+      setDepositData(null);
+      setDepositAmount('');
+    }
+    if (balanceData) {
+      setPreviousBalance(balance);
+    }
+  }, [balance, depositData, balanceData, previousBalance]);
   const transactions = (transactionsData as any)?.data || transactionsData || [];
 
   if (isBankLoading) {

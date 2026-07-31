@@ -1,7 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { Button } from '@/components/shared/atoms/button';
-import { Checkbox } from '@/components/shared/atoms/checkbox';
-import { ChevronDown, ChevronUp, Trash2, Upload, FileText, CheckCircle2, Circle } from 'lucide-react';
+import { Input } from '@/components/shared/atoms/input';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/shared/atoms/card';
+import { Trash2, Upload, FileText, CheckCircle2, Circle, Github, Facebook, Instagram, Linkedin, FileBadge } from 'lucide-react';
 import { profileService } from '@/services/profile.service';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -15,10 +16,9 @@ export const ProfileInformation: React.FC<ProfileInformationProps> = ({ user }) 
 
   // Bio State
   const [isEditingBio, setIsEditingBio] = useState(false);
-  const [bioText, setBioText] = useState(user?.profile?.bio || 'Click to add a short biography about yourself.');
+  const [bioText, setBioText] = useState(user?.profile?.bio || '');
 
   // CV State
-  const [isCvExpanded, setIsCvExpanded] = useState(false);
   const cvs = user?.profile?.cvs ? JSON.parse(user.profile.cvs) : [];
 
   // Socials State
@@ -63,13 +63,6 @@ export const ProfileInformation: React.FC<ProfileInformationProps> = ({ user }) 
     }
   };
 
-  const handleBioKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleBioBlur();
-    }
-  };
-
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -83,154 +76,204 @@ export const ProfileInformation: React.FC<ProfileInformationProps> = ({ user }) 
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
+  const socialIcons: any = {
+    github: <Github size={18} />,
+    facebook: <Facebook size={18} />,
+    instagram: <Instagram size={18} />,
+    linkedin: <Linkedin size={18} />
+  };
+
   return (
-    <div className="p-8 space-y-12 animate-in fade-in duration-300">
-
-      {/* Bio */}
-      <div>
-        <h3 className="text-xl font-black text-neutral-900 mb-4">Bio</h3>
-        {isEditingBio ? (
-          <textarea
-            autoFocus
-            value={bioText}
-            onChange={(e) => setBioText(e.target.value)}
-            onBlur={handleBioBlur}
-            onKeyDown={handleBioKeyDown}
-            className="w-full max-w-4xl min-h-[120px] bg-white p-6 rounded-2xl border-2 border-primary-500 focus:outline-none shadow-sm text-neutral-800 leading-relaxed resize-y"
-          />
-        ) : (
-          <div
-            onClick={() => setIsEditingBio(true)}
-            className="max-w-4xl bg-neutral-50 hover:bg-neutral-100 p-6 rounded-2xl border border-neutral-100 cursor-pointer transition-colors group"
-          >
-            <p className="text-neutral-600 leading-relaxed whitespace-pre-wrap">{bioText}</p>
-            <p className="text-xs text-neutral-400 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">Click to edit. Press Enter to save.</p>
-          </div>
-        )}
-      </div>
-
-      {/* CV Manager */}
-      <div>
-        <div className="flex items-center gap-6 border-b-2 border-primary-500 pb-2 max-w-4xl">
-          <h3 className="text-lg font-black text-primary-500 w-24 shrink-0">CVs</h3>
-          <div className="flex-1 flex flex-wrap gap-x-6 gap-y-3">
-            {cvs.length === 0 ? (
-              <span className="text-sm font-medium text-neutral-400">No CV uploaded yet</span>
-            ) : (
-              cvs.map((cv: any) => (
-                <label key={cv.id} className="flex items-center gap-2 cursor-pointer group">
-                  <div onClick={() => primaryCvMutation.mutate(cv.id)}>
-                    {cv.isPrimary ? (
-                      <CheckCircle2 size={18} className="text-primary-500" />
-                    ) : (
-                      <Circle size={18} className="text-neutral-300 group-hover:text-primary-300" />
-                    )}
+    <div className="p-4 md:p-8 max-w-7xl mx-auto animate-in fade-in duration-300">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        {/* Main Content Column */}
+        <div className="lg:col-span-2 space-y-8">
+          
+          {/* Biography Card */}
+          <Card className="shadow-lg border-neutral-100/50 bg-white/80 backdrop-blur-xl">
+            <CardHeader className="border-b border-neutral-100 pb-4">
+              <CardTitle className="text-2xl font-black flex items-center gap-2">
+                Biography
+              </CardTitle>
+              <CardDescription className="text-neutral-500 font-medium">
+                Share a bit about your background and experience.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6">
+              {isEditingBio ? (
+                <div className="space-y-4">
+                  <textarea
+                    autoFocus
+                    value={bioText}
+                    onChange={(e) => setBioText(e.target.value)}
+                    onBlur={handleBioBlur}
+                    placeholder="Write a short biography..."
+                    className="w-full min-h-[160px] bg-neutral-50/50 p-4 rounded-xl border border-neutral-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 outline-none text-neutral-800 leading-relaxed resize-y transition-all"
+                  />
+                  <div className="flex justify-end gap-2">
+                    <Button onClick={handleBioBlur} className="font-bold rounded-lg px-6">Save Bio</Button>
                   </div>
-                  <span className={`text-sm font-bold ${cv.isPrimary ? 'text-primary-600' : 'text-neutral-600'}`}>
-                    {cv.name}
-                  </span>
-                </label>
-              ))
-            )}
-          </div>
-          <button
-            onClick={() => setIsCvExpanded(!isCvExpanded)}
-            className="text-primary-500 hover:bg-primary-50 p-1 rounded-full transition-colors"
-          >
-            {isCvExpanded ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
-          </button>
-        </div>
-
-        {/* CV Upload Area */}
-        {isCvExpanded && (
-          <div className="max-w-4xl mt-4 bg-neutral-50 rounded-2xl p-6 border border-neutral-100 animate-in slide-in-from-top-2">
-            <h4 className="text-sm font-bold text-neutral-800 mb-4">Manage Uploaded CVs</h4>
-            <div className="space-y-3 mb-6">
-              {cvs.map((cv: any) => (
-                <div key={cv.id} className="flex items-center justify-between bg-white p-3 rounded-xl border border-neutral-200">
-                  <div className="flex items-center gap-3">
-                    <FileText size={18} className="text-neutral-400" />
-                    <a href={cv.base64} download={cv.name} className="text-sm font-semibold text-neutral-700 hover:text-primary-500 hover:underline">{cv.name}</a>
-                    {cv.isPrimary && <span className="text-[10px] uppercase font-black bg-primary-100 text-primary-600 px-2 py-0.5 rounded-full">Primary</span>}
-                  </div>
-                  <button
-                    onClick={() => deleteCvMutation.mutate(cv.id)}
-                    className="text-neutral-400 hover:text-red-500 transition-colors p-2"
-                  >
-                    <Trash2 size={18} />
-                  </button>
                 </div>
-              ))}
-              {cvs.length === 0 && <p className="text-sm text-neutral-400 text-center py-4">Upload a PDF or Word document to get started.</p>}
-            </div>
+              ) : (
+                <div
+                  onClick={() => setIsEditingBio(true)}
+                  className="bg-neutral-50/50 hover:bg-neutral-100/50 p-6 rounded-xl border border-neutral-100 cursor-pointer transition-colors group relative overflow-hidden"
+                >
+                  <p className={`leading-relaxed whitespace-pre-wrap ${!bioText ? 'text-neutral-400 italic' : 'text-neutral-700'}`}>
+                    {bioText || 'Click here to add your biography...'}
+                  </p>
+                  <div className="absolute inset-0 bg-gradient-to-t from-white/80 via-white/0 opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-2">
+                    <span className="text-xs font-bold text-primary-600 bg-primary-50 px-3 py-1 rounded-full">Click to edit</span>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
-            <div className="flex justify-center">
+          {/* Resumes & CVs Card */}
+          <Card className="shadow-lg border-neutral-100/50 bg-white/80 backdrop-blur-xl">
+            <CardHeader className="border-b border-neutral-100 pb-4 flex flex-row items-center justify-between">
+              <div>
+                <CardTitle className="text-2xl font-black flex items-center gap-2">
+                  <FileBadge size={24} className="text-primary-500" /> Resumes & CVs
+                </CardTitle>
+                <CardDescription className="text-neutral-500 font-medium">
+                  Manage your uploaded documents. Mark one as primary.
+                </CardDescription>
+              </div>
               <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept=".pdf,.doc,.docx" />
-              <Button
+              <Button 
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploadCvMutation.isPending}
-                className="!bg-white border-2 border-dashed border-primary-500 text-primary-500 font-bold hover:bg-primary-50 flex items-center gap-2 p-2"
+                className="rounded-full shadow-md shrink-0"
               >
-                <Upload size={18} />
-                {uploadCvMutation.isPending ? 'Uploading...' : 'Upload New CV'}
+                <Upload size={16} className="mr-2" /> 
+                {uploadCvMutation.isPending ? 'Uploading...' : 'Upload'}
               </Button>
-            </div>
-          </div>
-        )}
+            </CardHeader>
+            <CardContent className="pt-6">
+              {cvs.length === 0 ? (
+                <div className="text-center py-12 px-4 border-2 border-dashed border-neutral-200 rounded-2xl bg-neutral-50/50">
+                  <FileText size={48} className="mx-auto text-neutral-300 mb-4" />
+                  <h4 className="text-lg font-bold text-neutral-700">No resumes yet</h4>
+                  <p className="text-neutral-500 mt-1 max-w-sm mx-auto">Upload a PDF or Word document to showcase your experience to potential clients.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {cvs.map((cv: any) => (
+                    <div 
+                      key={cv.id} 
+                      className={`relative flex flex-col p-5 rounded-2xl border-2 transition-all ${cv.isPrimary ? 'border-primary-500 bg-primary-50/30' : 'border-neutral-100 bg-white hover:border-neutral-300'}`}
+                    >
+                      <div className="flex justify-between items-start mb-4">
+                        <div 
+                          className="cursor-pointer group flex items-center gap-2"
+                          onClick={() => !cv.isPrimary && primaryCvMutation.mutate(cv.id)}
+                        >
+                          {cv.isPrimary ? (
+                            <CheckCircle2 size={24} className="text-primary-500" />
+                          ) : (
+                            <Circle size={24} className="text-neutral-300 group-hover:text-primary-400 transition-colors" />
+                          )}
+                          {cv.isPrimary && <span className="text-xs font-black uppercase text-primary-600 tracking-wider">Primary</span>}
+                        </div>
+                        <button
+                          onClick={() => deleteCvMutation.mutate(cv.id)}
+                          className="text-neutral-400 hover:text-red-500 hover:bg-red-50 p-1.5 rounded-full transition-colors"
+                          title="Delete CV"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-neutral-100 flex items-center justify-center shrink-0">
+                          <FileText size={20} className="text-neutral-500" />
+                        </div>
+                        <a 
+                          href={cv.base64} 
+                          download={cv.name} 
+                          className="text-sm font-bold text-neutral-800 hover:text-primary-600 truncate transition-colors"
+                          title={cv.name}
+                        >
+                          {cv.name}
+                        </a>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Sidebar Column */}
+        <div className="space-y-8">
+          
+          {/* Social Profiles Card */}
+          <Card className="shadow-lg border-neutral-100/50 bg-white/80 backdrop-blur-xl">
+            <CardHeader className="border-b border-neutral-100 pb-4 flex justify-between flex-row items-center">
+              <CardTitle className="text-xl font-black">Social Profiles</CardTitle>
+              {!isEditingSocials && (
+                <button 
+                  onClick={() => setIsEditingSocials(true)}
+                  className="text-sm font-bold text-primary-600 hover:text-primary-700 transition-colors"
+                >
+                  Edit
+                </button>
+              )}
+            </CardHeader>
+            <CardContent className="pt-6">
+              {isEditingSocials ? (
+                <div className="space-y-4">
+                  {Object.keys(defaultSocials).map(network => (
+                    <div key={network} className="space-y-1.5">
+                      <label className="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-2">
+                        {socialIcons[network]} {network}
+                      </label>
+                      <Input
+                        type="text"
+                        value={socials[network] || ''}
+                        onChange={(e) => setSocials({ ...socials, [network]: e.target.value })}
+                        placeholder={`https://${network}.com/`}
+                        className="bg-neutral-50"
+                      />
+                    </div>
+                  ))}
+                  <div className="flex gap-2 pt-2">
+                    <Button onClick={() => socialsMutation.mutate(socials)} className="flex-1 font-bold">Save</Button>
+                    <Button variant="outline" onClick={() => setIsEditingSocials(false)} className="flex-1">Cancel</Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {Object.keys(defaultSocials).map(network => {
+                    const hasLink = !!socials[network];
+                    return (
+                      <div key={network} className="flex items-center gap-4 p-3 rounded-xl hover:bg-neutral-50 transition-colors group">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${hasLink ? 'bg-primary-50 text-primary-600' : 'bg-neutral-100 text-neutral-400'}`}>
+                          {socialIcons[network]}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-bold text-neutral-900 capitalize">{network}</p>
+                          {hasLink ? (
+                            <a href={socials[network]} target="_blank" rel="noreferrer" className="text-xs font-medium text-neutral-500 hover:text-primary-600 truncate block">
+                              {socials[network]}
+                            </a>
+                          ) : (
+                            <p className="text-xs font-medium text-neutral-400 italic">Not connected</p>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+          
+        </div>
       </div>
-
-      {/* Social Links */}
-      <div className="max-w-4xl">
-        <h3 className="text-xl font-black text-neutral-900 mb-4">Social</h3>
-
-        {isEditingSocials ? (
-          <div className="space-y-4 bg-neutral-50 p-6 rounded-2xl border border-neutral-100">
-            {['github', 'facebook', 'instagram', 'linkedin'].map(network => (
-              <div key={network} className="flex items-center gap-4">
-                <label className="w-24 text-sm font-bold text-neutral-700 capitalize">{network}:</label>
-                <input
-                  type="text"
-                  value={socials[network] || ''}
-                  onChange={(e) => setSocials({ ...socials, [network]: e.target.value })}
-                  className="flex-1 px-3 py-2 border border-neutral-200 rounded-lg text-sm focus:outline-none focus:border-primary-500"
-                  placeholder={`https://${network}.com/username`}
-                />
-              </div>
-            ))}
-            <div className="flex gap-3 pt-4">
-              <Button onClick={() => socialsMutation.mutate(socials)} className="bg-primary-500 font-bold px-8">Save Links</Button>
-              <Button variant="primary-outline" onClick={() => setIsEditingSocials(false)}>Cancel</Button>
-            </div>
-          </div>
-        ) : (
-          <div>
-            <div className="space-y-3 text-neutral-600 font-medium">
-              {['github', 'facebook', 'instagram', 'linkedin'].map(network => (
-                <p key={network} className="flex gap-2">
-                  <span className="w-20 capitalize text-neutral-500 font-bold">{network}:</span>
-                  {socials[network] ? (
-                    <a href={socials[network]} target="_blank" rel="noreferrer" className="text-neutral-800 hover:text-primary-500 truncate max-w-[300px] sm:max-w-md">
-                      {socials[network]}
-                    </a>
-                  ) : (
-                    <span className="text-neutral-300 italic">Not set</span>
-                  )}
-                </p>
-              ))}
-            </div>
-            <div className="mt-6">
-              <Button
-                onClick={() => setIsEditingSocials(true)}
-                variant="primary-outline"
-                className="rounded-lg font-bold px-8 shadow-sm"
-              >
-                Edit Socials
-              </Button>
-            </div>
-          </div>
-        )}
-      </div>
-
     </div>
   );
 };
