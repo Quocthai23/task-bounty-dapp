@@ -5,6 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/shared/at
 import { Button } from '@/components/shared/atoms/button';
 import { Input } from '@/components/shared/atoms/input';
 import { toast } from 'sonner';
+import { QRCodeSVG } from 'qrcode.react';
 
 export const Wallet: React.FC = () => {
   const queryClient = useQueryClient();
@@ -99,7 +100,14 @@ export const Wallet: React.FC = () => {
             <CardTitle>Scan to Deposit</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col items-center">
-            <img src={depositData.qrCodeUrl} alt="Deposit QR Code" className="w-64 h-64 mb-4 rounded-xl shadow-sm border border-neutral-200" />
+            <div className="bg-white p-4 rounded-2xl shadow-sm border border-neutral-100 mb-4">
+              <QRCodeSVG 
+                value={depositData.qrCodeData || depositData.qrCodeUrl} 
+                size={220} 
+                level="M" 
+                includeMargin={false} 
+              />
+            </div>
             <div className="text-center space-y-2 text-sm text-neutral-600 bg-neutral-50 p-4 rounded-xl w-full">
               <p>Bank: <strong>{depositData.bankName}</strong></p>
               <p>Account: <strong>{depositData.accountNumber}</strong></p>

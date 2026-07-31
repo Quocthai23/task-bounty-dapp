@@ -6,6 +6,7 @@ import { walletService } from '@/services/wallet.service';
 import { format } from 'date-fns';
 import { Building2, ArrowDownToLine, ArrowUpFromLine, Lock, Briefcase, Plus, Loader2, X } from 'lucide-react';
 import { toast } from 'sonner';
+import { QRCodeSVG } from 'qrcode.react';
 
 export const ProfilePayment: React.FC = () => {
   const queryClient = useQueryClient();
@@ -279,8 +280,13 @@ export const ProfilePayment: React.FC = () => {
                 <h3 className="text-2xl font-black mb-2 text-center">Scan to Deposit</h3>
                 <p className="text-sm text-neutral-500 mb-6 text-center">Use your banking app to scan this QR code.</p>
                 
-                <div className="bg-white p-2 rounded-2xl shadow-sm border border-neutral-100 mb-6">
-                  <img src={depositData.qrCodeUrl} alt="Deposit QR Code" className="w-56 h-56 rounded-xl" />
+                <div className="bg-white p-4 rounded-2xl shadow-sm border border-neutral-100 mb-6 flex justify-center">
+                  <QRCodeSVG 
+                    value={depositData.qrCodeData || depositData.qrCodeUrl} 
+                    size={200} 
+                    level="M" 
+                    includeMargin={false} 
+                  />
                 </div>
                 
                 <div className="w-full bg-neutral-50 rounded-xl p-4 space-y-3 text-sm">

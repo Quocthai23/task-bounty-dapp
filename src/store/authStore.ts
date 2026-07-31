@@ -12,25 +12,23 @@ interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (userData: User, accessToken: string, refreshToken: string) => void;
+  login: (userData: User) => void;
   logout: () => void;
   setLoading: (loading: boolean) => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
-  isAuthenticated: !!localStorage.getItem('access_token'),
+  isAuthenticated: false, // Must be determined by a /auth/me call on load
   isLoading: false,
   
-  login: (userData, accessToken, refreshToken) => {
-    localStorage.setItem('access_token', accessToken);
-    localStorage.setItem('refresh_token', refreshToken);
+  login: (userData) => {
+    // Tokens are now stored in HttpOnly cookies securely by the backend
     set({ user: userData, isAuthenticated: true, isLoading: false });
   },
   
   logout: () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
+    // Backend clears the HttpOnly cookies upon /auth/logout
     set({ user: null, isAuthenticated: false });
   },
   

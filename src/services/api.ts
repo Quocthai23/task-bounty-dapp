@@ -1,25 +1,15 @@
 import axios from 'axios';
+import { useAuthStore } from '../stores/auth.store';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 export const api = axios.create({
   baseURL: API_URL,
+  withCredentials: true, // Send cookies automatically
   headers: {
     'Content-Type': 'application/json',
   },
 });
-
-// Request Interceptor: Attach access token
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('access_token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
 
 // Response Interceptor: Handle 401 & Token Refresh
 api.interceptors.response.use(
@@ -28,31 +18,18 @@ api.interceptors.response.use(
     const originalRequest = error.config;
     
     // If error is 401 and we haven't already retried
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 && !originalRequest._retry && originalRequest.url !== '/auth/login') {
       originalRequest._retry = true;
       
       try {
-        const refreshToken = localStorage.getItem('refresh_token');
-        if (!refreshToken) throw new Error('No refresh token available');
+        // Try to refresh - cookies are automatically sent
+        await axios.post(`${API_URL}/auth/refresh`, {}, { withCredentials: true });
         
-        // Try to refresh
-        const { data } = await axios.post(`${API_URL}/auth/refresh`, {
-          refreshToken,
-        });
-        
-        // Save new tokens
-        localStorage.setItem('access_token', data.accessToken);
-        if (data.refreshToken) {
-          localStorage.setItem('refresh_token', data.refreshToken);
-        }
-        
-        // Update header and retry request
-        originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
+        // Retry original request
         return api(originalRequest);
       } catch (refreshError) {
         // Refresh failed, user needs to login again
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
+        useAuthStore.getState().logout();
         window.location.href = '/login';
         return Promise.reject(refreshError);
       }
