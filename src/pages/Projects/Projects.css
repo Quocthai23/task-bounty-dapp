@@ -1,0 +1,146 @@
+.projects-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.projects-header {
+  margin-bottom: 3rem;
+}
+
+.text-success { color: var(--status-success); font-weight: bold; }
+
+/* Project Detail */
+.project-detail-container {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.project-detail-header {
+  padding: 2.5rem;
+  margin-bottom: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.pd-title-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.pd-desc {
+  font-size: 1.125rem;
+  max-width: 800px;
+}
+
+.pd-meta {
+  display: flex;
+  gap: 3rem;
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.pd-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.pd-meta-item .label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.pd-meta-item .value {
+  font-size: 1.25rem;
+  color: var(--text-primary);
+}
+.font-bold { font-weight: bold; }
+
+.pd-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+/* Task Board */
+.project-board-section .section-title {
+  margin-bottom: 2rem;
+}
+
+.task-board {
+  display: flex;
+  gap: 1.5rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+  min-height: 500px;
+}
+
+.board-column {
+  flex: 0 0 320px;
+  display: flex;
+  flex-direction: column;
+  background: rgba(var(--bg-secondary), 0.5);
+  padding: 1rem;
+}
+
+.board-column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 0 0.5rem;
+}
+
+.board-column-header h3 {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+.task-count {
+  background: var(--bg-primary);
+  padding: 0.125rem 0.5rem;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.board-column-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex-grow: 1;
+}
+
+.board-task-card {
+  padding: 1.25rem;
+  cursor: pointer;
+}
+
+.board-task-card h4 {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+.board-task-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--border-color);
+  padding-top: 0.75rem;
+}
+
+.board-task-bounty {
+  font-weight: 700;
+  color: var(--status-success);
+}

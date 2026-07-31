@@ -1,0 +1,7 @@
+@import './color.css';
+@import './font-size.css';
+@import './spacing.css';
+@import './typography.css';
+
+@source './../../../src/**/*.{js,ts,jsx,tsx,mdx}';
+

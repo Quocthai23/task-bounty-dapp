@@ -1,0 +1,59 @@
+.risk-banner-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.risk-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: rgba(239, 68, 68, 0.05);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  position: relative;
+}
+
+.risk-banner-icon {
+  color: var(--status-danger);
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.risk-banner-content {
+  flex-grow: 1;
+}
+
+.risk-banner-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.risk-banner-title strong {
+  color: var(--text-primary);
+  font-size: 1.125rem;
+}
+
+.risk-banner-content p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.risk-banner-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.risk-banner-close:hover {
+  color: var(--status-danger);
+}
