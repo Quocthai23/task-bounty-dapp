@@ -1,15 +1,21 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/shared/atoms/button';
+import { Input } from '@/components/shared/atoms/input';
 import { walletService } from '@/services/wallet.service';
 import { format } from 'date-fns';
-import { Building2, ArrowDownToLine, ArrowUpFromLine, Lock, Briefcase, Plus, Loader2 } from 'lucide-react';
+import { Building2, ArrowDownToLine, ArrowUpFromLine, Lock, Briefcase, Plus, Loader2, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 export const ProfilePayment: React.FC = () => {
   const queryClient = useQueryClient();
   const [bankName, setBankName] = useState('');
   const [accountNumber, setAccountNumber] = useState('');
+  
+  // Deposit Modal State
+  const [isDepositOpen, setIsDepositOpen] = useState(false);
+  const [depositAmount, setDepositAmount] = useState('');
+  const [depositData, setDepositData] = useState<any>(null);
 
   // Queries
   const { data: bankAccount, isLoading: isBankLoading } = useQuery({
@@ -40,10 +46,21 @@ export const ProfilePayment: React.FC = () => {
     }
   });
 
+  const depositMutation = useMutation({
+    mutationFn: (amount: number) => walletService.deposit(amount),
+    onSuccess: (data) => {
+      setDepositData(data.paymentInstructions);
+    }
+  });
+
   const handleLinkBank = (e: React.FormEvent) => {
     e.preventDefault();
     if (!bankName || !accountNumber) return;
     linkMutation.mutate({ bankName, accountNumber });
+  };
+
+  const handleDeposit = () => {
+    if (depositAmount) depositMutation.mutate(Number(depositAmount));
   };
 
   const balance = balanceData?.balance || 100000000; // default 100M VND if not implemented yet
@@ -159,7 +176,10 @@ export const ProfilePayment: React.FC = () => {
           </div>
           
           <div className="flex gap-3 mt-8 md:mt-0 w-full md:w-auto">
-            <Button className="flex-1 md:flex-none bg-white text-blue-900 hover:bg-blue-50 font-black px-8 py-6 rounded-xl shadow-lg flex items-center justify-center gap-2">
+            <Button 
+              onClick={() => setIsDepositOpen(true)}
+              className="flex-1 md:flex-none bg-white text-blue-900 hover:bg-blue-50 font-black px-8 py-6 rounded-xl shadow-lg flex items-center justify-center gap-2"
+            >
               <ArrowDownToLine size={20} /> Deposit
             </Button>
             <Button variant="outline" className="flex-1 md:flex-none border-white/20 text-white hover:bg-white/10 font-bold px-8 py-6 rounded-xl flex items-center justify-center gap-2">
@@ -205,6 +225,80 @@ export const ProfilePayment: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Deposit Modal */}
+      {isDepositOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-3xl p-6 md:p-8 w-full max-w-md shadow-2xl relative animate-in zoom-in-95 duration-200">
+            <button 
+              onClick={() => { setIsDepositOpen(false); setDepositData(null); setDepositAmount(''); }}
+              className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-900 bg-neutral-100 hover:bg-neutral-200 rounded-full p-2 transition-colors"
+            >
+              <X size={20} />
+            </button>
+            
+            {!depositData ? (
+              <>
+                <h3 className="text-2xl font-black mb-6">Deposit Funds</h3>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-neutral-700">Amount (VND)</label>
+                    <Input 
+                      type="number" 
+                      placeholder="e.g. 500000"
+                      value={depositAmount}
+                      onChange={(e) => setDepositAmount(e.target.value)}
+                      className="text-lg"
+                    />
+                  </div>
+                  <Button 
+                    onClick={handleDeposit} 
+                    disabled={!depositAmount || depositMutation.isPending}
+                    className="w-full py-4 text-lg font-bold"
+                  >
+                    {depositMutation.isPending ? <Loader2 className="animate-spin" /> : 'Generate QR Code'}
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div className="flex flex-col items-center animate-in slide-in-from-right-4">
+                <h3 className="text-2xl font-black mb-2 text-center">Scan to Deposit</h3>
+                <p className="text-sm text-neutral-500 mb-6 text-center">Use your banking app to scan this QR code.</p>
+                
+                <div className="bg-white p-2 rounded-2xl shadow-sm border border-neutral-100 mb-6">
+                  <img src={depositData.qrCodeUrl} alt="Deposit QR Code" className="w-56 h-56 rounded-xl" />
+                </div>
+                
+                <div className="w-full bg-neutral-50 rounded-xl p-4 space-y-3 text-sm">
+                  <div className="flex justify-between items-center border-b border-neutral-200 pb-2">
+                    <span className="text-neutral-500 font-medium">Bank</span>
+                    <span className="font-bold">{depositData.bankName}</span>
+                  </div>
+                  <div className="flex justify-between items-center border-b border-neutral-200 pb-2">
+                    <span className="text-neutral-500 font-medium">Account No.</span>
+                    <span className="font-bold">{depositData.accountNumber}</span>
+                  </div>
+                  <div className="flex justify-between items-center border-b border-neutral-200 pb-2">
+                    <span className="text-neutral-500 font-medium">Name</span>
+                    <span className="font-bold">{depositData.accountName}</span>
+                  </div>
+                  <div className="flex justify-between items-center pt-1">
+                    <span className="text-neutral-500 font-medium">Transfer Memo</span>
+                    <span className="font-black text-primary-600 bg-primary-100 px-3 py-1 rounded-lg tracking-widest">{depositData.transferMemo}</span>
+                  </div>
+                </div>
+                <Button 
+                  onClick={() => { setIsDepositOpen(false); setDepositData(null); setDepositAmount(''); }}
+                  variant="outline" 
+                  className="w-full mt-6"
+                >
+                  Close
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
