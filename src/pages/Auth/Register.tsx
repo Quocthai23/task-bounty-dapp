@@ -4,11 +4,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { authService } from '@/services/auth.service';
 import { Input } from '@/components/shared/atoms/input';
 import { Button } from '@/components/shared/atoms/button';
-import { User, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { User, Mail, Lock, Eye, EyeOff, ShieldCheck, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 
 export const Register: React.FC = () => {
   const navigate = useNavigate();
+  const [step, setStep] = useState<1 | 2>(1);
+  const [otp, setOtp] = useState('');
+  
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -22,8 +25,39 @@ export const Register: React.FC = () => {
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
   const [error, setError] = useState('');
 
+  const sendOtpMutation = useMutation({
+    mutationFn: (email: string) => authService.sendOtp({ email, context: 'REGISTER' }),
+    onSuccess: () => {
+      toast.success('OTP sent to your email!');
+      setStep(2);
+    },
+    onError: (err: any) => {
+      setError(err.response?.data?.message || 'Failed to send OTP');
+    }
+  });
+
+  const verifyOtpMutation = useMutation({
+    mutationFn: (data: { email: string, otp: string }) => authService.verifyOtp({ ...data, context: 'REGISTER' }),
+    onSuccess: (data) => {
+      // Once OTP is verified, call register with challenge token
+      registerMutation.mutate({
+        data: {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          username: formData.username,
+          email: formData.email,
+          password: formData.password
+        },
+        challengeToken: data.challenge_token
+      });
+    },
+    onError: (err: any) => {
+      setError(err.response?.data?.message || 'Invalid OTP');
+    }
+  });
+
   const registerMutation = useMutation({
-    mutationFn: (data: any) => authService.register(data),
+    mutationFn: (params: { data: any, challengeToken: string }) => authService.register(params.data, params.challengeToken),
     onSuccess: () => {
       toast.success('Registration successful!');
       navigate('/login');
@@ -41,7 +75,7 @@ export const Register: React.FC = () => {
     }));
   };
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleStep1 = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -55,164 +89,222 @@ export const Register: React.FC = () => {
       return;
     }
 
-    registerMutation.mutate({
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      username: formData.username,
-      email: formData.email,
-      password: formData.password
-    });
+    sendOtpMutation.mutate(formData.email);
+  };
+
+  const handleStep2 = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    
+    if (otp.length < 6) {
+      setError('Please enter a valid 6-digit OTP');
+      return;
+    }
+
+    verifyOtpMutation.mutate({ email: formData.email, otp });
   };
 
   return (
-    <div className="flex min-h-screen w-full items-center justify-center p-4 md:p-8" 
-         style={{
-           backgroundColor: 'var(--color-primary-500)',
-           backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")'
-         }}>
+    <div className="flex min-h-screen w-full items-center justify-center bg-slate-50 p-4 md:p-8">
       
-      <div className="flex w-full max-w-[1000px] overflow-hidden rounded-3xl bg-white shadow-2xl md:h-[680px]">
+      <div className="flex w-full max-w-[1000px] overflow-hidden rounded-3xl bg-white border border-slate-200 shadow-xl md:h-[680px]">
         {/* Left Side - Illustration */}
-        <div className="hidden w-1/2 items-center justify-center bg-neutral-00 p-8 md:flex border-r border-neutral-100">
-          <img src="/assets/register_illustration.png" alt="Register Illustration" className="w-full max-w-sm object-contain" />
+        <div className="hidden w-1/2 items-center justify-center bg-blue-600 p-8 md:flex">
+          <div className="text-center text-white">
+            <h1 className="text-4xl font-bold mb-4">Join Task Bounty</h1>
+            <p className="text-blue-100 text-lg">Start building and earning today.</p>
+          </div>
         </div>
 
         {/* Right Side - Form */}
         <div className="flex flex-1 flex-col overflow-y-auto p-8 md:p-12 bg-white">
-          <h2 className="mb-6 text-3xl font-extrabold text-neutral-900 text-center md:text-left">
-            Sign Up
-          </h2>
+          {step === 1 && (
+            <>
+              <h2 className="mb-6 text-3xl font-bold text-slate-900 text-center md:text-left">
+                Sign Up
+              </h2>
 
-          {error && (
-            <div className="mb-6 p-3 bg-red-50 text-red-600 rounded-lg text-sm border border-red-100 font-medium">
-              {error}
-            </div>
+              {error && (
+                <div className="mb-6 p-3 bg-red-50 text-red-600 rounded-lg text-sm border border-red-200 font-medium">
+                  {error}
+                </div>
+              )}
+
+              <form className="flex flex-col gap-4" onSubmit={handleStep1}>
+                <div className="flex gap-4">
+                  <div className="flex-1 relative">
+                    <Input
+                      name="firstName"
+                      placeholder="First Name"
+                      value={formData.firstName}
+                      onChange={handleChange}
+                      className="h-12 pl-11 bg-slate-50 border-slate-200 focus:border-blue-500 focus:ring-blue-500 rounded-xl transition-all"
+                      required
+                    />
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                  </div>
+                  <div className="flex-1 relative">
+                    <Input
+                      name="lastName"
+                      placeholder="Last Name"
+                      value={formData.lastName}
+                      onChange={handleChange}
+                      className="h-12 pl-11 bg-slate-50 border-slate-200 focus:border-blue-500 focus:ring-blue-500 rounded-xl transition-all"
+                      required
+                    />
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                  </div>
+                </div>
+
+                <div className="relative">
+                  <Input
+                    name="username"
+                    placeholder="Username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    className="h-12 pl-11 bg-slate-50 border-slate-200 focus:border-blue-500 focus:ring-blue-500 rounded-xl transition-all"
+                    required
+                  />
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                </div>
+
+                <div className="relative">
+                  <Input
+                    name="email"
+                    type="email"
+                    placeholder="Email Address"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="h-12 pl-11 bg-slate-50 border-slate-200 focus:border-blue-500 focus:ring-blue-500 rounded-xl transition-all"
+                    required
+                  />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                </div>
+
+                <div className="relative">
+                  <Input
+                    name="password"
+                    type={isPasswordVisible ? 'text' : 'password'}
+                    placeholder="Password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="h-12 pl-11 pr-11 bg-slate-50 border-slate-200 focus:border-blue-500 focus:ring-blue-500 rounded-xl transition-all"
+                    required
+                  />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                  <button
+                    type="button"
+                    onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                  >
+                    {isPasswordVisible ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+
+                <div className="relative">
+                  <Input
+                    name="confirmPassword"
+                    type={isConfirmPasswordVisible ? 'text' : 'password'}
+                    placeholder="Confirm Password"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    className="h-12 pl-11 pr-11 bg-slate-50 border-slate-200 focus:border-blue-500 focus:ring-blue-500 rounded-xl transition-all"
+                    required
+                  />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                  <button
+                    type="button"
+                    onClick={() => setIsConfirmPasswordVisible(!isConfirmPasswordVisible)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                  >
+                    {isConfirmPasswordVisible ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-2 mt-2">
+                  <input
+                    type="checkbox"
+                    id="agreeTerms"
+                    name="agreeTerms"
+                    checked={formData.agreeTerms}
+                    onChange={handleChange}
+                    className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <label htmlFor="agreeTerms" className="text-sm font-medium text-slate-600">
+                    I agree to the <Link to="/terms" className="text-blue-600 font-bold hover:underline">Terms</Link> and <Link to="/privacy" className="text-blue-600 font-bold hover:underline">Privacy Policy</Link>
+                  </label>
+                </div>
+
+                <Button
+                  type="submit"
+                  className="mt-4 h-12 rounded-xl text-base font-bold transition-transform active:scale-[0.98] bg-blue-600 hover:bg-blue-700 text-white"
+                  disabled={sendOtpMutation.isPending}
+                >
+                  {sendOtpMutation.isPending ? 'Sending OTP...' : 'Next Step'}
+                </Button>
+
+                <p className="mt-6 text-center text-sm font-medium text-slate-600">
+                  Already have an account?{' '}
+                  <Link to="/login" className="text-blue-600 font-bold hover:underline">
+                    Log In
+                  </Link>
+                </p>
+              </form>
+            </>
           )}
 
-          <form className="flex flex-col gap-4" onSubmit={handleRegister}>
-            <div className="flex gap-4">
-              <div className="flex-1 relative">
-                <Input
-                  name="firstName"
-                  placeholder="First Name"
-                  value={formData.firstName}
-                  onChange={handleChange}
-                  className="h-12 pl-11 bg-neutral-50 border-neutral-200 focus:border-primary-500 focus:ring-primary-500 rounded-xl transition-all"
-                  required
-                />
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" size={18} />
-              </div>
-              <div className="flex-1 relative">
-                <Input
-                  name="lastName"
-                  placeholder="Last Name"
-                  value={formData.lastName}
-                  onChange={handleChange}
-                  className="h-12 pl-11 bg-neutral-50 border-neutral-200 focus:border-primary-500 focus:ring-primary-500 rounded-xl transition-all"
-                  required
-                />
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" size={18} />
-              </div>
-            </div>
-
-            <div className="relative">
-              <Input
-                name="username"
-                placeholder="Username"
-                value={formData.username}
-                onChange={handleChange}
-                className="h-12 pl-11 bg-neutral-50 border-neutral-200 focus:border-primary-500 focus:ring-primary-500 rounded-xl transition-all"
-                required
-              />
-              <User className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" size={18} />
-            </div>
-
-            <div className="relative">
-              <Input
-                name="email"
-                type="email"
-                placeholder="Email"
-                value={formData.email}
-                onChange={handleChange}
-                className="h-12 pl-11 bg-neutral-50 border-neutral-200 focus:border-primary-500 focus:ring-primary-500 rounded-xl transition-all"
-                required
-              />
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" size={18} />
-            </div>
-
-            <div className="relative">
-              <Input
-                name="password"
-                type={isPasswordVisible ? 'text' : 'password'}
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
-                className="h-12 pl-11 pr-11 bg-neutral-50 border-neutral-200 focus:border-primary-500 focus:ring-primary-500 rounded-xl transition-all"
-                required
-              />
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" size={18} />
-              <button
-                type="button"
-                onClick={() => setIsPasswordVisible(v => !v)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 transition-colors"
+          {step === 2 && (
+            <div className="flex flex-col h-full">
+              <button 
+                onClick={() => setStep(1)} 
+                className="flex items-center text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors mb-6 w-fit"
               >
-                {isPasswordVisible ? <Eye size={18} /> : <EyeOff size={18} />}
+                <ArrowLeft size={16} className="mr-1" /> Back
               </button>
+              
+              <div className="flex-1 flex flex-col justify-center items-center">
+                <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-6">
+                  <ShieldCheck className="text-blue-600 w-8 h-8" />
+                </div>
+                
+                <h2 className="mb-2 text-2xl font-bold text-slate-900 text-center">
+                  Verify Your Email
+                </h2>
+                <p className="text-slate-500 text-center mb-8">
+                  We've sent a 6-digit verification code to <br/>
+                  <span className="font-bold text-slate-900">{formData.email}</span>
+                </p>
+
+                {error && (
+                  <div className="mb-6 w-full p-3 bg-red-50 text-red-600 rounded-lg text-sm border border-red-200 font-medium text-center">
+                    {error}
+                  </div>
+                )}
+
+                <form className="w-full flex flex-col gap-4" onSubmit={handleStep2}>
+                  <div className="relative">
+                    <Input
+                      name="otp"
+                      placeholder="Enter 6-digit OTP"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                      className="h-14 text-center text-2xl tracking-widest bg-slate-50 border-slate-200 focus:border-blue-500 focus:ring-blue-500 rounded-xl transition-all font-bold"
+                      required
+                      maxLength={6}
+                    />
+                  </div>
+
+                  <Button
+                    type="submit"
+                    className="mt-4 h-12 w-full rounded-xl text-base font-bold transition-transform active:scale-[0.98] bg-blue-600 hover:bg-blue-700 text-white"
+                    disabled={verifyOtpMutation.isPending || registerMutation.isPending}
+                  >
+                    {(verifyOtpMutation.isPending || registerMutation.isPending) ? 'Verifying...' : 'Create Account'}
+                  </Button>
+                </form>
+              </div>
             </div>
-
-            <div className="relative">
-              <Input
-                name="confirmPassword"
-                type={isConfirmPasswordVisible ? 'text' : 'password'}
-                placeholder="Confirm Password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                className="h-12 pl-11 pr-11 bg-neutral-50 border-neutral-200 focus:border-primary-500 focus:ring-primary-500 rounded-xl transition-all"
-                required
-              />
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" size={18} />
-              <button
-                type="button"
-                onClick={() => setIsConfirmPasswordVisible(v => !v)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 transition-colors"
-              >
-                {isConfirmPasswordVisible ? <Eye size={18} /> : <EyeOff size={18} />}
-              </button>
-            </div>
-
-            <div className="flex items-center gap-2 mt-2">
-              <input
-                type="checkbox"
-                id="agreeTerms"
-                name="agreeTerms"
-                checked={formData.agreeTerms}
-                onChange={handleChange}
-                className="h-4 w-4 rounded border-neutral-300 text-primary-500 focus:ring-primary-500"
-              />
-              <label htmlFor="agreeTerms" className="text-sm font-medium text-neutral-600">
-                I agree to all terms
-              </label>
-            </div>
-
-            <Button
-              variant="primary-contained"
-              type="submit"
-              className="mt-4 h-12 w-full rounded-xl text-base font-bold shadow-lg shadow-primary-500/30 transition-transform active:scale-[0.98]"
-              disabled={registerMutation.isPending}
-            >
-              {registerMutation.isPending ? 'Registering...' : 'Register'}
-            </Button>
-          </form>
-
-          <p className="mt-auto pt-6 text-center text-sm font-medium text-neutral-500">
-            Already have an account?{' '}
-            <Link 
-              to="/login" 
-              className="text-primary-500 hover:text-primary-600 hover:underline font-bold transition-colors"
-            >
-              Sign in
-            </Link>
-          </p>
+          )}
         </div>
       </div>
     </div>

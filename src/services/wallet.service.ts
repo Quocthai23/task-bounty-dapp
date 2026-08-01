@@ -13,12 +13,16 @@ export const walletService = {
     const response = await api.get('/wallets/balance');
     return response.data;
   },
-  deposit: async (amount: number) => {
-    const response = await api.post('/wallets/deposit', { amount });
+  deposit: async (amount: number, challengeToken: string) => {
+    const response = await api.post('/wallets/deposit', { amount }, {
+      headers: { 'x-challenge-token': challengeToken }
+    });
     return response.data;
   },
-  withdraw: async (amount: number) => {
-    const response = await api.post('/wallets/withdraw', { amount });
+  withdraw: async (amount: number, challengeToken: string) => {
+    const response = await api.post('/wallets/withdraw', { amount }, {
+      headers: { 'x-challenge-token': challengeToken }
+    });
     return response.data;
   },
   getTransactions: async (params?: any) => {

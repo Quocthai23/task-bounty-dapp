@@ -32,7 +32,7 @@ export const Wallet: React.FC = () => {
   }, [balance, depositData, balanceData, previousBalance]);
 
   const depositMutation = useMutation({
-    mutationFn: (amount: number) => walletService.deposit(amount),
+    mutationFn: (amount: number) => walletService.deposit(amount, ''),
     onSuccess: (data) => {
       setDepositData(data.paymentInstructions);
       setAmount('');
@@ -40,7 +40,7 @@ export const Wallet: React.FC = () => {
   });
 
   const withdrawMutation = useMutation({
-    mutationFn: (amount: number) => walletService.withdraw(amount),
+    mutationFn: (amount: number) => walletService.withdraw(amount, ''),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wallet-balance'] });
       setAmount('');

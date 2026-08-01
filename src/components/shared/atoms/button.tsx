@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import { useExperience } from '@/lib/experience/useExperience';
 
 const baseClasses =
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded transition-all outline-none [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 disabled:opacity-50 disabled:cursor-not-allowed";
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg transition-all outline-none font-medium [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 disabled:opacity-50 disabled:cursor-not-allowed";
 
 const appButtonVariants = cva(baseClasses, {
   variants: {
@@ -40,10 +40,21 @@ const appButtonVariants = cva(baseClasses, {
       'white-contained': 'bg-background !text-neutral-900 border-0 dark:!text-neutral-50',
       'white-outline':
         'bg-background !text-neutral-900 border-1 border-neutral-200 dark:!text-neutral-50 dark:border-neutral-800',
+
+      // Aliases
+      'outline': 'bg-background !text-neutral-900 border-1 border-neutral-200 dark:!text-neutral-50 dark:border-neutral-800',
+      'ghost': 'bg-transparent !text-neutral-900 hover:bg-neutral-100 dark:hover:bg-neutral-800',
+    },
+    size: {
+      default: "h-10 px-4 py-2",
+      sm: "h-9 rounded-md px-3 text-sm",
+      lg: "h-11 rounded-xl px-8",
+      icon: "h-10 w-10",
     },
   },
   defaultVariants: {
     variant: 'primary-contained',
+    size: 'default',
   },
 });
 
@@ -79,10 +90,21 @@ const webButtonVariants = cva(baseClasses, {
       'white-contained': 'bg-background text-neutral-900 border-0 dark:text-neutral-50',
       'white-outline':
         'bg-background text-neutral-900 border-1 border-neutral-200 dark:text-neutral-50 dark:border-neutral-800',
+
+      // Aliases
+      'outline': 'bg-background text-neutral-900 border-1 border-neutral-200 dark:text-neutral-50 dark:border-neutral-800',
+      'ghost': 'bg-transparent text-neutral-900 hover:bg-neutral-100 dark:hover:bg-neutral-800',
+    },
+    size: {
+      default: "h-10 px-4 py-2",
+      sm: "h-9 rounded-md px-3 text-sm",
+      lg: "h-11 rounded-xl px-8",
+      icon: "h-10 w-10",
     },
   },
   defaultVariants: {
     variant: 'primary-contained',
+    size: 'default',
   },
 });
 
@@ -99,12 +121,14 @@ type ButtonVariant = NonNullable<
 function Button({
   className,
   variant = 'primary-contained',
+  size = 'default',
   asChild = false,
   content,
   children,
   ...props
 }: React.ComponentProps<'button'> & {
   variant?: ButtonVariant;
+  size?: 'default' | 'sm' | 'lg' | 'icon';
   asChild?: boolean;
   content?: React.ReactNode;
 }) {
@@ -116,7 +140,7 @@ function Button({
     <Comp
       data-slot="button"
       data-variant={variant}
-      className={cn(buttonVariant({ variant, className }))}
+      className={cn(buttonVariant({ variant, size, className }))}
       {...props}
     >
       {content ?? children}

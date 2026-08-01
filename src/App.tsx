@@ -3,6 +3,7 @@ import { Login } from './pages/Auth/Login';
 import { Register } from './pages/Auth/Register';
 import { Dashboard } from './pages/Dashboard/Dashboard';
 import { Profile } from './pages/Profile/Profile';
+import { PublicProfile } from './pages/PublicProfile/PublicProfile';
 import { ProjectList } from './pages/Projects/ProjectList';
 import { ProjectDetail } from './pages/Projects/ProjectDetail';
 import { Wallet } from './pages/Wallet/Wallet';
@@ -23,6 +24,7 @@ function App() {
         <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/u/:username" element={<PublicProfile />} />
           <Route path="/projects" element={<ProjectList />} />
           <Route path="/projects/:id" element={<ProjectDetail />} />
           <Route path="/my-tasks" element={<MyTasks />} />

@@ -19,11 +19,6 @@
   --status-danger: #ef4444;
   --status-info: #3b82f6;
 
-  /* Glassmorphism Variables */
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.4);
-  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
-
   /* Borders & Shadows */
   --border-color: #e2e8f0;
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -32,25 +27,6 @@
 
   /* Typography */
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg-primary: #0f172a;
-    --bg-secondary: #1e293b;
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
-    
-    --accent-primary: #818cf8;
-    --accent-primary-hover: #6366f1;
-    --accent-secondary: #f472b6;
-    
-    --glass-bg: rgba(30, 41, 59, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-
-    --border-color: #334155;
-  }
 }
 
 body {
@@ -107,4 +83,22 @@ p { margin: 0 0 1rem 0; line-height: 1.6; color: var(--text-secondary); }
 
 .animate-fade-in {
   animation: fadeIn 0.4s ease-out forwards;
+}
+
+@keyframes sheetSlideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes sheetSlideOutRight {
+  from { transform: translateX(0); }
+  to { transform: translateX(100%); }
+}
+
+.animate-sheet-in {
+  animation: sheetSlideInRight 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-sheet-out {
+  animation: sheetSlideOutRight 0.4s cubic-bezier(0.7, 0, 0.84, 0) forwards;
 }

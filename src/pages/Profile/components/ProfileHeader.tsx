@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/shared/atoms/button';
 import { BadgeCheck, Edit2 } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/shared/atoms/dialog';
+import { Dialog, SheetContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/shared/atoms/dialog';
 import { profileService } from '@/services/profile.service';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ImageUpload } from '@/components/shared/atoms/image-upload';
@@ -16,6 +16,7 @@ interface ProfileHeaderProps {
 export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, activeTab, onTabChange }) => {
   const tabs = ['Information', 'Jobs', 'History Log', 'Payment History', 'Job Manager'];
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState({
@@ -51,62 +52,89 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, activeTab, o
     : 'Not connected';
 
   return (
-    <div className="bg-white rounded-t-3xl border-b border-neutral-100 overflow-hidden shrink-0 shadow-sm relative z-10">
-      {/* Clean UI Banner instead of massive red block */}
-      <div className="h-32 bg-gradient-to-r from-neutral-50 to-neutral-100 border-b border-neutral-100 relative">
-        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]"></div>
-      </div>
+    <div className="bg-white rounded-t-3xl border-b border-neutral-100 shrink-0 shadow-sm relative z-10 transition-all duration-300">
       
-      {/* Profile Info */}
-      <div className="px-8 pb-6 relative flex flex-col md:flex-row md:items-end md:justify-between">
-        <div className="flex flex-col md:flex-row items-center md:items-end gap-6 -mt-16 md:-mt-12 relative z-10">
-          <div className="w-32 h-32 rounded-full border-4 border-white overflow-hidden bg-white shadow-xl shrink-0">
-            <img src={user?.avatarUrl || "/assets/avatar.png"} alt="Avatar" className="w-full h-full object-cover" />
-          </div>
-          <div className="text-center md:text-left mb-2">
-            <h1 className="text-3xl font-black text-neutral-900 flex items-center justify-center md:justify-start gap-2">
-              {user?.firstName ? `${user.firstName} ${user.lastName || ''}` : (user?.username || 'ThaiNguyen')}
-              {user?.nickname && <span className="text-lg font-semibold text-neutral-400">({user.nickname})</span>}
-              <BadgeCheck size={24} className="text-blue-500" />
-            </h1>
-            <p className="text-neutral-500 font-semibold">{currentRole}</p>
-          </div>
+      {/* Collapsible Section */}
+      <div className={`overflow-hidden transition-all duration-300 ${isCollapsed ? 'max-h-0 opacity-0' : 'max-h-[500px] opacity-100'}`}>
+        {/* Clean UI Banner */}
+        <div className="h-24 bg-gradient-to-r from-neutral-50 to-neutral-100 relative">
+          <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]"></div>
         </div>
-        <div className="mt-6 md:mt-0 flex justify-center md:justify-end">
-          <Button 
-            onClick={() => setIsEditOpen(true)}
-            variant="outline" 
-            className="rounded-full font-bold px-6 shadow-sm border-neutral-200 hover:bg-neutral-50 hover:text-primary-600 flex items-center gap-2 bg-white"
-          >
-            <Edit2 size={16} /> Edit Profile
-          </Button>
+        
+        {/* Profile Info */}
+        <div className="px-8 pb-4 relative flex flex-col md:flex-row md:items-center md:justify-between -mt-10 z-10">
+          <div className="flex flex-col md:flex-row items-center md:items-center gap-4">
+            <div className="w-20 h-20 rounded-full border-4 border-white overflow-hidden bg-white shadow-lg shrink-0">
+              <img src={user?.avatarUrl || "/assets/avatar.png"} alt="Avatar" className="w-full h-full object-cover" />
+            </div>
+            <div className="text-center md:text-left mt-2 md:mt-0">
+              <h1 className="text-2xl font-black text-neutral-900 flex items-center justify-center md:justify-start gap-2">
+                {user?.firstName ? `${user.firstName} ${user.lastName || ''}` : (user?.username || 'ThaiNguyen')}
+                {user?.nickname && <span className="text-md font-semibold text-neutral-400">({user.nickname})</span>}
+                <BadgeCheck size={20} className="text-blue-500" />
+              </h1>
+              <p className="text-neutral-500 font-semibold text-sm">{currentRole}</p>
+            </div>
+          </div>
+          <div className="mt-4 md:mt-0 flex justify-center md:justify-end shrink-0">
+            <Button 
+              onClick={() => setIsEditOpen(true)}
+              variant="outline" 
+              size="sm"
+              className="rounded-full font-bold shadow-sm border-neutral-200 hover:bg-neutral-50 hover:text-primary-600 flex items-center gap-2 bg-white"
+            >
+              <Edit2 size={14} /> Edit Profile
+            </Button>
+          </div>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="px-4 md:px-8 flex items-center justify-center md:justify-start gap-2 md:gap-8 overflow-x-auto custom-scrollbar border-t border-neutral-100 bg-white">
-        {tabs.map(tab => (
-          <button
-            key={tab}
-            onClick={() => onTabChange(tab)}
-            className={`py-4 px-2 font-bold text-sm transition-colors relative whitespace-nowrap ${
-              activeTab === tab ? 'text-primary-500' : 'text-neutral-500 hover:text-neutral-900'
-            }`}
+      <div className="px-4 md:px-8 flex items-center justify-between border-t border-neutral-100 bg-white">
+        <div className="flex items-center gap-2 md:gap-8 overflow-x-auto custom-scrollbar flex-1">
+          {tabs.map(tab => (
+            <button
+              key={tab}
+              onClick={() => onTabChange(tab)}
+              className={`py-4 px-2 font-bold text-sm transition-colors relative whitespace-nowrap ${
+                activeTab === tab ? 'text-primary-500' : 'text-neutral-500 hover:text-neutral-900'
+              }`}
+            >
+              {tab}
+              {activeTab === tab && (
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-primary-500 rounded-t-full"></div>
+              )}
+            </button>
+          ))}
+        </div>
+        
+        {/* Collapse Toggle */}
+        <button 
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className="ml-4 p-2 rounded-full hover:bg-neutral-100 text-neutral-400 hover:text-neutral-700 transition-colors shrink-0 flex items-center gap-1"
+          title={isCollapsed ? "Expand profile" : "Collapse profile"}
+        >
+          <span className="text-xs font-bold uppercase tracking-wider hidden md:block">
+            {isCollapsed ? 'Expand' : 'Collapse'}
+          </span>
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            width="16" height="16" viewBox="0 0 24 24" fill="none" 
+            stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" 
+            className={`transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`}
           >
-            {tab}
-            {activeTab === tab && (
-              <div className="absolute bottom-0 left-0 right-0 h-1 bg-primary-500 rounded-t-full"></div>
-            )}
-          </button>
-        ))}
+            <polyline points="18 15 12 9 6 15"></polyline>
+          </svg>
+        </button>
       </div>
 
       {/* Edit Modal */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-        <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-y-auto custom-scrollbar bg-white">
-          <DialogHeader className="mb-4 border-b border-neutral-100 pb-4">
-            <DialogTitle className="text-2xl font-black text-neutral-900">Edit Profile</DialogTitle>
-          </DialogHeader>
+        <SheetContent className="overflow-y-auto custom-scrollbar p-0">
+          <div className="p-6">
+            <DialogHeader className="mb-4 border-b border-neutral-100 pb-4">
+              <DialogTitle className="text-2xl font-black text-neutral-900">Edit Profile</DialogTitle>
+            </DialogHeader>
           
           <div className="space-y-8 py-2">
             
@@ -264,8 +292,9 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, activeTab, o
             </section>
 
           </div>
+          </div>
 
-          <DialogFooter className="border-t border-neutral-100 pt-6 mt-4 flex justify-end gap-4">
+          <DialogFooter className="border-t border-neutral-100 p-6 flex justify-end gap-4 bg-neutral-50/50 mt-auto">
             <DialogClose asChild>
               <Button variant="outline" className="px-6 font-bold bg-white text-neutral-600 border-neutral-200 hover:bg-neutral-50">
                 Cancel
@@ -279,7 +308,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, activeTab, o
               {mutation.isPending ? 'Saving...' : 'Save Changes'}
             </Button>
           </DialogFooter>
-        </DialogContent>
+        </SheetContent>
       </Dialog>
     </div>
   );

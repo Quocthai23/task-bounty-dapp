@@ -11,16 +11,20 @@ export const authService = {
     const response = await api.post('/auth/login', data);
     return response.data;
   },
-  register: async (data: any) => {
-    const response = await api.post('/auth/register', data);
+  register: async (data: any, challengeToken: string) => {
+    const response = await api.post('/auth/register', data, {
+      headers: {
+        'x-challenge-token': challengeToken
+      }
+    });
     return response.data;
   },
-  sendOtp: async (data: { email: string }) => {
-    const response = await api.post('/auth/send-otp', { ...data, context: 'REGISTER' });
+  sendOtp: async (data: { email: string, context?: string }) => {
+    const response = await api.post('/auth/send-otp', { ...data, context: data.context || 'REGISTER' });
     return response.data;
   },
-  verifyOtp: async (data: { email: string; otp: string }) => {
-    const response = await api.post('/auth/verify-otp', { email: data.email, code: data.otp, context: 'REGISTER' });
+  verifyOtp: async (data: { email: string; otp: string, context?: string }) => {
+    const response = await api.post('/auth/verify-otp', { email: data.email, code: data.otp, context: data.context || 'REGISTER' });
     return response.data;
   },
   changePassword: async (data: any) => {

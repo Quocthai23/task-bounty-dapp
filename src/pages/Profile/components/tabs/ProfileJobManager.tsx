@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { projectService } from '@/services/project.service';
 import { Button } from '@/components/shared/atoms/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/shared/atoms/dialog';
-import { Plus, Briefcase, ChevronRight, Users, Check, X, DollarSign, Loader2 } from 'lucide-react';
+import { Dialog, DialogContent, SheetContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/shared/atoms/dialog';
+import { Plus, Briefcase, ChevronRight, Users, Check, X, DollarSign } from 'lucide-react';
 import { toast } from 'sonner';
 
 export const ProfileJobManager: React.FC = () => {
@@ -66,42 +66,46 @@ export const ProfileJobManager: React.FC = () => {
 
         <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-primary-500 hover:bg-primary-600 text-white font-bold px-10 py-6 rounded-2xl shadow-lg flex items-center justify-center gap-2 mx-auto">
+            <Button size="lg" className="bg-primary-500 hover:bg-primary-600 text-white font-bold !h-auto px-10 py-6 rounded-2xl shadow-lg flex items-center justify-center gap-2 mx-auto">
               <Plus size={24} /> Create Your First Job
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[500px] p-6 rounded-[2rem]">
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-black">Create New Job</DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleCreateSubmit} className="space-y-4 mt-4">
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-neutral-700">Job Title</label>
-                <input required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-neutral-200 outline-none focus:border-primary-500" placeholder="e.g. Frontend Developer" />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-neutral-700">Description</label>
-                <textarea required value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-neutral-200 outline-none focus:border-primary-500 h-24 resize-none" placeholder="Describe the job..." />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
+          <SheetContent className="p-0 overflow-y-auto custom-scrollbar">
+            <div className="p-6">
+              <DialogHeader className="mb-4 border-b border-neutral-100 pb-4">
+                <DialogTitle className="text-2xl font-black">Create New Job</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleCreateSubmit} className="space-y-4 mt-4 flex flex-col">
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-neutral-700">Budget (VND)</label>
-                  <input required type="number" value={formData.budget} onChange={e => setFormData({...formData, budget: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-neutral-200 outline-none focus:border-primary-500" placeholder="e.g. 5000000" />
+                  <label className="text-sm font-bold text-neutral-700">Job Title</label>
+                  <input required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-neutral-200 outline-none focus:border-primary-500 bg-neutral-50/50" placeholder="e.g. Frontend Developer" />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-neutral-700">Positions</label>
-                  <input required type="number" min="1" value={formData.positions} onChange={e => setFormData({...formData, positions: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-neutral-200 outline-none focus:border-primary-500" />
+                  <label className="text-sm font-bold text-neutral-700">Description</label>
+                  <textarea required value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-neutral-200 outline-none focus:border-primary-500 h-24 resize-none bg-neutral-50/50" placeholder="Describe the job..." />
                 </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-neutral-700">Skills (comma separated)</label>
-                <input required value={formData.skillsRequired} onChange={e => setFormData({...formData, skillsRequired: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-neutral-200 outline-none focus:border-primary-500" placeholder="e.g. React, Node.js" />
-              </div>
-              <Button type="submit" disabled={createMutation.isPending} className="w-full py-6 bg-neutral-900 hover:bg-black text-white font-black rounded-xl mt-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-neutral-700">Budget (VND)</label>
+                    <input required type="number" value={formData.budget} onChange={e => setFormData({...formData, budget: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-neutral-200 outline-none focus:border-primary-500 bg-neutral-50/50" placeholder="e.g. 5000000" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-neutral-700">Positions</label>
+                    <input required type="number" min="1" value={formData.positions} onChange={e => setFormData({...formData, positions: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-neutral-200 outline-none focus:border-primary-500 bg-neutral-50/50" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-neutral-700">Skills (comma separated)</label>
+                  <input required value={formData.skillsRequired} onChange={e => setFormData({...formData, skillsRequired: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-neutral-200 outline-none focus:border-primary-500 bg-neutral-50/50" placeholder="e.g. React, Node.js" />
+                </div>
+              </form>
+            </div>
+            <div className="border-t border-neutral-100 p-6 bg-neutral-50/50 mt-auto flex justify-end">
+              <Button onClick={handleCreateSubmit} disabled={createMutation.isPending} className="bg-primary-500 hover:bg-primary-600 text-white font-bold px-8 py-3 rounded-xl shadow-md w-full sm:w-auto">
                 {createMutation.isPending ? 'Creating...' : 'Create Job'}
               </Button>
-            </form>
-          </DialogContent>
+            </div>
+          </SheetContent>
         </Dialog>
       </div>
     );
@@ -113,45 +117,49 @@ export const ProfileJobManager: React.FC = () => {
       <div className="p-8 max-w-5xl mx-auto animate-in fade-in duration-300">
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-2xl font-black text-neutral-900">PM Dashboard</h2>
-          <Button onClick={() => setIsCreateModalOpen(true)} className="bg-primary-500 hover:bg-primary-600 text-white font-bold rounded-xl flex items-center gap-2">
+          <Button size="lg" onClick={() => setIsCreateModalOpen(true)} className="bg-primary-500 hover:bg-primary-600 text-white font-bold rounded-xl flex items-center gap-2 px-6">
             <Plus size={18} /> Create Job
           </Button>
         </div>
 
         {/* Modal is still needed here for Create Job */}
         <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
-          <DialogContent className="sm:max-w-[500px] p-6 rounded-[2rem]">
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-black">Create New Job</DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleCreateSubmit} className="space-y-4 mt-4">
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-neutral-700">Job Title</label>
-                <input required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-neutral-200 outline-none focus:border-primary-500" placeholder="e.g. Frontend Developer" />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-neutral-700">Description</label>
-                <textarea required value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-neutral-200 outline-none focus:border-primary-500 h-24 resize-none" placeholder="Describe the job..." />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
+          <SheetContent className="p-0 overflow-y-auto custom-scrollbar">
+            <div className="p-6">
+              <DialogHeader className="mb-4 border-b border-neutral-100 pb-4">
+                <DialogTitle className="text-2xl font-black">Create New Job</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleCreateSubmit} className="space-y-4 mt-4 flex flex-col">
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-neutral-700">Budget (VND)</label>
-                  <input required type="number" value={formData.budget} onChange={e => setFormData({...formData, budget: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-neutral-200 outline-none focus:border-primary-500" placeholder="e.g. 5000000" />
+                  <label className="text-sm font-bold text-neutral-700">Job Title</label>
+                  <input required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-neutral-200 outline-none focus:border-primary-500 bg-neutral-50/50" placeholder="e.g. Frontend Developer" />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-neutral-700">Positions</label>
-                  <input required type="number" min="1" value={formData.positions} onChange={e => setFormData({...formData, positions: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-neutral-200 outline-none focus:border-primary-500" />
+                  <label className="text-sm font-bold text-neutral-700">Description</label>
+                  <textarea required value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-neutral-200 outline-none focus:border-primary-500 h-24 resize-none bg-neutral-50/50" placeholder="Describe the job..." />
                 </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-neutral-700">Skills (comma separated)</label>
-                <input required value={formData.skillsRequired} onChange={e => setFormData({...formData, skillsRequired: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-neutral-200 outline-none focus:border-primary-500" placeholder="e.g. React, Node.js" />
-              </div>
-              <Button type="submit" disabled={createMutation.isPending} className="w-full py-6 bg-neutral-900 hover:bg-black text-white font-black rounded-xl mt-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-neutral-700">Budget (VND)</label>
+                    <input required type="number" value={formData.budget} onChange={e => setFormData({...formData, budget: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-neutral-200 outline-none focus:border-primary-500 bg-neutral-50/50" placeholder="e.g. 5000000" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-neutral-700">Positions</label>
+                    <input required type="number" min="1" value={formData.positions} onChange={e => setFormData({...formData, positions: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-neutral-200 outline-none focus:border-primary-500 bg-neutral-50/50" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-neutral-700">Skills (comma separated)</label>
+                  <input required value={formData.skillsRequired} onChange={e => setFormData({...formData, skillsRequired: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-neutral-200 outline-none focus:border-primary-500 bg-neutral-50/50" placeholder="e.g. React, Node.js" />
+                </div>
+              </form>
+            </div>
+            <div className="border-t border-neutral-100 p-6 bg-neutral-50/50 mt-auto flex justify-end">
+              <Button onClick={handleCreateSubmit} disabled={createMutation.isPending} className="bg-primary-500 hover:bg-primary-600 text-white font-bold px-8 py-3 rounded-xl shadow-md w-full sm:w-auto">
                 {createMutation.isPending ? 'Creating...' : 'Create Job'}
               </Button>
-            </form>
-          </DialogContent>
+            </div>
+          </SheetContent>
         </Dialog>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
