@@ -285,11 +285,11 @@ export const ProfileHistory: React.FC = () => {
               onClick={() => setSelectedCategory(cat.id as CategoryFilter)}
               className={`px-4 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center gap-2 shrink-0 cursor-pointer ${
                 isSelected
-                  ? 'bg-slate-900 text-white shadow-sm font-black scale-102'
-                  : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:text-slate-900'
+                  ? 'bg-slate-900 dark:bg-blue-600 text-white shadow-sm font-black scale-102'
+                  : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              <Icon className={`w-4 h-4 ${isSelected ? 'text-blue-400' : cat.color || 'text-slate-400'}`} />
+              <Icon className={`w-4 h-4 ${isSelected ? 'text-blue-400 dark:text-white' : cat.color || 'text-slate-400'}`} />
               <span>{cat.label}</span>
             </button>
           );
@@ -297,33 +297,33 @@ export const ProfileHistory: React.FC = () => {
       </div>
 
       {/* Date Filter Bar */}
-      <div className="bg-white border border-slate-200 rounded-3xl p-4 sm:p-5 shadow-sm space-y-3">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 sm:p-5 shadow-sm space-y-3">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex items-center gap-2 flex-wrap text-xs">
-            <span className="font-bold text-slate-500 flex items-center gap-1">
-              <Calendar className="w-3.5 h-3.5 text-blue-600" /> Lọc nhanh:
+            <span className="font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1">
+              <Calendar className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" /> Lọc nhanh:
             </span>
             <button
               onClick={() => handleQuickDateFilter(0)}
-              className="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-slate-700 transition-colors"
+              className="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-bold text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
             >
               Hôm nay
             </button>
             <button
               onClick={() => handleQuickDateFilter(3)}
-              className="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-slate-700 transition-colors"
+              className="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-bold text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
             >
               3 ngày qua
             </button>
             <button
               onClick={() => handleQuickDateFilter(7)}
-              className="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-slate-700 transition-colors"
+              className="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-bold text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
             >
               7 ngày qua
             </button>
             <button
               onClick={() => handleQuickDateFilter(30)}
-              className="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-slate-700 transition-colors"
+              className="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-bold text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
             >
               30 ngày qua
             </button>
@@ -334,7 +334,7 @@ export const ProfileHistory: React.FC = () => {
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500"
+              className="px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl outline-none focus:border-blue-500"
               title="Từ ngày"
             />
             <span className="text-slate-400 text-xs">-</span>
@@ -342,13 +342,13 @@ export const ProfileHistory: React.FC = () => {
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500"
+              className="px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl outline-none focus:border-blue-500"
               title="Đến ngày"
             />
             {(startDate || endDate || selectedCategory !== 'ALL') && (
               <button
                 onClick={handleClearFilters}
-                className="text-xs font-bold text-rose-600 hover:text-rose-800 px-2 py-1"
+                className="text-xs font-bold text-rose-600 dark:text-rose-400 hover:text-rose-800 dark:hover:text-rose-300 px-2 py-1 cursor-pointer"
               >
                 Xóa lọc
               </button>
@@ -367,18 +367,18 @@ export const ProfileHistory: React.FC = () => {
         )}
 
         {!isLoading && notifications.length === 0 && (
-          <div className="text-center py-16 bg-white border-2 border-dashed border-slate-200 rounded-3xl space-y-3">
-            <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto text-slate-400">
+          <div className="text-center py-16 bg-white dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl space-y-3">
+            <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto text-slate-400">
               <Bell className="w-6 h-6" />
             </div>
-            <h3 className="text-base font-bold text-slate-700">Chưa có thông báo nào phù hợp</h3>
+            <h3 className="text-base font-bold text-slate-700 dark:text-slate-200">Chưa có thông báo nào phù hợp</h3>
             <p className="text-xs text-slate-400 max-w-sm mx-auto">
               Các thông báo về nhiệm vụ mới, cảnh báo trễ hạn, biến động số dư hoặc ai đã xem hồ sơ của bạn sẽ xuất hiện tại đây.
             </p>
             <Button 
               variant="outline" 
               onClick={handleClearFilters} 
-              className="rounded-2xl text-xs font-bold mt-2"
+              className="rounded-2xl text-xs font-bold mt-2 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
             >
               Xem tất cả thông báo
             </Button>
@@ -388,10 +388,10 @@ export const ProfileHistory: React.FC = () => {
         {!isLoading && Object.keys(groupedNotifications).sort((a, b) => new Date(b).getTime() - new Date(a).getTime()).map((dateKey) => (
           <div key={dateKey} className="space-y-3">
             <div className="flex items-center gap-3">
-              <span className="text-xs font-black uppercase tracking-wider text-slate-400 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
+              <span className="text-xs font-black uppercase tracking-wider text-slate-400 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700">
                 {getRelativeDateLabel(dateKey)}
               </span>
-              <div className="flex-1 h-px bg-slate-200/80"></div>
+              <div className="flex-1 h-px bg-slate-200/80 dark:bg-slate-800"></div>
             </div>
 
             <div className="space-y-2.5">
@@ -407,8 +407,8 @@ export const ProfileHistory: React.FC = () => {
                     }}
                     className={`rounded-2xl p-4 sm:p-5 border transition-all duration-200 flex items-start gap-3.5 sm:gap-4 relative overflow-hidden group cursor-pointer hover:shadow-md ${
                       item.isRead
-                        ? 'bg-white border-slate-200/80 text-slate-800'
-                        : 'bg-blue-50/40 border-blue-300/80 text-slate-900 shadow-sm'
+                        ? 'bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800 text-slate-800 dark:text-slate-200'
+                        : 'bg-blue-50/40 dark:bg-blue-950/20 border-blue-300/80 dark:border-blue-900/60 text-slate-900 dark:text-white shadow-sm'
                     }`}
                   >
                     {/* Unread Accent Bar */}
@@ -417,7 +417,7 @@ export const ProfileHistory: React.FC = () => {
                     )}
 
                     {/* Icon Bubble */}
-                    <div className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-sm border border-slate-100 bg-slate-50">
+                    <div className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-sm border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800">
                       {config.icon}
                     </div>
 
@@ -437,13 +437,13 @@ export const ProfileHistory: React.FC = () => {
                         </span>
                       </div>
 
-                      <p className="text-xs sm:text-sm font-medium leading-relaxed text-slate-800">
+                      <p className="text-xs sm:text-sm font-medium leading-relaxed text-slate-800 dark:text-slate-200">
                         {item.content}
                       </p>
 
                       {/* Optional details metadata viewer */}
                       {item.details && typeof item.details === 'object' && Object.keys(item.details).length > 0 && (
-                        <div className="mt-2 p-2 bg-slate-50 border border-slate-100 rounded-xl text-[11px] font-mono text-slate-600 flex flex-wrap gap-x-4 gap-y-1">
+                        <div className="mt-2 p-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 rounded-xl text-[11px] font-mono text-slate-600 dark:text-slate-300 flex flex-wrap gap-x-4 gap-y-1">
                           {item.details.taskTitle && (
                             <span>Task: <strong>{item.details.taskTitle}</strong></span>
                           )}

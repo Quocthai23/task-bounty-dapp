@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { projectService } from '@/services/project.service';
 import { Button } from '@/components/shared/atoms/button';
 import { CreateProjectModal } from '@/components/features/manage-jobs/CreateProjectModal';
@@ -21,6 +22,7 @@ import {
 } from 'lucide-react';
 
 export const ManageJobs: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
@@ -73,13 +75,13 @@ export const ManageJobs: React.FC = () => {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-2">
-              <ShieldCheck className="w-4 h-4" /> PM Command Center
+              <ShieldCheck className="w-4 h-4" /> {t('manageJobs.commandCenter')}
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-              Quản Lý Dự Án & Đội Ngũ (Manage Jobs)
+              {t('manageJobs.title')}
             </h1>
             <p className="text-slate-600 dark:text-slate-400 text-xs sm:text-sm max-w-2xl mt-1.5 leading-relaxed">
-              Trung tâm quản trị dự án dành riêng cho Project Manager: Cam kết ngân sách minh chứng tài chính, phê duyệt hồ sơ ứng viên, phân quyền thực thi và khen thưởng thành viên xuất sắc.
+              {t('manageJobs.subtitle')}
             </p>
           </div>
 
@@ -87,7 +89,7 @@ export const ManageJobs: React.FC = () => {
             onClick={() => setIsCreateModalOpen(true)}
             className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 text-white font-bold text-xs px-6 py-3 rounded-2xl shadow-md flex items-center gap-2 shrink-0 transition-all hover:scale-105"
           >
-            <Plus className="w-4 h-4" /> Tạo Job / Dự Án Mới
+            <Plus className="w-4 h-4" /> {t('manageJobs.createNewJobBtn')}
           </Button>
         </div>
 
@@ -95,7 +97,7 @@ export const ManageJobs: React.FC = () => {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-6 pt-6 border-t border-slate-100 dark:border-slate-800">
           <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 rounded-2xl p-4">
             <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 font-medium">
-              <Briefcase className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" /> Dự Án Quản Lý
+              <Briefcase className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" /> {t('manageJobs.statManagedProjects')}
             </div>
             <div className="text-2xl sm:text-3xl font-black font-mono mt-1 text-slate-900 dark:text-white">
               {totalProjects}
@@ -104,7 +106,7 @@ export const ManageJobs: React.FC = () => {
 
           <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 rounded-2xl p-4">
             <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 font-medium">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" /> Tổng Ngân Sách Bảo Chứng
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" /> {t('manageJobs.statEscrowBudget')}
             </div>
             <div className="text-2xl sm:text-3xl font-black font-mono mt-1 text-emerald-600 dark:text-emerald-400">
               ${totalBudgetEscrow.toLocaleString()}
@@ -113,7 +115,7 @@ export const ManageJobs: React.FC = () => {
 
           <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 rounded-2xl p-4">
             <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 font-medium">
-              <Users className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" /> Tổng Thành Viên
+              <Users className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" /> {t('manageJobs.statTotalMembers')}
             </div>
             <div className="text-2xl sm:text-3xl font-black font-mono mt-1 text-purple-600 dark:text-purple-400">
               {totalMembers}
@@ -122,7 +124,7 @@ export const ManageJobs: React.FC = () => {
 
           <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 rounded-2xl p-4 relative overflow-hidden">
             <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 font-medium">
-              <UserCheck className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" /> Đơn Ứng Tuyển Chờ Duyệt
+              <UserCheck className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" /> {t('manageJobs.statPendingApps')}
             </div>
             <div className="text-2xl sm:text-3xl font-black font-mono mt-1 text-amber-600 dark:text-amber-400 flex items-center gap-2">
               {totalPendingApplications}
@@ -145,7 +147,7 @@ export const ManageJobs: React.FC = () => {
                 : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
-            Tất Cả ({totalProjects})
+            {t('manageJobs.tabAll', { count: totalProjects })}
           </button>
           <button
             onClick={() => setFilterTab('RECRUITING')}
@@ -155,7 +157,7 @@ export const ManageJobs: React.FC = () => {
                 : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
-            Đang Tuyển Người
+            {t('manageJobs.tabRecruiting')}
           </button>
           <button
             onClick={() => setFilterTab('FULL')}
@@ -165,7 +167,7 @@ export const ManageJobs: React.FC = () => {
                 : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
-            Đã Đủ Người / Nội Bộ
+            {t('manageJobs.tabFull')}
           </button>
         </div>
 
@@ -175,7 +177,7 @@ export const ManageJobs: React.FC = () => {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Tìm kiếm dự án..."
+            placeholder={t('manageJobs.searchPlaceholder')}
             className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white shadow-sm"
           />
         </div>
@@ -193,15 +195,15 @@ export const ManageJobs: React.FC = () => {
           <div className="w-16 h-16 bg-blue-50 dark:bg-blue-950/40 rounded-2xl flex items-center justify-center mx-auto text-blue-600">
             <Briefcase className="w-8 h-8" />
           </div>
-          <h3 className="text-lg font-bold text-slate-900 dark:text-white">Chưa có dự án nào</h3>
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white">{t('manageJobs.emptyTitle')}</h3>
           <p className="text-slate-500 text-xs max-w-md mx-auto">
-            Bạn chưa tạo dự án nào với vai trò PM. Hãy bắt đầu bằng việc tạo dự án mới và cam kết mức ngân sách minh chứng tài chính!
+            {t('manageJobs.emptyDesc')}
           </p>
           <Button
             onClick={() => setIsCreateModalOpen(true)}
             className="bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-xs px-5 py-2.5"
           >
-            <Plus className="w-4 h-4 mr-1.5" /> Tạo Dự Án Mới
+            <Plus className="w-4 h-4 mr-1.5" /> {t('manageJobs.emptyCreateBtn')}
           </Button>
         </div>
       ) : (
@@ -227,7 +229,7 @@ export const ManageJobs: React.FC = () => {
                         : 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950/40 dark:text-purple-300'
                     }`}>
                       {project.type === 'PUBLIC' ? <Globe className="w-3 h-3" /> : <Lock className="w-3 h-3" />}
-                      {project.type === 'PUBLIC' ? 'Public (Cộng đồng)' : 'Private (Nội bộ)'}
+                      {project.type === 'PUBLIC' ? t('manageJobs.publicCommunity') : t('manageJobs.privateInternal')}
                     </span>
 
                     <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${
@@ -235,7 +237,7 @@ export const ManageJobs: React.FC = () => {
                         ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300'
                         : 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800'
                     }`}>
-                      {project.isRecruiting && memberCount < maxCount ? '● Đang Tuyển' : '● Đủ Thành Viên'}
+                      {project.isRecruiting && memberCount < maxCount ? t('manageJobs.recruitingBadge') : t('manageJobs.fullBadge')}
                     </span>
                   </div>
 
@@ -251,7 +253,7 @@ export const ManageJobs: React.FC = () => {
                   <div className="mt-4 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700 flex items-center justify-between">
                     <div>
                       <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
-                        <ShieldCheck className="w-3 h-3 text-emerald-600" /> Ngân Sách Cam Kết
+                        <ShieldCheck className="w-3 h-3 text-emerald-600" /> {t('manageJobs.committedBudget')}
                       </div>
                       <div className="text-base font-black font-mono text-emerald-600 dark:text-emerald-400 mt-0.5">
                         ${Number(project.budget || 0).toLocaleString()} <span className="text-[11px] font-sans font-bold text-slate-500">{project.currency || 'USD'}</span>
@@ -261,11 +263,11 @@ export const ManageJobs: React.FC = () => {
                     <div className="text-right">
                       {hasApplicants ? (
                         <span className="text-[10px] font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800 px-2 py-0.5 rounded-md flex items-center gap-1">
-                          <Lock className="w-3 h-3" /> Đã Khóa
+                          <Lock className="w-3 h-3" /> {t('manageJobs.lockBudget')}
                         </span>
                       ) : (
                         <span className="text-[10px] font-bold text-slate-500 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded-md">
-                          Có Thể Đổi
+                          {t('manageJobs.negotiableBudget')}
                         </span>
                       )}
                     </div>
@@ -275,10 +277,10 @@ export const ManageJobs: React.FC = () => {
                   <div className="mt-4 space-y-1.5">
                     <div className="flex items-center justify-between text-xs font-semibold">
                       <span className="text-slate-500 flex items-center gap-1">
-                        <Users className="w-3.5 h-3.5" /> Quy mô đội ngũ
+                        <Users className="w-3.5 h-3.5" /> {t('manageJobs.teamSize')}
                       </span>
                       <span className="text-slate-900 dark:text-white font-bold">
-                        {memberCount} / {maxCount} người
+                        {t('manageJobs.teamCount', { count: memberCount, max: maxCount })}
                       </span>
                     </div>
 
@@ -295,9 +297,9 @@ export const ManageJobs: React.FC = () => {
                     <div className="mt-3 p-2.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-xl flex items-center justify-between text-xs font-bold text-amber-800 dark:text-amber-300">
                       <span className="flex items-center gap-1.5">
                         <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
-                        {pendingApps.length} đơn ứng tuyển mới
+                        {t('manageJobs.pendingAppsAlert', { count: pendingApps.length })}
                       </span>
-                      <span className="text-[11px] underline cursor-pointer hover:text-amber-950">Xem ngay →</span>
+                      <span className="text-[11px] underline cursor-pointer hover:text-amber-950">{t('manageJobs.viewNow')}</span>
                     </div>
                   )}
                 </div>
@@ -305,14 +307,14 @@ export const ManageJobs: React.FC = () => {
                 {/* Card Action */}
                 <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
                   <span className="text-[11px] text-slate-400">
-                    {project.tasks?.length || 0} nhiệm vụ
+                    {t('manageJobs.tasksCount', { count: project.tasks?.length || 0 })}
                   </span>
 
                   <Button
                     onClick={() => navigate(`/manage-jobs/${project.id}`)}
                     className="bg-slate-900 hover:bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all flex items-center gap-1.5 shadow-sm"
                   >
-                    Quản Trị & Phân Quyền <ArrowRight className="w-3.5 h-3.5" />
+                    {t('manageJobs.adminManageBtn')} <ArrowRight className="w-3.5 h-3.5" />
                   </Button>
                 </div>
               </div>

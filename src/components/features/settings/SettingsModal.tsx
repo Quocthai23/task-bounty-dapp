@@ -31,7 +31,7 @@ export const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: (
               </div>
               <div>
                 <h4 className="font-bold text-[var(--app-text)]">{t('settings.language')}</h4>
-                <p className="text-xs font-medium text-[var(--app-text-muted)]">Choose your preferred language</p>
+                <p className="text-xs font-medium text-[var(--app-text-muted)]">{t('settings.languageSubtitle')}</p>
               </div>
             </div>
             

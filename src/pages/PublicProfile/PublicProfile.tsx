@@ -1,12 +1,14 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { api } from '@/services/api';
 import { BadgeCheck, Calendar, Briefcase, Mail, Code, Globe, Star } from 'lucide-react';
 import { Button } from '@/components/shared/atoms/button';
 import { UserAvatar } from '@/components/shared/atoms/Avatar';
 
 export const PublicProfile: React.FC = () => {
+  const { t, i18n } = useTranslation();
   const { username } = useParams<{ username: string }>();
   const navigate = useNavigate();
 
@@ -29,15 +31,15 @@ export const PublicProfile: React.FC = () => {
   if (isError || !profile) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center min-h-[60vh] gap-4">
-        <h2 className="text-2xl font-bold text-neutral-800">Không tìm thấy hồ sơ người dùng</h2>
-        <p className="text-neutral-500">Người dùng @{username} có thể không tồn tại hoặc đã thay đổi thông tin.</p>
-        <Button onClick={() => navigate('/dashboard')} variant="primary-contained">Về trang chủ</Button>
+        <h2 className="text-2xl font-bold text-neutral-800">{t('publicProfile.userNotFound')}</h2>
+        <p className="text-neutral-500">{t('publicProfile.userNotFoundDesc')}</p>
+        <Button onClick={() => navigate('/dashboard')} variant="primary-contained">{t('publicProfile.backHome')}</Button>
       </div>
     );
   }
 
   const role = profile.profile?.title || 'Chuyên gia Web3 / Freelancer';
-  const joinDate = new Date(profile.createdAt).toLocaleDateString('vi-VN', { month: 'long', year: 'numeric' });
+  const joinDate = new Date(profile.createdAt).toLocaleDateString(i18n.language === 'vi' ? 'vi-VN' : 'en-US', { month: 'long', year: 'numeric' });
   const skills = profile.profile?.skills ? JSON.parse(profile.profile.skills) : [];
   const languages = profile.profile?.languages ? JSON.parse(profile.profile.languages) : [];
 
@@ -51,7 +53,7 @@ export const PublicProfile: React.FC = () => {
           onClick={() => navigate(-1)}
           className="rounded-full bg-white font-bold"
         >
-          ← Quay lại
+          {t('publicProfile.backBtn')}
         </Button>
       </div>
 
@@ -77,11 +79,13 @@ export const PublicProfile: React.FC = () => {
                   <Briefcase size={18} /> {role}
                 </p>
                 <p className="text-neutral-500 text-sm flex items-center gap-2 mt-1">
-                  <Calendar size={16} /> Joined {joinDate}
+                  <Calendar size={16} /> {t('common.joined', 'Joined')} {joinDate}
                 </p>
               </div>
               <div className="flex gap-2">
-                <Button className="rounded-xl px-6 bg-primary-500 hover:bg-primary-600 shadow-md font-bold text-white">Hire Me</Button>
+                <Button className="rounded-xl px-6 bg-primary-500 hover:bg-primary-600 shadow-md font-bold text-white">
+                  {t('publicProfile.hireMe')}
+                </Button>
                 <Button variant="outline" className="rounded-xl px-4 shadow-sm border-neutral-200">
                   <Mail size={18} />
                 </Button>
@@ -94,11 +98,11 @@ export const PublicProfile: React.FC = () => {
         <div className="bg-neutral-900 rounded-3xl p-8 shadow-sm text-white flex flex-col justify-between relative overflow-hidden">
           <div className="absolute top-0 right-0 p-16 opacity-5 bg-white rounded-full blur-3xl mix-blend-screen"></div>
           <div>
-            <h3 className="text-neutral-400 font-bold uppercase tracking-wider text-sm mb-6">Performance</h3>
+            <h3 className="text-neutral-400 font-bold uppercase tracking-wider text-sm mb-6">{t('publicProfile.performance')}</h3>
             <div className="space-y-6">
               <div>
                 <p className="text-5xl font-black tracking-tight">{profile.stats?.totalJobs || 0}</p>
-                <p className="text-neutral-400 font-medium mt-1">Total Jobs Completed</p>
+                <p className="text-neutral-400 font-medium mt-1">{t('publicProfile.completedJobs')}</p>
               </div>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-yellow-500/20 text-yellow-500 flex items-center justify-center">
@@ -106,7 +110,7 @@ export const PublicProfile: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-2xl font-black">{profile.stats?.rating || 'N/A'}</p>
-                  <p className="text-neutral-400 text-sm font-medium">Average Rating</p>
+                  <p className="text-neutral-400 text-sm font-medium">{t('publicProfile.averageRating')}</p>
                 </div>
               </div>
             </div>
@@ -119,25 +123,25 @@ export const PublicProfile: React.FC = () => {
         <div className="lg:col-span-2 space-y-6">
           {/* About */}
           <div className="bg-white rounded-3xl p-8 border border-neutral-100 shadow-sm">
-            <h3 className="text-xl font-black text-neutral-900 mb-4">About</h3>
+            <h3 className="text-xl font-black text-neutral-900 mb-4">{t('publicProfile.aboutUser')}</h3>
             <p className="text-neutral-600 leading-relaxed font-medium">
-              {profile.profile?.bio || profile.profile?.experience || "This user hasn't added a bio yet."}
+              {profile.profile?.bio || profile.profile?.experience || t('publicProfile.noBioYet')}
             </p>
           </div>
 
           {/* Real Work & Project History */}
           <div className="bg-white rounded-3xl p-8 border border-neutral-100 shadow-sm">
-            <h3 className="text-xl font-black text-neutral-900 mb-6">Lịch sử Dự Án & Nhiệm Vụ</h3>
+            <h3 className="text-xl font-black text-neutral-900 mb-6">{t('publicProfile.projectHistory')}</h3>
             {(profile.completedTasks?.length > 0 || profile.projects?.length > 0) ? (
               <div className="space-y-4">
-                {profile.completedTasks?.map((t: any) => (
-                  <div key={t.id} className="p-4 rounded-2xl border border-neutral-100 bg-neutral-50/50 hover:bg-neutral-50 transition-colors">
+                {profile.completedTasks?.map((tTask: any) => (
+                  <div key={tTask.id} className="p-4 rounded-2xl border border-neutral-100 bg-neutral-50/50 hover:bg-neutral-50 transition-colors">
                     <div className="flex justify-between items-start mb-1">
-                      <h4 className="font-bold text-neutral-900 text-base">{t.title}</h4>
-                      <span className="bg-emerald-100 text-emerald-700 text-[11px] font-bold px-2.5 py-0.5 rounded-full">Đã hoàn thành</span>
+                      <h4 className="font-bold text-neutral-900 text-base">{tTask.title}</h4>
+                      <span className="bg-emerald-100 text-emerald-700 text-[11px] font-bold px-2.5 py-0.5 rounded-full">{t('publicProfile.completedStatus')}</span>
                     </div>
-                    {t.budget > 0 && (
-                      <p className="text-neutral-500 text-xs font-mono font-bold mb-2">Thù lao: {Number(t.budget).toLocaleString()} ₫</p>
+                    {tTask.budget > 0 && (
+                      <p className="text-neutral-500 text-xs font-mono font-bold mb-2">{t('common.tasks')}: {Number(tTask.budget).toLocaleString()} ₫</p>
                     )}
                     <div className="flex items-center gap-2">
                       <div className="flex text-amber-400"><Star size={13} fill="currentColor" /><Star size={13} fill="currentColor" /><Star size={13} fill="currentColor" /><Star size={13} fill="currentColor" /><Star size={13} fill="currentColor" /></div>
@@ -150,14 +154,14 @@ export const PublicProfile: React.FC = () => {
                   <div key={p.id} className="p-4 rounded-2xl border border-neutral-100 bg-neutral-50/50 hover:bg-neutral-50 transition-colors">
                     <div className="flex justify-between items-start mb-1">
                       <h4 className="font-bold text-neutral-900 text-base">{p.title}</h4>
-                      <span className="bg-blue-100 text-blue-700 text-[11px] font-bold px-2.5 py-0.5 rounded-full">Dự án tham gia</span>
+                      <span className="bg-blue-100 text-blue-700 text-[11px] font-bold px-2.5 py-0.5 rounded-full">{t('publicProfile.joinedProjectStatus')}</span>
                     </div>
-                    <p className="text-neutral-500 text-xs">Loại: {p.type} • Ngân sách: {Number(p.budget || 0).toLocaleString()} {p.currency || 'USD'}</p>
+                    <p className="text-neutral-500 text-xs">{p.type} • {Number(p.budget || 0).toLocaleString()} {p.currency || 'USD'}</p>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-neutral-500 font-medium text-center py-8">Chưa có nhiệm vụ hoặc dự án công khai nào.</p>
+              <p className="text-neutral-500 font-medium text-center py-8">{t('publicProfile.noPublicProjects')}</p>
             )}
           </div>
         </div>
@@ -166,7 +170,7 @@ export const PublicProfile: React.FC = () => {
         <div className="space-y-6">
           {/* Skills */}
           <div className="bg-white rounded-3xl p-8 border border-neutral-100 shadow-sm">
-            <h3 className="text-xl font-black text-neutral-900 mb-6">Tech Skills</h3>
+            <h3 className="text-xl font-black text-neutral-900 mb-6">{t('publicProfile.techSkills')}</h3>
             {skills.length > 0 ? (
               <div className="flex flex-wrap gap-2">
                 {skills.map((skill: string) => (
@@ -176,12 +180,12 @@ export const PublicProfile: React.FC = () => {
                 ))}
               </div>
             ) : (
-              <p className="text-neutral-500 text-sm font-medium">No skills listed.</p>
+              <p className="text-neutral-500 text-sm font-medium">{t('publicProfile.noSkills')}</p>
             )}
 
             {languages.length > 0 && (
               <>
-                <h3 className="text-xl font-black text-neutral-900 mb-4 mt-8">Languages</h3>
+                <h3 className="text-xl font-black text-neutral-900 mb-4 mt-8">{t('publicProfile.languages')}</h3>
                 <div className="flex flex-wrap gap-2">
                   {languages.map((lang: string) => (
                     <span key={lang} className="px-4 py-2 bg-neutral-100 text-neutral-700 font-bold text-sm rounded-xl">
@@ -195,14 +199,14 @@ export const PublicProfile: React.FC = () => {
 
           {/* Links */}
           <div className="bg-white rounded-3xl p-8 border border-neutral-100 shadow-sm">
-            <h3 className="text-xl font-black text-neutral-900 mb-6">Links</h3>
+            <h3 className="text-xl font-black text-neutral-900 mb-6">{t('publicProfile.links')}</h3>
             <div className="space-y-4">
               {profile.profile?.githubUrl && (
                 <a href={profile.profile.githubUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 rounded-xl hover:bg-neutral-50 transition-colors text-neutral-700 font-bold">
                   <div className="w-10 h-10 rounded-full bg-neutral-100 flex items-center justify-center">
                     <Code size={20} />
                   </div>
-                  GitHub Profile
+                  {t('publicProfile.githubProfile')}
                 </a>
               )}
               {profile.profile?.portfolioUrl && (
@@ -210,11 +214,11 @@ export const PublicProfile: React.FC = () => {
                   <div className="w-10 h-10 rounded-full bg-neutral-100 flex items-center justify-center">
                     <Globe size={20} />
                   </div>
-                  Personal Website
+                  {t('publicProfile.portfolioSite')}
                 </a>
               )}
               {!profile.profile?.githubUrl && !profile.profile?.portfolioUrl && (
-                <p className="text-neutral-500 text-sm font-medium">No links available.</p>
+                <p className="text-neutral-500 text-sm font-medium">{t('publicProfile.noLinks')}</p>
               )}
             </div>
           </div>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { 
   Dialog, 
   DialogContent, 
@@ -16,7 +17,7 @@ import {
   CheckCircle2, 
   XCircle, 
   Clock, 
-  Sparkles,
+  Sparkles, 
   Calendar,
   X
 } from 'lucide-react';
@@ -38,6 +39,7 @@ export const CandidateProfileModal: React.FC<CandidateProfileModalProps> = ({
   onReject,
   isProcessing = false,
 }) => {
+  const { t } = useTranslation();
   if (!application) return null;
 
   const candidate = application.user || {};
@@ -85,7 +87,11 @@ export const CandidateProfileModal: React.FC<CandidateProfileModalProps> = ({
                     ? 'bg-rose-500 text-white' 
                     : 'bg-amber-400 text-amber-950'
                 }`}>
-                  {application.status === 'APPROVED' ? 'Đã duyệt' : application.status === 'REJECTED' ? 'Đã từ chối' : 'Chờ duyệt'}
+                  {application.status === 'APPROVED' 
+                    ? t('candidateProfileModal.statusApproved') 
+                    : application.status === 'REJECTED' 
+                    ? t('candidateProfileModal.statusRejected') 
+                    : t('candidateProfileModal.statusPending')}
                 </Badge>
               </div>
               <p className="text-slate-500 text-xs font-medium flex items-center gap-1.5 mt-1">
@@ -106,7 +112,7 @@ export const CandidateProfileModal: React.FC<CandidateProfileModalProps> = ({
           {application.coverLetter && (
             <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 rounded-2xl p-5 space-y-2">
               <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
-                <FileText className="w-4 h-4 text-blue-600" /> Thư Ứng Tuyển (Cover Letter)
+                <FileText className="w-4 h-4 text-blue-600" /> {t('candidateProfileModal.coverLetterTitle')}
               </div>
               <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line font-medium">
                 {application.coverLetter}
@@ -118,7 +124,7 @@ export const CandidateProfileModal: React.FC<CandidateProfileModalProps> = ({
           {profile.bio && (
             <div className="space-y-2">
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-                <User className="w-4 h-4 text-blue-500" /> Giới Thiệu Bản Thân
+                <User className="w-4 h-4 text-blue-500" /> {t('candidateProfileModal.bioTitle')}
               </h3>
               <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium bg-slate-50 dark:bg-slate-800/40 p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
                 {profile.bio}
@@ -130,7 +136,7 @@ export const CandidateProfileModal: React.FC<CandidateProfileModalProps> = ({
           {skills.length > 0 && (
             <div className="space-y-2.5">
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-purple-500" /> Kỹ Năng Chuyên Môn
+                <Sparkles className="w-4 h-4 text-purple-500" /> {t('candidateProfileModal.skillsTitle')}
               </h3>
               <div className="flex flex-wrap gap-2">
                 {skills.map((skill, index) => (
@@ -149,7 +155,7 @@ export const CandidateProfileModal: React.FC<CandidateProfileModalProps> = ({
           {experiences.length > 0 && (
             <div className="space-y-3">
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-                <Briefcase className="w-4 h-4 text-emerald-500" /> Kinh Nghiệm Làm Việc
+                <Briefcase className="w-4 h-4 text-emerald-500" /> {t('candidateProfileModal.expTitle')}
               </h3>
               <div className="space-y-2.5">
                 {experiences.map((exp: any, index: number) => (
@@ -169,7 +175,7 @@ export const CandidateProfileModal: React.FC<CandidateProfileModalProps> = ({
           {educations.length > 0 && (
             <div className="space-y-3">
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-                <GraduationCap className="w-4 h-4 text-blue-500" /> Học Vấn & Bằng Cấp
+                <GraduationCap className="w-4 h-4 text-blue-500" /> {t('candidateProfileModal.eduTitle')}
               </h3>
               <div className="space-y-2.5">
                 {educations.map((edu: any, index: number) => (
@@ -186,7 +192,7 @@ export const CandidateProfileModal: React.FC<CandidateProfileModalProps> = ({
         {/* Footer Actions */}
         <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 flex items-center justify-between">
           <Button variant="ghost" onClick={onClose} className="text-xs text-slate-500">
-            Đóng
+            {t('candidateProfileModal.close')}
           </Button>
 
           {application.status === 'PENDING' ? (
@@ -197,19 +203,19 @@ export const CandidateProfileModal: React.FC<CandidateProfileModalProps> = ({
                 onClick={() => onReject(application.id)}
                 className="rounded-xl text-xs px-5 py-2 font-bold"
               >
-                <XCircle className="w-4 h-4 mr-1.5" /> Từ Chối
+                <XCircle className="w-4 h-4 mr-1.5" /> {t('candidateProfileModal.rejectBtn')}
               </Button>
               <Button
                 disabled={isProcessing}
                 onClick={() => onApprove(application.id)}
                 className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs px-6 py-2 font-bold shadow-md shadow-emerald-600/20"
               >
-                <CheckCircle2 className="w-4 h-4 mr-1.5" /> Duyệt Vào Dự Án
+                <CheckCircle2 className="w-4 h-4 mr-1.5" /> {t('candidateProfileModal.approveBtn')}
               </Button>
             </div>
           ) : (
             <div className="text-xs font-bold text-slate-500">
-              Hồ sơ này đã được xử lý ({application.status})
+              {t('candidateProfileModal.processedStatus', { status: application.status })}
             </div>
           )}
         </div>
@@ -217,3 +223,4 @@ export const CandidateProfileModal: React.FC<CandidateProfileModalProps> = ({
     </Dialog>
   );
 };
+

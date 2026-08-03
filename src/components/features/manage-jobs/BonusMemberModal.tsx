@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { 
   Dialog, 
   DialogContent, 
@@ -22,9 +23,10 @@ export const BonusMemberModal: React.FC<BonusMemberModalProps> = ({
   project,
   onConfirmBonus,
 }) => {
+  const { t } = useTranslation();
   const [amount, setAmount] = useState<number | ''>(50);
   const [currency, setCurrency] = useState('USD');
-  const [reason, setReason] = useState('Khen thưởng hoàn thành xuất sắc nhiệm vụ và đóng góp vượt bậc cho dự án.');
+  const [reason, setReason] = useState(t('bonusMemberModal.defaultReason'));
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!member) return null;
@@ -34,21 +36,25 @@ export const BonusMemberModal: React.FC<BonusMemberModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!amount || Number(amount) <= 0) {
-      toast.error('Vui lòng nhập số tiền thưởng hợp lệ');
+      toast.error(t('bonusMemberModal.validationAmount'));
       return;
     }
     if (!reason.trim()) {
-      toast.error('Vui lòng nhập lý do khen thưởng');
+      toast.error(t('bonusMemberModal.validationReason'));
       return;
     }
 
     try {
       setIsSubmitting(true);
       await onConfirmBonus(member.id, Number(amount), currency, reason);
-      toast.success(`Đã trao thưởng thành công ${amount} ${currency} cho ${user.firstName || user.email}!`);
+      toast.success(t('bonusMemberModal.successToast', {
+        amount,
+        currency,
+        name: user.firstName || user.email
+      }));
       onClose();
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || 'Có lỗi xảy ra khi trao thưởng');
+      toast.error(err?.response?.data?.message || t('bonusMemberModal.errorToast'));
     } finally {
       setIsSubmitting(false);
     }
@@ -67,8 +73,8 @@ export const BonusMemberModal: React.FC<BonusMemberModalProps> = ({
               <Gift className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-black text-slate-900 dark:text-white">Khen Thưởng Thành Viên</h2>
-              <p className="text-xs text-slate-500">Dự án: {project?.title}</p>
+              <h2 className="text-lg font-black text-slate-900 dark:text-white">{t('bonusMemberModal.title')}</h2>
+              <p className="text-xs text-slate-500">{t('bonusMemberModal.project', { title: project?.title })}</p>
             </div>
           </div>
 
@@ -96,7 +102,10 @@ export const BonusMemberModal: React.FC<BonusMemberModalProps> = ({
               </div>
               <div className="text-xs text-slate-500 truncate">{user.email}</div>
               <div className="text-[11px] text-amber-600 dark:text-amber-400 font-semibold mt-0.5">
-                Vai trò: {member.role} • Đã nhận thưởng: ${(member.bonusReceived || 0).toLocaleString()}
+                {t('bonusMemberModal.roleAndBonus', {
+                  role: member.role,
+                  amount: (member.bonusReceived || 0).toLocaleString()
+                })}
               </div>
             </div>
           </div>
@@ -105,7 +114,7 @@ export const BonusMemberModal: React.FC<BonusMemberModalProps> = ({
             {/* Amount & Currency */}
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1.5">
-                Số Tiền Thưởng
+                {t('bonusMemberModal.amountLabel')}
               </label>
               <div className="flex gap-2">
                 <div className="relative flex-1">
@@ -152,14 +161,14 @@ export const BonusMemberModal: React.FC<BonusMemberModalProps> = ({
             {/* Reason */}
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1.5">
-                Lý Do & Lời Nhắn Khen Thưởng
+                {t('bonusMemberModal.reasonLabel')}
               </label>
               <textarea
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
                 rows={3}
                 className="w-full p-3 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 outline-none resize-none leading-relaxed"
-                placeholder="VD: Cảm ơn bạn đã giải quyết dứt điểm lỗi bảo mật..."
+                placeholder={t('bonusMemberModal.reasonPlaceholder')}
               />
             </div>
 
@@ -171,14 +180,14 @@ export const BonusMemberModal: React.FC<BonusMemberModalProps> = ({
                 onClick={onClose}
                 className="text-xs text-slate-500"
               >
-                Hủy
+                {t('bonusMemberModal.cancel')}
               </Button>
               <Button
                 type="submit"
                 disabled={isSubmitting}
                 className="bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-xl px-6 py-2.5 shadow-md shadow-amber-500/20"
               >
-                {isSubmitting ? 'Đang Xử Lý...' : 'Trao Thưởng Ngay'}
+                {isSubmitting ? t('bonusMemberModal.sending') : t('bonusMemberModal.confirm')}
               </Button>
             </div>
           </form>

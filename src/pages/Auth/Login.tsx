@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { authService } from '@/services/auth.service';
 import { Input } from '@/components/shared/atoms/input';
 import { Button } from '@/components/shared/atoms/button';
@@ -8,6 +9,7 @@ import { User, Lock, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
 
 export const Login: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
@@ -22,11 +24,11 @@ export const Login: React.FC = () => {
       if (data.refresh_token) {
         localStorage.setItem('refresh_token', data.refresh_token);
       }
-      toast.success('Login successful!');
+      toast.success(t('auth.loginSuccess'));
       window.location.href = '/dashboard';
     },
     onError: (err: any) => {
-      setError(err.response?.data?.message || 'Login failed');
+      setError(err.response?.data?.message || t('auth.loginFailed'));
     }
   });
 
@@ -47,7 +49,7 @@ export const Login: React.FC = () => {
         {/* Left Side - Form */}
         <div className="flex flex-1 flex-col overflow-y-auto p-8 md:p-12 bg-white">
           <h2 className="mb-6 text-3xl font-extrabold text-neutral-900 text-center md:text-left mt-8">
-            Sign In
+            {t('auth.signInTitle')}
           </h2>
 
           {error && (
@@ -60,7 +62,7 @@ export const Login: React.FC = () => {
             <div className="relative">
               <Input
                 autoComplete="username"
-                placeholder="Enter Username or Email"
+                placeholder={t('auth.usernameOrEmail')}
                 value={identifier}
                 className="h-14 pl-12 bg-neutral-50 border-neutral-200 focus:border-primary-500 focus:ring-primary-500 rounded-xl transition-all"
                 onChange={(e) => {
@@ -75,7 +77,7 @@ export const Login: React.FC = () => {
             <div className="relative">
               <Input
                 autoComplete="current-password"
-                placeholder="Enter Password"
+                placeholder={t('auth.password')}
                 type={isPasswordVisible ? 'text' : 'password'}
                 value={password}
                 className="h-14 pl-12 pr-12 bg-neutral-50 border-neutral-200 focus:border-primary-500 focus:ring-primary-500 rounded-xl transition-all"
@@ -102,12 +104,12 @@ export const Login: React.FC = () => {
                   className="h-4 w-4 rounded border-neutral-300 text-primary-500 focus:ring-primary-500"
                 />
                 <label htmlFor="rememberMe" className="text-sm font-medium text-neutral-600 cursor-pointer">
-                  Remember Me
+                  {t('auth.rememberMe')}
                 </label>
               </div>
               <Link to="/forgot-password">
                 <span className="text-primary-500 text-sm font-semibold hover:underline">
-                  Forgot password?
+                  {t('auth.forgotPassword')}
                 </span>
               </Link>
             </div>
@@ -115,15 +117,15 @@ export const Login: React.FC = () => {
             <Button
               variant="primary-contained"
               type="submit"
-              className="mt-4 h-12 w-[120px] rounded-xl text-base font-bold shadow-lg shadow-primary-500/30 transition-transform active:scale-[0.98]"
+              className="mt-4 h-12 w-[140px] rounded-xl text-base font-bold shadow-lg shadow-primary-500/30 transition-transform active:scale-[0.98]"
               disabled={loginMutation.isPending || !identifier || !password}
             >
-              {loginMutation.isPending ? 'Logging In...' : 'Login'}
+              {loginMutation.isPending ? t('auth.loggingIn') : t('auth.loginBtn')}
             </Button>
           </form>
 
           <div className="mt-8 flex flex-col gap-4">
-            <p className="text-sm font-medium text-neutral-500">Or Login with</p>
+            <p className="text-sm font-medium text-neutral-500">{t('auth.orLoginWith')}</p>
             <div className="flex gap-4">
               <button type="button" className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1877f2] text-white hover:opacity-90 transition-opacity">
                 <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
@@ -138,12 +140,12 @@ export const Login: React.FC = () => {
           </div>
 
           <p className="mt-auto pt-6 text-sm font-medium text-neutral-500 text-center md:text-left">
-            Don't have an account?{' '}
+            {t('auth.dontHaveAccount')}{' '}
             <Link 
               to="/register" 
               className="text-primary-500 hover:text-primary-600 hover:underline font-bold transition-colors"
             >
-              Create One
+              {t('auth.createOne')}
             </Link>
           </p>
         </div>

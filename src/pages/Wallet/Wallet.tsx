@@ -544,22 +544,22 @@ export const Wallet: React.FC = () => {
   let accumulatedPercent = 0;
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 pb-16 text-slate-800">
+    <div className="max-w-6xl mx-auto space-y-6 pb-16 text-slate-800 dark:text-slate-100">
       
       {/* ========================================================================= */}
       {/* TOP HEADER & BASE CURRENCY BAR (CLEAN MODERN WHITE CARD)                   */}
       {/* ========================================================================= */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 shadow-sm">
         <div>
           <div className="flex items-center gap-3.5">
             <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-md shadow-blue-500/20 text-white">
               <WalletIcon className="w-6 h-6" />
             </div>
             <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
                 Quản Lý Tài Khoản & Số Dư
               </h1>
-              <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
                 Cổng thanh toán tự động PayOS & Chuyển tiền kiều hối Cross-Currency tức thì
               </p>
             </div>
@@ -568,9 +568,9 @@ export const Wallet: React.FC = () => {
         
         <div className="flex items-center gap-3 flex-wrap">
           {/* Base Currency Selector */}
-          <div className="flex items-center bg-slate-50 border border-slate-200 rounded-2xl p-1 shadow-inner">
-            <span className="text-xs text-slate-500 px-2.5 font-bold flex items-center gap-1">
-              <TrendingUp className="w-3.5 h-3.5 text-blue-600" /> Đồng cơ sở:
+          <div className="flex items-center bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-2xl p-1 shadow-inner">
+            <span className="text-xs text-slate-500 dark:text-slate-400 px-2.5 font-bold flex items-center gap-1">
+              <TrendingUp className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" /> Đồng cơ sở:
             </span>
             <div className="flex gap-1">
               {BASE_CURRENCIES.map((b) => (
@@ -580,7 +580,7 @@ export const Wallet: React.FC = () => {
                   className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer ${
                     baseCurrency === b.code
                       ? 'bg-blue-600 text-white shadow-sm font-black'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/70'
+                      : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-slate-700'
                   }`}
                   title={b.name}
                 >
@@ -593,9 +593,9 @@ export const Wallet: React.FC = () => {
 
           <button 
             onClick={() => { refetchBalance(); refetchBank(); }}
-            className="flex items-center gap-1.5 text-xs font-bold px-4 py-2.5 rounded-2xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 shadow-sm transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 text-xs font-bold px-4 py-2.5 rounded-2xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 shadow-sm transition-colors cursor-pointer"
           >
-            <RefreshCw className={`w-3.5 h-3.5 text-blue-600 ${isBalanceLoading ? 'animate-spin' : ''}`} /> Làm mới
+            <RefreshCw className={`w-3.5 h-3.5 text-blue-600 dark:text-blue-400 ${isBalanceLoading ? 'animate-spin' : ''}`} /> Làm mới
           </button>
         </div>
       </div>
@@ -650,31 +650,31 @@ export const Wallet: React.FC = () => {
       {/* ========================================================================= */}
       {/* HERO SECTION: ESTIMATED TOTAL BALANCE & ALLOCATION DONUT                  */}
       {/* ========================================================================= */}
-      <div className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-sm p-6 sm:p-8">
+      <div className="relative overflow-hidden rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm p-6 sm:p-8">
         <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           
           {/* Left: Total Estimated Valuation */}
           <div className="lg:col-span-7 space-y-6">
             <div>
-              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
                 <Sparkles className="w-4 h-4 text-amber-500" />
                 <span>Tổng Tài Sản Ước Tính</span>
               </div>
               <div className="flex items-baseline gap-3 flex-wrap">
-                <span className="text-3xl sm:text-4xl font-bold text-slate-400">≈</span>
-                <span className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900 font-mono">
+                <span className="text-3xl sm:text-4xl font-bold text-slate-400 dark:text-slate-500">≈</span>
+                <span className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white font-mono">
                   {isBalanceLoading ? (
                     <span className="text-slate-400 animate-pulse">Đang tính toán...</span>
                   ) : (
                     `${formatNumber(totalEstimatedBalance, activeBaseCurrency.decimals)} ${activeBaseCurrency.symbol}`
                   )}
                 </span>
-                <span className="text-xs font-bold px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                <span className="text-xs font-bold px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                   {activeBaseCurrency.code}
                 </span>
               </div>
-              <p className="text-xs text-slate-500 mt-2 flex items-center gap-1.5">
-                <Info className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 flex items-center gap-1.5">
+                <Info className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
                 Được quy đổi tự động theo tỷ giá chuẩn sang đồng tiền cơ sở {activeBaseCurrency.name}.
               </p>
             </div>
@@ -682,33 +682,33 @@ export const Wallet: React.FC = () => {
             {/* Dual-Balance Sub Breakdown Pills */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
               {/* Withdrawable Balance */}
-              <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200/80 space-y-1">
-                <div className="flex items-center justify-between text-xs text-emerald-800 font-bold">
+              <div className="p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/60 space-y-1">
+                <div className="flex items-center justify-between text-xs text-emerald-800 dark:text-emerald-300 font-bold">
                   <span className="flex items-center gap-1.5">
-                    <ShieldCheck className="w-4 h-4 text-emerald-600" /> Số Dư Khả Dụng
+                    <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> Số Dư Khả Dụng
                   </span>
-                  <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-mono font-bold">RÚT / CHUYỂN</span>
+                  <span className="text-[10px] bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 px-2 py-0.5 rounded font-mono font-bold">RÚT / CHUYỂN</span>
                 </div>
-                <div className="text-xl font-bold text-emerald-950 font-mono">
+                <div className="text-xl font-bold text-emerald-950 dark:text-emerald-100 font-mono">
                   ≈ {formatNumber(totalMainInBase, activeBaseCurrency.decimals)} {activeBaseCurrency.symbol}
                 </div>
-                <div className="text-[11px] text-emerald-700 font-medium">
+                <div className="text-[11px] text-emerald-700 dark:text-emerald-400 font-medium">
                   {totalEstimatedBalance > 0 ? ((totalMainInBase / totalEstimatedBalance) * 100).toFixed(1) : 100}% tổng tài sản
                 </div>
               </div>
 
               {/* Bonus / System Credit */}
-              <div className="p-4 rounded-2xl bg-purple-50/70 border border-purple-200/80 space-y-1">
-                <div className="flex items-center justify-between text-xs text-purple-800 font-bold">
+              <div className="p-4 rounded-2xl bg-purple-50/70 dark:bg-purple-950/30 border border-purple-200/80 dark:border-purple-800/60 space-y-1">
+                <div className="flex items-center justify-between text-xs text-purple-800 dark:text-purple-300 font-bold">
                   <span className="flex items-center gap-1.5">
-                    <Gift className="w-4 h-4 text-purple-600" /> Điểm Thưởng Hoạt Động
+                    <Gift className="w-4 h-4 text-purple-600 dark:text-purple-400" /> Điểm Thưởng Hoạt Động
                   </span>
-                  <span className="text-[10px] bg-purple-100 text-purple-800 px-2 py-0.5 rounded font-mono font-bold">NỘI BỘ</span>
+                  <span className="text-[10px] bg-purple-100 dark:bg-purple-900/60 text-purple-800 dark:text-purple-200 px-2 py-0.5 rounded font-mono font-bold">NỘI BỘ</span>
                 </div>
-                <div className="text-xl font-bold text-purple-950 font-mono">
+                <div className="text-xl font-bold text-purple-950 dark:text-purple-100 font-mono">
                   ≈ {formatNumber(systemCreditConverted, activeBaseCurrency.decimals)} {activeBaseCurrency.symbol}
                 </div>
-                <div className="text-[11px] text-purple-700 font-medium">
+                <div className="text-[11px] text-purple-700 dark:text-purple-400 font-medium">
                   {totalEstimatedBalance > 0 ? ((systemCreditConverted / totalEstimatedBalance) * 100).toFixed(1) : 0}% (Dùng cho Bounty/Task)
                 </div>
               </div>
@@ -740,7 +740,7 @@ export const Wallet: React.FC = () => {
               <div className="flex justify-end pt-1">
                 <button
                   onClick={() => setShowAssetList(!showAssetList)}
-                  className="flex items-center gap-1.5 text-xs font-bold px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200/80 transition-colors cursor-pointer"
+                  className="flex items-center gap-1.5 text-xs font-bold px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700 transition-colors cursor-pointer"
                 >
                   {showAssetList ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                   {showAssetList ? 'Thu gọn danh sách tiền tệ' : 'Xem chi tiết các loại tiền'}
@@ -750,10 +750,10 @@ export const Wallet: React.FC = () => {
           </div>
 
           {/* Right: Interactive Donut Chart */}
-          <div className="lg:col-span-5 flex flex-col items-center justify-center p-6 rounded-3xl bg-slate-50 border border-slate-200">
-            <div className="flex items-center justify-between w-full mb-3 text-xs font-bold text-slate-600">
+          <div className="lg:col-span-5 flex flex-col items-center justify-center p-6 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800">
+            <div className="flex items-center justify-between w-full mb-3 text-xs font-bold text-slate-600 dark:text-slate-300">
               <span className="flex items-center gap-1.5">
-                <PieChartIcon className="w-4 h-4 text-blue-600" /> Phân Bổ Danh Mục
+                <PieChartIcon className="w-4 h-4 text-blue-600 dark:text-blue-400" /> Phân Bổ Danh Mục
               </span>
               <span className="text-[11px] text-slate-400 font-normal">Chạm để xem chi tiết</span>
             </div>
@@ -766,9 +766,10 @@ export const Wallet: React.FC = () => {
                   cx="100"
                   cy="100"
                   r={radius}
-                  stroke="#e2e8f0"
+                  stroke="#334155"
                   strokeWidth="20"
                   fill="transparent"
+                  className="stroke-slate-200 dark:stroke-slate-700"
                 />
 
                 {/* Slices */}
@@ -806,6 +807,7 @@ export const Wallet: React.FC = () => {
                     strokeWidth="20"
                     strokeDasharray={`${circumference} ${circumference}`}
                     fill="transparent"
+                    className="dark:stroke-slate-700"
                   />
                 )}
               </svg>
@@ -819,11 +821,11 @@ export const Wallet: React.FC = () => {
                     return (
                       <>
                         <span className="text-xl">{item?.flag}</span>
-                        <span className="text-xs font-bold text-slate-800 mt-0.5">{item?.name}</span>
-                        <span className="text-sm font-black text-blue-600 font-mono">
+                        <span className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5">{item?.name}</span>
+                        <span className="text-sm font-black text-blue-600 dark:text-blue-400 font-mono">
                           {slice ? `${slice.percentage.toFixed(1)}%` : '0%'}
                         </span>
-                        <span className="text-[10px] text-slate-500 font-mono truncate max-w-[110px]">
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono truncate max-w-[110px]">
                           ≈ {formatNumber(item?.convertedVal || 0, activeBaseCurrency.decimals)} {activeBaseCurrency.symbol}
                         </span>
                       </>
@@ -831,19 +833,19 @@ export const Wallet: React.FC = () => {
                   })()
                 ) : (
                   <>
-                    <WalletIcon className="w-5 h-5 text-blue-600 mb-0.5" />
-                    <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500">Tổng tài sản</span>
-                    <span className="text-sm font-black text-slate-900 font-mono">
+                    <WalletIcon className="w-5 h-5 text-blue-600 dark:text-blue-400 mb-0.5" />
+                    <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500 dark:text-slate-400">Tổng tài sản</span>
+                    <span className="text-sm font-black text-slate-900 dark:text-white font-mono">
                       {formatNumber(totalEstimatedBalance, activeBaseCurrency.decimals)} {activeBaseCurrency.symbol}
                     </span>
-                    <span className="text-[10px] text-slate-500 font-mono">{activeSlices.length} Loại tiền</span>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">{activeSlices.length} Loại tiền</span>
                   </>
                 )}
               </div>
             </div>
 
             {/* Interactive Color Legend */}
-            <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 w-full mt-3 pt-3 border-t border-slate-200 text-xs">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 w-full mt-3 pt-3 border-t border-slate-200 dark:border-slate-700/80 text-xs">
               {allAssets.map(asset => {
                 const isHovered = hoveredSlice === asset.id;
                 const slice = activeSlices.find(s => s.id === asset.id);
@@ -855,14 +857,14 @@ export const Wallet: React.FC = () => {
                     onMouseEnter={() => setHoveredSlice(asset.id)}
                     onMouseLeave={() => setHoveredSlice(null)}
                     className={`flex items-center justify-between p-1.5 rounded-lg cursor-pointer transition-colors ${
-                      isHovered ? 'bg-slate-200/80 text-slate-900 font-bold' : 'text-slate-600 hover:text-slate-900'
+                      isHovered ? 'bg-slate-200/80 dark:bg-slate-700 text-slate-900 dark:text-white font-bold' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                     }`}
                   >
                     <div className="flex items-center gap-1.5 truncate">
                       <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: asset.color }} />
                       <span className="font-bold text-[11px] truncate">{asset.code} ({asset.symbol})</span>
                     </div>
-                    <span className="font-mono text-[11px] font-bold text-slate-700">{percent}%</span>
+                    <span className="font-mono text-[11px] font-bold text-slate-700 dark:text-slate-300">{percent}%</span>
                   </div>
                 );
               })}
@@ -877,11 +879,11 @@ export const Wallet: React.FC = () => {
       {showAssetList && (
         <div className="space-y-4 animate-in fade-in duration-300">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2">
-              <Coins className="w-4 h-4 text-blue-600" /> Chi Tiết Các Loại Tiền & Số Dư
+            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200 flex items-center gap-2">
+              <Coins className="w-4 h-4 text-blue-600 dark:text-blue-400" /> Chi Tiết Các Loại Tiền & Số Dư
             </h2>
-            <span className="text-xs text-slate-500">
-              Quy đổi sang <strong className="text-slate-800 font-bold">{activeBaseCurrency.name}</strong>
+            <span className="text-xs text-slate-500 dark:text-slate-400">
+              Quy đổi sang <strong className="text-slate-800 dark:text-slate-200 font-bold">{activeBaseCurrency.name}</strong>
             </span>
           </div>
 
@@ -896,8 +898,8 @@ export const Wallet: React.FC = () => {
                   onClick={() => handleCardClick(asset)}
                   className={`rounded-3xl p-5 border transition-all duration-200 text-left relative overflow-hidden flex flex-col justify-between cursor-pointer hover:shadow-md ${
                     isSelected && isMain
-                      ? 'bg-blue-50/40 border-blue-500 shadow-md ring-2 ring-blue-500/20'
-                      : 'bg-white hover:bg-slate-50 border-slate-200 shadow-sm hover:border-slate-300'
+                      ? 'bg-blue-50/40 dark:bg-blue-950/40 border-blue-500 shadow-md ring-2 ring-blue-500/20'
+                      : 'bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/80 border-slate-200 dark:border-slate-800 shadow-sm hover:border-slate-300 dark:hover:border-slate-700'
                   }`}
                 >
                   {/* Top Bar */}
@@ -906,17 +908,17 @@ export const Wallet: React.FC = () => {
                       <div className="flex items-center gap-2.5">
                         <span className="text-3xl">{asset.flag}</span>
                         <div>
-                          <div className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                          <div className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
                             <span>{asset.name}</span>
                             <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
                               isMain 
-                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
-                                : 'bg-purple-50 text-purple-700 border border-purple-200'
+                                ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' 
+                                : 'bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800'
                             }`}>
                               {isMain ? asset.code : 'Thưởng'}
                             </span>
                           </div>
-                          <div className="text-xs text-slate-500 truncate max-w-[160px]">
+                          <div className="text-xs text-slate-500 dark:text-slate-400 truncate max-w-[160px]">
                             {asset.code} ({asset.symbol})
                           </div>
                         </div>
@@ -928,16 +930,16 @@ export const Wallet: React.FC = () => {
                     </div>
 
                     {/* Balances Display */}
-                    <div className="space-y-1.5 my-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
-                      <div className="text-xs text-slate-500 flex items-center justify-between">
+                    <div className="space-y-1.5 my-3 bg-slate-50 dark:bg-slate-800/60 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-800">
+                      <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center justify-between">
                         <span>Số dư thực tế:</span>
-                        <strong className="text-slate-900 font-mono text-sm font-bold">
+                        <strong className="text-slate-900 dark:text-white font-mono text-sm font-bold">
                           {formatNumber(asset.amount, asset.decimals)} {asset.symbol}
                         </strong>
                       </div>
-                      <div className="text-xs text-slate-500 flex items-center justify-between pt-1.5 border-t border-slate-200/60">
+                      <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center justify-between pt-1.5 border-t border-slate-200/60 dark:border-slate-700">
                         <span>Giá trị quy đổi:</span>
-                        <span className="text-blue-600 font-mono font-bold">
+                        <span className="text-blue-600 dark:text-blue-400 font-mono font-bold">
                           ≈ {formatNumber(asset.convertedVal, activeBaseCurrency.decimals)} {activeBaseCurrency.symbol}
                         </span>
                       </div>
@@ -945,13 +947,13 @@ export const Wallet: React.FC = () => {
                   </div>
 
                   {/* Clean Informational Footer (NO cluttering buttons) */}
-                  <div className="pt-2 flex items-center justify-between text-[11px] text-slate-400 border-t border-slate-100">
+                  <div className="pt-2 flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500 border-t border-slate-100 dark:border-slate-800">
                     <span className="flex items-center gap-1">
                       <History className="w-3.5 h-3.5 text-slate-400" />
                       {isMain ? 'Chạm để xem lịch sử' : 'Dùng cho Bounty/Task'}
                     </span>
                     {isSelected && isMain && (
-                      <span className="text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded-full text-[10px]">
+                      <span className="text-blue-600 dark:text-blue-400 font-bold bg-blue-50 dark:bg-blue-950/60 px-2 py-0.5 rounded-full text-[10px]">
                         Đang chọn ●
                       </span>
                     )}
@@ -966,16 +968,16 @@ export const Wallet: React.FC = () => {
       {/* ========================================================================= */}
       {/* WORKSTATION TABS & ACTIVE FLOWS                                           */}
       {/* ========================================================================= */}
-      <div ref={workstationRef} id="workstation-tabs" className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden scroll-mt-6">
+      <div ref={workstationRef} id="workstation-tabs" className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm overflow-hidden scroll-mt-6">
         
         {/* Navigation Tabs */}
-        <div className="flex border-b border-slate-200 px-6 pt-4 gap-2 overflow-x-auto bg-slate-50/70">
+        <div className="flex border-b border-slate-200 dark:border-slate-800 px-6 pt-4 gap-2 overflow-x-auto bg-slate-50/70 dark:bg-slate-950/50">
           <button
             onClick={() => { setActiveTab('deposit'); setDepositData(null); }}
             className={`pb-4 px-4 text-sm font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap cursor-pointer ${
               activeTab === 'deposit'
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
+                ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
             }`}
           >
             <ArrowDownLeft className="w-4 h-4" /> Nạp tiền ({selectedCurrency})
@@ -985,8 +987,8 @@ export const Wallet: React.FC = () => {
             onClick={() => { setActiveTab('withdraw'); setDepositData(null); }}
             className={`pb-4 px-4 text-sm font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap cursor-pointer ${
               activeTab === 'withdraw'
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
+                ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
             }`}
           >
             <ArrowUpRight className="w-4 h-4" /> Rút tiền ({selectedCurrency})
@@ -996,8 +998,8 @@ export const Wallet: React.FC = () => {
             onClick={() => { setActiveTab('swap'); setDepositData(null); }}
             className={`pb-4 px-4 text-sm font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap cursor-pointer ${
               activeTab === 'swap'
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
+                ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
             }`}
           >
             <ArrowRightLeft className="w-4 h-4" /> Quy đổi ngoại tệ (Swap)
@@ -1007,8 +1009,8 @@ export const Wallet: React.FC = () => {
             onClick={() => { setActiveTab('history'); setDepositData(null); }}
             className={`pb-4 px-4 text-sm font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap cursor-pointer ${
               activeTab === 'history'
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
+                ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
             }`}
           >
             <History className="w-4 h-4" /> Lịch sử giao dịch
@@ -1018,8 +1020,8 @@ export const Wallet: React.FC = () => {
             onClick={() => { setActiveTab('bank'); setDepositData(null); }}
             className={`pb-4 px-4 text-sm font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap cursor-pointer ${
               activeTab === 'bank'
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
+                ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
             }`}
           >
             <Building2 className="w-4 h-4" /> Tài khoản ngân hàng
@@ -1033,15 +1035,15 @@ export const Wallet: React.FC = () => {
           {activeTab === 'deposit' && (
             <div className="max-w-xl mx-auto space-y-6 animate-in fade-in duration-200">
               <div>
-                <h2 className="text-xl font-extrabold text-slate-900">Nạp Tiền Vào Tài Khoản</h2>
-                <p className="text-xs text-slate-500 mt-1">
+                <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">Nạp Tiền Vào Tài Khoản</h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   Chuyển khoản qua cổng thanh toán tự động PayOS. Tiền sẽ được cộng tức thì vào số dư khả dụng của bạn.
                 </p>
               </div>
 
               {/* Currency Selector Chips */}
               <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-700">Chọn loại tiền muốn nạp:</label>
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Chọn loại tiền muốn nạp:</label>
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
                   {SUPPORTED_CURRENCIES.map(c => {
                     const isSelected = selectedCurrency === c.code;
@@ -1052,23 +1054,23 @@ export const Wallet: React.FC = () => {
                         className={`p-3 rounded-2xl border flex flex-col items-center gap-1 transition-all cursor-pointer relative ${
                           isSelected
                             ? 'bg-blue-600 text-white border-blue-600 shadow-sm font-bold'
-                            : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                            : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700/80'
                         }`}
                       >
                         <span className="text-2xl">{c.flag}</span>
                         <span className="text-xs font-bold">{c.code}</span>
-                        <span className={`text-[10px] ${isSelected ? 'text-blue-100' : 'text-slate-500'}`}>
+                        <span className={`text-[10px] ${isSelected ? 'text-blue-100' : 'text-slate-500 dark:text-slate-400'}`}>
                           {c.symbol}
                         </span>
                         {c.code === 'VND' ? (
                           <span className={`text-[9px] px-1.5 py-0.2 rounded font-bold ${
-                            isSelected ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-800'
+                            isSelected ? 'bg-white/20 text-white' : 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300'
                           }`}>
                             Tự động
                           </span>
                         ) : (
                           <span className={`text-[9px] px-1.5 py-0.2 rounded font-bold ${
-                            isSelected ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-600'
+                            isSelected ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
                           }`}>
                             Sắp có
                           </span>
@@ -1081,12 +1083,12 @@ export const Wallet: React.FC = () => {
 
               {/* Non-VND Warning Notice */}
               {selectedCurrency !== 'VND' && (
-                <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-2">
-                  <div className="flex items-center gap-2 font-bold text-sm text-amber-800">
+                <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-xs space-y-2">
+                  <div className="flex items-center gap-2 font-bold text-sm text-amber-800 dark:text-amber-300">
                     <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
                     <span>Ngoại tệ {selectedCurrency} chưa hỗ trợ nạp tự động</span>
                   </div>
-                  <p className="text-amber-800">
+                  <p className="text-amber-800 dark:text-amber-300">
                     Hiện tại hệ thống thanh toán tự động qua PayOS chỉ hỗ trợ đồng <strong>VND (Việt Nam Đồng)</strong>. Các loại ngoại tệ ({selectedCurrency}) sẽ sớm được mở trong phiên bản tiếp theo.
                   </p>
                   <button
@@ -1102,10 +1104,10 @@ export const Wallet: React.FC = () => {
               {!depositData ? (
                 <form onSubmit={handleDepositSubmit} className="space-y-5">
                   <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-700 flex justify-between">
+                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex justify-between">
                       <span>Số tiền nạp ({activeCurrencyInfo.symbol}):</span>
                       {selectedCurrency === 'VND' && (
-                        <span className="text-emerald-600 font-bold">
+                        <span className="text-emerald-600 dark:text-emerald-400 font-bold">
                           ✓ Hỗ trợ thanh toán QR tự động PayOS
                         </span>
                       )}
@@ -1119,9 +1121,9 @@ export const Wallet: React.FC = () => {
                         value={amount}
                         disabled={selectedCurrency !== 'VND'}
                         onChange={(e) => setAmount(e.target.value)}
-                        className="w-full text-lg font-mono font-bold bg-slate-50 border border-slate-200 text-slate-900 rounded-2xl px-4 py-3.5 focus:outline-none focus:bg-white focus:border-blue-600 transition-colors disabled:opacity-50 disabled:bg-slate-100 ring-offset-2 focus:ring-2 focus:ring-blue-500/20"
+                        className="w-full text-lg font-mono font-bold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-2xl px-4 py-3.5 focus:outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-blue-600 transition-colors disabled:opacity-50 disabled:bg-slate-100 dark:disabled:bg-slate-800/50 ring-offset-2 focus:ring-2 focus:ring-blue-500/20"
                       />
-                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-500">
+                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-500 dark:text-slate-400">
                         {activeCurrencyInfo.symbol}
                       </span>
                     </div>
@@ -1130,14 +1132,14 @@ export const Wallet: React.FC = () => {
                   {/* Preset Buttons */}
                   {selectedCurrency === 'VND' && (
                     <div className="space-y-1.5">
-                      <span className="text-[11px] font-bold text-slate-500">Chọn nhanh mệnh giá VND:</span>
+                      <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">Chọn nhanh mệnh giá VND:</span>
                       <div className="flex flex-wrap gap-2">
                         {activeCurrencyInfo.presets.map((preset) => (
                           <button
                             key={preset}
                             type="button"
                             onClick={() => setAmount(preset.toString())}
-                            className="px-3 py-1.5 text-xs font-bold rounded-xl bg-slate-100 text-slate-700 border border-slate-200 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 transition-colors cursor-pointer"
+                            className="px-3 py-1.5 text-xs font-bold rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-700 dark:hover:text-blue-400 hover:border-blue-300 transition-colors cursor-pointer"
                           >
                             +{preset.toLocaleString()} {activeCurrencyInfo.symbol}
                           </button>
@@ -1161,20 +1163,20 @@ export const Wallet: React.FC = () => {
                 </form>
               ) : (
                 /* PayOS Payment QR Code Display */
-                <div className="space-y-6 p-6 rounded-3xl bg-white border border-slate-200 shadow-sm animate-in zoom-in-95 duration-200">
+                <div className="space-y-6 p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm animate-in zoom-in-95 duration-200">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="font-bold text-slate-900 text-base">Quét Mã QR Thanh Toán PayOS</h3>
-                      <p className="text-xs text-slate-500 mt-0.5">
+                      <h3 className="font-bold text-slate-900 dark:text-white text-base">Quét Mã QR Thanh Toán PayOS</h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                         Mở ứng dụng ngân hàng và quét mã QR để chuyển khoản chính xác.
                       </p>
                     </div>
-                    <span className="px-2.5 py-1 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 animate-pulse">
+                    <span className="px-2.5 py-1 text-[10px] font-bold rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 animate-pulse">
                       Đang chờ thanh toán
                     </span>
                   </div>
 
-                  <div className="flex flex-col items-center justify-center p-6 bg-slate-50 border border-slate-200 rounded-2xl">
+                  <div className="flex flex-col items-center justify-center p-6 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-2xl">
                     {depositData.qrCode ? (
                       <div className="bg-white p-3 rounded-xl shadow-sm border border-slate-200">
                         <QRCodeSVG value={depositData.qrCode} size={220} level="M" />
@@ -1187,30 +1189,30 @@ export const Wallet: React.FC = () => {
                   </div>
 
                   <div className="space-y-2 text-xs font-mono">
-                    <div className="flex justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
-                      <span className="text-slate-500">Ngân hàng:</span>
-                      <span className="text-slate-900 font-bold">{depositData.bankName || 'MB Bank'}</span>
+                    <div className="flex justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                      <span className="text-slate-500 dark:text-slate-400">Ngân hàng:</span>
+                      <span className="text-slate-900 dark:text-white font-bold">{depositData.bankName || 'MB Bank'}</span>
                     </div>
-                    <div className="flex justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
-                      <span className="text-slate-500">Số tài khoản:</span>
+                    <div className="flex justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                      <span className="text-slate-500 dark:text-slate-400">Số tài khoản:</span>
                       <div className="flex items-center gap-2">
-                        <span className="text-slate-900 font-bold">{depositData.accountNumber}</span>
-                        <button onClick={() => copyToClipboard(depositData.accountNumber, 'Số tài khoản')} className="text-slate-500 hover:text-slate-900 cursor-pointer">
+                        <span className="text-slate-900 dark:text-white font-bold">{depositData.accountNumber}</span>
+                        <button onClick={() => copyToClipboard(depositData.accountNumber, 'Số tài khoản')} className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer">
                           {copiedField === 'Số tài khoản' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                         </button>
                       </div>
                     </div>
-                    <div className="flex justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
-                      <span className="text-slate-500">Số tiền:</span>
-                      <span className="text-emerald-700 font-bold text-sm">
+                    <div className="flex justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                      <span className="text-slate-500 dark:text-slate-400">Số tiền:</span>
+                      <span className="text-emerald-700 dark:text-emerald-400 font-bold text-sm">
                         {depositData.amount?.toLocaleString()} VND
                       </span>
                     </div>
-                    <div className="flex justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
-                      <span className="text-slate-500">Nội dung chuyển khoản:</span>
+                    <div className="flex justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                      <span className="text-slate-500 dark:text-slate-400">Nội dung chuyển khoản:</span>
                       <div className="flex items-center gap-2">
-                        <span className="text-blue-700 font-bold">{depositData.description}</span>
-                        <button onClick={() => copyToClipboard(depositData.description, 'Nội dung chuyển khoản')} className="text-slate-500 hover:text-slate-900 cursor-pointer">
+                        <span className="text-blue-700 dark:text-blue-400 font-bold">{depositData.description}</span>
+                        <button onClick={() => copyToClipboard(depositData.description, 'Nội dung chuyển khoản')} className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer">
                           {copiedField === 'Nội dung chuyển khoản' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                         </button>
                       </div>
@@ -1220,7 +1222,7 @@ export const Wallet: React.FC = () => {
                   <div className="flex gap-3">
                     <button
                       onClick={() => setDepositData(null)}
-                      className="flex-1 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors cursor-pointer border border-slate-200"
+                      className="flex-1 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition-colors cursor-pointer border border-slate-200 dark:border-slate-700"
                     >
                       Hủy Yêu Cầu
                     </button>
@@ -1246,24 +1248,24 @@ export const Wallet: React.FC = () => {
           {activeTab === 'withdraw' && (
             <div className="max-w-xl mx-auto space-y-6 animate-in fade-in duration-200">
               <div>
-                <h2 className="text-xl font-extrabold text-slate-900">Rút Tiền & Chuyển Khoản</h2>
-                <p className="text-xs text-slate-500 mt-1">
+                <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">Rút Tiền & Chuyển Khoản</h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   Chọn kênh nhận tiền: Rút thẳng về Tài khoản Ngân hàng hoặc Chuyển tức thì đến Địa chỉ Ví Số.
                 </p>
               </div>
 
               {/* Withdrawal Method Switcher (2 Channels) */}
-              <div className="grid grid-cols-2 gap-3 p-1.5 bg-slate-100 border border-slate-200 rounded-2xl">
+              <div className="grid grid-cols-2 gap-3 p-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl">
                 <button
                   type="button"
                   onClick={() => setWithdrawMode('bank')}
                   className={`py-3 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
                     withdrawMode === 'bank'
-                      ? 'bg-white text-amber-800 shadow-sm font-extrabold border border-amber-200'
-                      : 'text-slate-600 hover:text-slate-900'
+                      ? 'bg-white dark:bg-slate-900 text-amber-800 dark:text-amber-300 shadow-sm font-extrabold border border-amber-200 dark:border-amber-800'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
-                  <Building2 className="w-4 h-4 text-amber-600" />
+                  <Building2 className="w-4 h-4 text-amber-600 dark:text-amber-400" />
                   <span>1. Về Ngân Hàng</span>
                 </button>
 
@@ -1272,18 +1274,18 @@ export const Wallet: React.FC = () => {
                   onClick={() => setWithdrawMode('wallet')}
                   className={`py-3 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
                     withdrawMode === 'wallet'
-                      ? 'bg-white text-blue-800 shadow-sm font-extrabold border border-blue-200'
-                      : 'text-slate-600 hover:text-slate-900'
+                      ? 'bg-white dark:bg-slate-900 text-blue-800 dark:text-blue-300 shadow-sm font-extrabold border border-blue-200 dark:border-blue-800'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
-                  <CreditCard className="w-4 h-4 text-blue-600" />
+                  <CreditCard className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                   <span>2. Đến Ví Số (0x...)</span>
                 </button>
               </div>
 
               {/* Currency Selector Chips */}
               <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-700">Chọn loại tiền muốn rút/chuyển:</label>
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Chọn loại tiền muốn rút/chuyển:</label>
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
                   {SUPPORTED_CURRENCIES.map(c => {
                     const cBal = balanceData?.breakdown?.[c.code]?.onChain ?? (balances[c.code] ?? 0);
@@ -1297,12 +1299,12 @@ export const Wallet: React.FC = () => {
                             ? withdrawMode === 'bank' 
                               ? 'bg-amber-600 text-white border-amber-600 shadow-sm font-bold'
                               : 'bg-blue-600 text-white border-blue-600 shadow-sm font-bold'
-                            : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                            : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700/80'
                         }`}
                       >
                         <span className="text-2xl">{c.flag}</span>
                         <span className="text-xs font-bold">{c.code}</span>
-                        <span className={`text-[10px] font-mono ${isSelected ? 'text-white/80' : 'text-slate-500'}`}>
+                        <span className={`text-[10px] font-mono ${isSelected ? 'text-white/80' : 'text-slate-500 dark:text-slate-400'}`}>
                           {formatNumber(cBal, c.decimals)}
                         </span>
                       </button>
@@ -1313,19 +1315,19 @@ export const Wallet: React.FC = () => {
 
               {/* Channel 1: Bank Account Display */}
               {withdrawMode === 'bank' && (
-                <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200/80 space-y-2">
+                <div className="p-4 rounded-2xl bg-amber-50/60 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/60 space-y-2">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-amber-900 font-bold flex items-center gap-1.5">
-                      <Building2 className="w-4 h-4 text-amber-600" /> Ngân hàng nhận tiền:
+                    <span className="text-amber-900 dark:text-amber-300 font-bold flex items-center gap-1.5">
+                      <Building2 className="w-4 h-4 text-amber-600 dark:text-amber-400" /> Ngân hàng nhận tiền:
                     </span>
                     <button 
                       onClick={() => setActiveTab('bank')} 
-                      className="text-amber-700 hover:underline font-bold text-xs cursor-pointer"
+                      className="text-amber-700 dark:text-amber-400 hover:underline font-bold text-xs cursor-pointer"
                     >
                       Thay đổi / Liên kết mới
                     </button>
                   </div>
-                  <div className="font-mono text-sm text-slate-900 font-bold">
+                  <div className="font-mono text-sm text-slate-900 dark:text-slate-100 font-bold">
                     {bankData?.bankName || 'Chưa liên kết'} - {bankData?.accountNumber || 'Vui lòng liên kết tài khoản ngân hàng'}
                   </div>
                 </div>
@@ -1335,13 +1337,13 @@ export const Wallet: React.FC = () => {
               {withdrawMode === 'wallet' && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-xs">
-                    <label className="font-bold text-slate-700 flex items-center gap-1.5">
-                      <Send className="w-3.5 h-3.5 text-blue-600" /> Địa chỉ ví người nhận (0x...):
+                    <label className="font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                      <Send className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" /> Địa chỉ ví người nhận (0x...):
                     </label>
                     <button
                       type="button"
                       onClick={handlePasteAddress}
-                      className="text-blue-600 hover:text-blue-700 font-bold flex items-center gap-1 text-xs cursor-pointer"
+                      className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-bold flex items-center gap-1 text-xs cursor-pointer"
                     >
                       <ClipboardPaste className="w-3.5 h-3.5" /> Dán từ Clipboard
                     </button>
@@ -1353,23 +1355,23 @@ export const Wallet: React.FC = () => {
                       placeholder="Nhập địa chỉ ví đích 0x..."
                       value={targetWalletAddress}
                       onChange={(e) => setTargetWalletAddress(e.target.value.trim())}
-                      className="w-full font-mono text-xs font-bold bg-slate-50 border border-slate-200 text-slate-900 rounded-2xl px-4 py-3.5 focus:outline-none focus:bg-white focus:border-blue-600 transition-colors"
+                      className="w-full font-mono text-xs font-bold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-2xl px-4 py-3.5 focus:outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-blue-600 transition-colors"
                     />
                     {targetWalletAddress && (
                       <span className="absolute right-3.5 top-1/2 -translate-y-1/2">
                         {isValidAddress(targetWalletAddress) ? (
-                          <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                          <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
                             <CheckCircle2 className="w-3 h-3" /> Hợp lệ
                           </span>
                         ) : (
-                          <span className="flex items-center gap-1 text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200">
+                          <span className="flex items-center gap-1 text-[10px] font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 px-2 py-0.5 rounded-full border border-rose-200 dark:border-rose-800">
                             Chưa hợp lệ
                           </span>
                         )}
                       </span>
                     )}
                   </div>
-                  <p className="text-[11px] text-slate-500">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
                     Hỗ trợ chuyển tức thì giữa các ví tài khoản trong hệ thống hoặc các ví đối tác tương thích.
                   </p>
                 </div>
@@ -1378,8 +1380,8 @@ export const Wallet: React.FC = () => {
               <form onSubmit={handleWithdrawSubmit} className="space-y-5">
                 <div className="space-y-2">
                   <div className="flex justify-between text-xs">
-                    <label className="font-bold text-slate-700">Số lượng ({activeCurrencyInfo.symbol}):</label>
-                    <span className="text-emerald-700 font-mono font-bold">
+                    <label className="font-bold text-slate-700 dark:text-slate-300">Số lượng ({activeCurrencyInfo.symbol}):</label>
+                    <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
                       Khả dụng: {formatNumber(currentAvailableBalance, activeCurrencyInfo.decimals)} {activeCurrencyInfo.symbol}
                     </span>
                   </div>
@@ -1390,11 +1392,11 @@ export const Wallet: React.FC = () => {
                       placeholder={`Nhập số lượng ${selectedCurrency}...`}
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
-                      className={`w-full text-lg font-mono font-bold bg-slate-50 border border-slate-200 text-slate-900 rounded-2xl px-4 py-3.5 focus:outline-none focus:bg-white transition-colors ${
+                      className={`w-full text-lg font-mono font-bold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-2xl px-4 py-3.5 focus:outline-none focus:bg-white dark:focus:bg-slate-900 transition-colors ${
                         withdrawMode === 'bank' ? 'focus:border-amber-600' : 'focus:border-blue-600'
                       }`}
                     />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-500">
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-500 dark:text-slate-400">
                       {activeCurrencyInfo.symbol}
                     </span>
                   </div>
@@ -1412,7 +1414,7 @@ export const Wallet: React.FC = () => {
                         setActiveQuote(null);
                         setQuoteSecondsLeft(0);
                       }}
-                      className="flex-1 py-1.5 text-xs font-bold rounded-xl bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200 transition-colors cursor-pointer"
+                      className="flex-1 py-1.5 text-xs font-bold rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors cursor-pointer"
                     >
                       {pct * 100}% {pct === 1 ? '(Tối đa)' : ''}
                     </button>
@@ -1423,31 +1425,31 @@ export const Wallet: React.FC = () => {
                 {/* 15-MINUTE GUARANTEED EXCHANGE RATE QUOTE WIDGET (CROSS-CURRENCY)   */}
                 {/* ================================================================= */}
                 {withdrawMode === 'bank' && selectedCurrency !== 'VND' && Number(amount) > 0 && (
-                  <div className="rounded-3xl border border-indigo-200 bg-gradient-to-br from-indigo-50/80 via-white to-blue-50/50 p-5 space-y-4 shadow-sm">
+                  <div className="rounded-3xl border border-indigo-200 dark:border-indigo-800/80 bg-gradient-to-br from-indigo-50/80 dark:from-indigo-950/40 via-white dark:via-slate-900 to-blue-50/50 dark:to-slate-900 p-5 space-y-4 shadow-sm">
                     <div className="flex items-center justify-between flex-wrap gap-2">
                       <div className="flex items-center gap-2">
                         <span className="p-1.5 bg-indigo-600 text-white rounded-xl shadow-sm">
                           <ArrowRightLeft className="w-4 h-4" />
                         </span>
                         <div>
-                          <div className="text-xs font-extrabold text-indigo-950 uppercase tracking-wider flex items-center gap-1.5">
+                          <div className="text-xs font-extrabold text-indigo-950 dark:text-indigo-200 uppercase tracking-wider flex items-center gap-1.5">
                             Kiều Hối: Đốt {selectedCurrency} → Giải Ngân VND
                           </div>
-                          <div className="text-[11px] text-indigo-700/80">
+                          <div className="text-[11px] text-indigo-700/80 dark:text-indigo-300/80">
                             Khóa tỷ giá bảo chứng ECB 15 phút (Zero Slippage Guarantee)
                           </div>
                         </div>
                       </div>
 
                       {activeQuote && quoteSecondsLeft > 0 ? (
-                        <div className="flex items-center gap-2 bg-emerald-100 text-emerald-800 border border-emerald-300 px-3 py-1 rounded-full text-xs font-bold font-mono">
+                        <div className="flex items-center gap-2 bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 px-3 py-1 rounded-full text-xs font-bold font-mono">
                           <Timer className="w-3.5 h-3.5 animate-spin" />
                           <span>
                             Còn {Math.floor(quoteSecondsLeft / 60)}:{(quoteSecondsLeft % 60).toString().padStart(2, '0')}
                           </span>
                         </div>
                       ) : (
-                        <span className="text-[11px] font-bold text-amber-700 bg-amber-100 border border-amber-200 px-2.5 py-0.5 rounded-full">
+                        <span className="text-[11px] font-bold text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 px-2.5 py-0.5 rounded-full">
                           Chưa khóa tỷ giá
                         </span>
                       )}
@@ -1455,16 +1457,16 @@ export const Wallet: React.FC = () => {
 
                     {/* Rate details & Lock button */}
                     {!activeQuote || quoteSecondsLeft <= 0 ? (
-                      <div className="p-4 rounded-2xl bg-white border border-indigo-100 space-y-3">
+                      <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-indigo-100 dark:border-indigo-900/60 space-y-3">
                         <div className="flex justify-between items-center text-xs">
-                          <span className="text-slate-500">Tỷ giá tham chiếu hiện tại:</span>
-                          <span className="font-bold font-mono text-slate-900">
+                          <span className="text-slate-500 dark:text-slate-400">Tỷ giá tham chiếu hiện tại:</span>
+                          <span className="font-bold font-mono text-slate-900 dark:text-white">
                             1 {selectedCurrency} = {(liveRatesToVnd[selectedCurrency] || 25450).toLocaleString()} VND
                           </span>
                         </div>
                         <div className="flex justify-between items-center text-xs">
-                          <span className="text-slate-500">Số tiền VND dự kiến nhận:</span>
-                          <span className="font-bold font-mono text-indigo-700 text-sm">
+                          <span className="text-slate-500 dark:text-slate-400">Số tiền VND dự kiến nhận:</span>
+                          <span className="font-bold font-mono text-indigo-700 dark:text-indigo-400 text-sm">
                             ≈ {(Number(amount) * (liveRatesToVnd[selectedCurrency] || 25450)).toLocaleString()} VND
                           </span>
                         </div>
@@ -1484,26 +1486,26 @@ export const Wallet: React.FC = () => {
                         </button>
                       </div>
                     ) : (
-                      <div className="p-4 rounded-2xl bg-white border border-emerald-200 space-y-2.5 text-xs">
-                        <div className="flex justify-between items-center pb-2 border-b border-slate-100">
-                          <span className="text-slate-500">Mã Báo Giá (Quote ID):</span>
-                          <span className="font-mono font-bold text-slate-700 text-[11px]">
+                      <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800 space-y-2.5 text-xs">
+                        <div className="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800">
+                          <span className="text-slate-500 dark:text-slate-400">Mã Báo Giá (Quote ID):</span>
+                          <span className="font-mono font-bold text-slate-700 dark:text-slate-300 text-[11px]">
                             #{activeQuote.quoteId.slice(0, 8)}...
                           </span>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-slate-500">Tỷ giá đã khóa cố định:</span>
-                          <span className="font-mono font-bold text-emerald-700">
+                          <span className="text-slate-500 dark:text-slate-400">Tỷ giá đã khóa cố định:</span>
+                          <span className="font-mono font-bold text-emerald-700 dark:text-emerald-400">
                             1 {selectedCurrency} = {activeQuote.exchangeRate.toLocaleString()} VND
                           </span>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-slate-500">Phí giao dịch & Đổi ngoại tệ:</span>
-                          <span className="font-bold text-emerald-600">0 VND (100% Miễn phí)</span>
+                          <span className="text-slate-500 dark:text-slate-400">Phí giao dịch & Đổi ngoại tệ:</span>
+                          <span className="font-bold text-emerald-600 dark:text-emerald-400">0 VND (100% Miễn phí)</span>
                         </div>
-                        <div className="flex justify-between items-center pt-2 border-t border-slate-100 text-sm">
-                          <span className="font-bold text-slate-900">Thực nhận về tài khoản:</span>
-                          <span className="font-black font-mono text-emerald-700 text-base">
+                        <div className="flex justify-between items-center pt-2 border-t border-slate-100 dark:border-slate-800 text-sm">
+                          <span className="font-bold text-slate-900 dark:text-white">Thực nhận về tài khoản:</span>
+                          <span className="font-black font-mono text-emerald-700 dark:text-emerald-400 text-base">
                             {activeQuote.targetAmount.toLocaleString()} VND
                           </span>
                         </div>
@@ -1512,7 +1514,7 @@ export const Wallet: React.FC = () => {
                           <button
                             type="button"
                             onClick={handleRequestQuote}
-                            className="text-[11px] font-bold text-indigo-600 hover:underline flex items-center gap-1 cursor-pointer"
+                            className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 cursor-pointer"
                           >
                             <RefreshCw className="w-3 h-3" /> Làm mới báo giá
                           </button>
@@ -1524,9 +1526,9 @@ export const Wallet: React.FC = () => {
 
                 {/* Simple Payout for Direct VND */}
                 {Number(amount) > 0 && withdrawMode === 'bank' && selectedCurrency === 'VND' && (
-                  <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 flex justify-between items-center">
+                  <div className="p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-xs text-amber-900 dark:text-amber-200 flex justify-between items-center">
                     <span>Số tiền VND nhận về tài khoản ngân hàng:</span>
-                    <strong className="font-mono text-sm text-slate-900 font-bold">
+                    <strong className="font-mono text-sm text-slate-900 dark:text-white font-bold">
                       {Number(amount).toLocaleString()} VND
                     </strong>
                   </div>
@@ -1569,20 +1571,20 @@ export const Wallet: React.FC = () => {
           {activeTab === 'swap' && (
             <div className="max-w-xl mx-auto space-y-6 animate-in fade-in duration-200">
               <div>
-                <h2 className="text-xl font-extrabold text-slate-900">Quy Đổi Ngoại Tệ Tức Thì (Swap)</h2>
-                <p className="text-xs text-slate-500 mt-1">
+                <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">Quy Đổi Ngoại Tệ Tức Thì (Swap)</h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   Chuyển đổi tức thì giữa các loại tiền tệ (USD, EUR, VND, JPY, CNY) theo tỷ giá thị trường ECB thời gian thực. Phí 0%.
                 </p>
               </div>
 
               <form onSubmit={handleExecuteSwap} className="space-y-4">
                 {/* FROM CARD */}
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all space-y-2">
-                  <div className="flex items-center justify-between text-xs text-slate-500">
+                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all space-y-2">
+                  <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
                     <span className="font-bold">Từ (Bạn đổi):</span>
                     <span className="font-mono font-medium">
                       Khả dụng:{' '}
-                      <strong className="text-slate-900 font-bold">
+                      <strong className="text-slate-900 dark:text-white font-bold">
                         {formatNumber(balanceData?.breakdown?.[swapFromCurrency]?.onChain ?? (balances[swapFromCurrency] ?? 0), 2)}{' '}
                         {swapFromCurrency}
                       </strong>
@@ -1597,7 +1599,7 @@ export const Wallet: React.FC = () => {
                       placeholder="0.0"
                       value={swapAmount}
                       onChange={(e) => setSwapAmount(e.target.value)}
-                      className="w-full text-2xl font-black font-mono bg-transparent text-slate-900 focus:outline-none placeholder:text-slate-300"
+                      className="w-full text-2xl font-black font-mono bg-transparent text-slate-900 dark:text-white focus:outline-none placeholder:text-slate-300 dark:placeholder:text-slate-600"
                     />
 
                     <select
@@ -1609,7 +1611,7 @@ export const Wallet: React.FC = () => {
                           setSwapToCurrency(SUPPORTED_CURRENCIES.find(c => c.code !== newFrom)?.code || 'VND');
                         }
                       }}
-                      className="bg-white border border-slate-200 font-bold text-slate-800 text-sm rounded-xl px-3 py-2 focus:outline-none cursor-pointer shadow-sm hover:border-slate-300"
+                      className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-bold text-slate-800 dark:text-slate-200 text-sm rounded-xl px-3 py-2 focus:outline-none cursor-pointer shadow-sm hover:border-slate-300 dark:hover:border-slate-600"
                     >
                       {SUPPORTED_CURRENCIES.map((c) => (
                         <option key={c.code} value={c.code}>
@@ -1631,7 +1633,7 @@ export const Wallet: React.FC = () => {
                             const calculated = (srcBal * pct) / 100;
                             setSwapAmount(calculated.toString());
                           }}
-                          className="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-200/80 text-[11px] font-bold text-slate-600 border border-slate-200 transition-colors cursor-pointer"
+                          className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 hover:bg-slate-200/80 dark:hover:bg-slate-700 text-[11px] font-bold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
                         >
                           {pct === 100 ? 'Tối đa (Max)' : `${pct}%`}
                         </button>
@@ -1650,7 +1652,7 @@ export const Wallet: React.FC = () => {
                       setSwapFromCurrency(prevTo);
                       setSwapToCurrency(prevFrom);
                     }}
-                    className="w-10 h-10 rounded-2xl bg-white border border-slate-200 shadow-md text-blue-600 hover:text-white hover:bg-blue-600 flex items-center justify-center transition-all transform hover:rotate-180 cursor-pointer"
+                    className="w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-md text-blue-600 dark:text-blue-400 hover:text-white hover:bg-blue-600 dark:hover:bg-blue-600 flex items-center justify-center transition-all transform hover:rotate-180 cursor-pointer"
                     title="Đảo chiều quy đổi"
                   >
                     <ArrowUpDown className="w-5 h-5" />
@@ -1658,12 +1660,12 @@ export const Wallet: React.FC = () => {
                 </div>
 
                 {/* TO CARD */}
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-                  <div className="flex items-center justify-between text-xs text-slate-500">
+                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-2">
+                  <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
                     <span className="font-bold">Sang (Bạn nhận ước tính):</span>
                     <span className="font-mono font-medium">
                       Số dư hiện tại:{' '}
-                      <strong className="text-slate-900 font-bold">
+                      <strong className="text-slate-900 dark:text-white font-bold">
                         {formatNumber(balanceData?.breakdown?.[swapToCurrency]?.onChain ?? (balances[swapToCurrency] ?? 0), 2)}{' '}
                         {swapToCurrency}
                       </strong>
@@ -1683,7 +1685,7 @@ export const Wallet: React.FC = () => {
                           type="text"
                           readOnly
                           value={Number(swapAmount) > 0 ? formatNumber(calculatedTarget, targetDecimals) : '0.0'}
-                          className="w-full text-2xl font-black font-mono bg-transparent text-emerald-700 focus:outline-none"
+                          className="w-full text-2xl font-black font-mono bg-transparent text-emerald-700 dark:text-emerald-400 focus:outline-none"
                         />
                       );
                     })()}
@@ -1697,7 +1699,7 @@ export const Wallet: React.FC = () => {
                           setSwapFromCurrency(SUPPORTED_CURRENCIES.find(c => c.code !== newTo)?.code || 'USD');
                         }
                       }}
-                      className="bg-white border border-slate-200 font-bold text-slate-800 text-sm rounded-xl px-3 py-2 focus:outline-none cursor-pointer shadow-sm hover:border-slate-300"
+                      className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-bold text-slate-800 dark:text-slate-200 text-sm rounded-xl px-3 py-2 focus:outline-none cursor-pointer shadow-sm hover:border-slate-300 dark:hover:border-slate-600"
                     >
                       {SUPPORTED_CURRENCIES.map((c) => (
                         <option key={c.code} value={c.code}>
@@ -1709,31 +1711,31 @@ export const Wallet: React.FC = () => {
                 </div>
 
                 {/* RATE & FEE BREAKDOWN */}
-                <div className="p-4 rounded-2xl bg-indigo-50/60 border border-indigo-100 text-xs space-y-2">
+                <div className="p-4 rounded-2xl bg-indigo-50/60 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/60 text-xs space-y-2">
                   {(() => {
                     const srcVnd = liveRatesToVnd[swapFromCurrency] || 1;
                     const tgtVnd = liveRatesToVnd[swapToCurrency] || 1;
                     const rate = srcVnd / tgtVnd;
                     return (
-                      <div className="flex items-center justify-between text-indigo-950 font-medium">
+                      <div className="flex items-center justify-between text-indigo-950 dark:text-indigo-200 font-medium">
                         <span className="flex items-center gap-1.5">
-                          <Globe className="w-3.5 h-3.5 text-blue-600" /> Tỷ giá thị trường (ECB):
+                          <Globe className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" /> Tỷ giá thị trường (ECB):
                         </span>
-                        <span className="font-mono font-bold text-blue-700">
+                        <span className="font-mono font-bold text-blue-700 dark:text-blue-400">
                           1 {swapFromCurrency} ≈ {rate < 1 ? rate.toFixed(6) : formatNumber(rate, 2)} {swapToCurrency}
                         </span>
                       </div>
                     );
                   })()}
 
-                  <div className="flex items-center justify-between text-slate-600 pt-1 border-t border-indigo-100">
+                  <div className="flex items-center justify-between text-slate-600 dark:text-slate-400 pt-1 border-t border-indigo-100 dark:border-indigo-900/60">
                     <span>Phí quy đổi:</span>
-                    <span className="font-bold text-emerald-600">0% (Hoàn toàn miễn phí)</span>
+                    <span className="font-bold text-emerald-600 dark:text-emerald-400">0% (Hoàn toàn miễn phí)</span>
                   </div>
 
-                  <div className="flex items-center justify-between text-slate-600">
+                  <div className="flex items-center justify-between text-slate-600 dark:text-slate-400">
                     <span>Thời gian xử lý:</span>
-                    <span className="font-bold text-slate-800">Tức thì (&lt; 1 giây • Sổ cái bảo chứng)</span>
+                    <span className="font-bold text-slate-800 dark:text-slate-200">Tức thì (&lt; 1 giây • Sổ cái bảo chứng)</span>
                   </div>
                 </div>
 
@@ -1765,8 +1767,8 @@ export const Wallet: React.FC = () => {
             <div className="space-y-4 animate-in fade-in duration-200">
               <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
                 <div>
-                  <h2 className="text-lg font-extrabold text-slate-900">Lịch Sử Giao Dịch Thu / Chi</h2>
-                  <p className="text-xs text-slate-500">
+                  <h2 className="text-lg font-extrabold text-slate-900 dark:text-white">Lịch Sử Giao Dịch Thu / Chi</h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
                     Chi tiết các lần nạp, rút, kiều hối và thưởng hoạt động trong tài khoản của bạn.
                   </p>
                 </div>
@@ -1774,7 +1776,7 @@ export const Wallet: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <button 
                     onClick={() => queryClient.invalidateQueries({ queryKey: ['wallet-transactions'] })}
-                    className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1 cursor-pointer bg-blue-50 px-3 py-1.5 rounded-xl border border-blue-200"
+                    className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 cursor-pointer bg-blue-50 dark:bg-blue-950/50 px-3 py-1.5 rounded-xl border border-blue-200 dark:border-blue-800"
                   >
                     <RefreshCw className="w-3.5 h-3.5" /> Tải lại
                   </button>
@@ -1782,8 +1784,8 @@ export const Wallet: React.FC = () => {
               </div>
 
               {/* Currency Filter Chips */}
-              <div className="flex items-center gap-1.5 flex-wrap pt-1 pb-2 border-b border-slate-100">
-                <span className="text-xs text-slate-500 font-bold mr-1 flex items-center gap-1">
+              <div className="flex items-center gap-1.5 flex-wrap pt-1 pb-2 border-b border-slate-100 dark:border-slate-800">
+                <span className="text-xs text-slate-500 dark:text-slate-400 font-bold mr-1 flex items-center gap-1">
                   <Filter className="w-3.5 h-3.5 text-slate-400" /> Lọc tiền tệ:
                 </span>
                 <button
@@ -1791,7 +1793,7 @@ export const Wallet: React.FC = () => {
                   className={`px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     selectedHistoryFilter === 'ALL'
                       ? 'bg-blue-600 text-white shadow-sm font-black'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
                   }`}
                 >
                   Tất cả
@@ -1803,7 +1805,7 @@ export const Wallet: React.FC = () => {
                     className={`px-3 py-1 rounded-xl text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
                       selectedHistoryFilter === c.code
                         ? 'bg-blue-600 text-white shadow-sm font-black'
-                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
                     }`}
                   >
                     <span>{c.flag}</span>
@@ -1818,7 +1820,7 @@ export const Wallet: React.FC = () => {
                   : (transactionsData?.data || (transactionsData as any)?.transactions || []);
 
                 if (isTxLoading) {
-                  return <div className="py-12 text-center text-slate-500 text-xs">Đang tải lịch sử giao dịch...</div>;
+                  return <div className="py-12 text-center text-slate-500 dark:text-slate-400 text-xs">Đang tải lịch sử giao dịch...</div>;
                 }
 
                 const txList = selectedHistoryFilter === 'ALL'
@@ -1831,7 +1833,7 @@ export const Wallet: React.FC = () => {
 
                 if (!txList || txList.length === 0) {
                   return (
-                    <div className="py-12 text-center text-slate-400 text-xs border border-dashed border-slate-200 rounded-2xl bg-slate-50">
+                    <div className="py-12 text-center text-slate-400 dark:text-slate-500 text-xs border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl bg-slate-50 dark:bg-slate-900/50">
                       {selectedHistoryFilter === 'ALL' 
                         ? 'Chưa có giao dịch nào được ghi nhận.' 
                         : `Không có giao dịch nào liên quan đến ${selectedHistoryFilter}.`}
@@ -1864,13 +1866,13 @@ export const Wallet: React.FC = () => {
                 const getFriendlyStatus = (status: string) => {
                   switch (status) {
                     case 'COMPLETED':
-                      return { text: 'Thành công', color: 'text-emerald-700 bg-emerald-50 border-emerald-200' };
+                      return { text: 'Thành công', color: 'text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 border-emerald-200 dark:border-emerald-800' };
                     case 'PENDING':
-                      return { text: 'Đang xử lý', color: 'text-amber-700 bg-amber-50 border-amber-200' };
+                      return { text: 'Đang xử lý', color: 'text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 border-amber-200 dark:border-amber-800' };
                     case 'FAILED':
-                      return { text: 'Thất bại', color: 'text-rose-700 bg-rose-50 border-rose-200' };
+                      return { text: 'Thất bại', color: 'text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/60 border-rose-200 dark:border-rose-800' };
                     default:
-                      return { text: status, color: 'text-slate-700 bg-slate-50 border-slate-200' };
+                      return { text: status, color: 'text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700' };
                   }
                 };
 
@@ -1885,15 +1887,15 @@ export const Wallet: React.FC = () => {
                       return (
                         <div
                           key={tx.id}
-                          className="p-4 rounded-2xl bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50/60 flex items-center justify-between transition-all shadow-sm"
+                          className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50/60 dark:hover:bg-slate-800/50 flex items-center justify-between transition-all shadow-sm"
                         >
                           <div className="flex items-center gap-3">
                             <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm ${
                               isSwap
-                                ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
+                                ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800'
                                 : isPositive 
-                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
-                                : 'bg-amber-50 text-amber-700 border border-amber-200'
+                                ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' 
+                                : 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800'
                             }`}>
                               {isSwap ? (
                                 <ArrowRightLeft className="w-5 h-5" />
@@ -1904,20 +1906,20 @@ export const Wallet: React.FC = () => {
                               )}
                             </div>
                             <div>
-                              <div className="font-bold text-sm text-slate-900 flex items-center gap-2">
+                              <div className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
                                 <span>
                                   {tx.sourceCurrency && tx.targetCurrency && tx.sourceCurrency !== tx.targetCurrency
                                     ? `Quy đổi (${tx.sourceCurrency} → ${tx.targetCurrency})`
                                     : typeLabel}
                                 </span>
-                                <span className="text-[10px] px-2 py-0.5 rounded-full font-mono bg-slate-100 text-slate-700 border border-slate-200">
+                                <span className="text-[10px] px-2 py-0.5 rounded-full font-mono bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                                   {tx.currency || 'VND'}
                                 </span>
                               </div>
-                              <div className="text-[11px] text-slate-500 flex items-center gap-1.5 mt-0.5">
+                              <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5">
                                 <span>{new Date(tx.createdAt).toLocaleString('vi-VN')}</span>
                                 {tx.targetAmount && tx.sourceCurrency !== tx.targetCurrency && (
-                                  <span className="text-emerald-700 font-mono font-bold">
+                                  <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
                                     • Nhận: {tx.targetAmount.toLocaleString()} {tx.targetCurrency}
                                   </span>
                                 )}
@@ -1927,7 +1929,7 @@ export const Wallet: React.FC = () => {
 
                           <div className="text-right">
                             <div className={`font-mono text-sm font-bold ${
-                              isSwap ? 'text-indigo-700' : isPositive ? 'text-emerald-700' : 'text-amber-700'
+                              isSwap ? 'text-indigo-700 dark:text-indigo-400' : isPositive ? 'text-emerald-700 dark:text-emerald-400' : 'text-amber-700 dark:text-amber-400'
                             }`}>
                               {isSwap ? '⇄ ' : isPositive ? '+' : '-'}{tx.amount?.toLocaleString()} {tx.currency || 'VND'}
                             </div>
@@ -1950,16 +1952,16 @@ export const Wallet: React.FC = () => {
           {activeTab === 'bank' && (
             <div className="max-w-md mx-auto space-y-6 animate-in fade-in duration-200">
               <div>
-                <h2 className="text-xl font-extrabold text-slate-900">Liên Kết Tài Khoản Ngân Hàng</h2>
-                <p className="text-xs text-slate-500 mt-1">
+                <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">Liên Kết Tài Khoản Ngân Hàng</h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   Cung cấp thông tin tài khoản ngân hàng chính chủ để nhận tiền khi rút tiền về ngân hàng.
                 </p>
               </div>
 
               {bankData && (
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5 font-mono text-xs">
-                  <div className="text-slate-500">Tài khoản hiện tại:</div>
-                  <div className="text-slate-900 font-bold text-sm">
+                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-1.5 font-mono text-xs">
+                  <div className="text-slate-500 dark:text-slate-400">Tài khoản hiện tại:</div>
+                  <div className="text-slate-900 dark:text-white font-bold text-sm">
                     {bankData.bankName} - {bankData.accountNumber}
                   </div>
                 </div>
@@ -1977,24 +1979,24 @@ export const Wallet: React.FC = () => {
                 className="space-y-4"
               >
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700">Tên ngân hàng (Ví dụ: MB Bank, Vietcombank, Techcombank):</label>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Tên ngân hàng (Ví dụ: MB Bank, Vietcombank, Techcombank):</label>
                   <input
                     type="text"
                     placeholder="Nhập tên ngân hàng..."
                     value={bankName}
                     onChange={(e) => setBankName(e.target.value)}
-                    className="w-full text-sm font-bold bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-4 py-3 focus:outline-none focus:bg-white focus:border-blue-600"
+                    className="w-full text-sm font-bold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-blue-600"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700">Số tài khoản ngân hàng:</label>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Số tài khoản ngân hàng:</label>
                   <input
                     type="text"
                     placeholder="Nhập số tài khoản..."
                     value={accountNumber}
                     onChange={(e) => setAccountNumber(e.target.value)}
-                    className="w-full text-sm font-mono font-bold bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-4 py-3 focus:outline-none focus:bg-white focus:border-blue-600"
+                    className="w-full text-sm font-mono font-bold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-blue-600"
                   />
                 </div>
 
@@ -2017,9 +2019,9 @@ export const Wallet: React.FC = () => {
       {/* ========================================================================= */}
       {isSwapModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white border border-slate-200 rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden animate-in zoom-in-95 duration-200">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden animate-in zoom-in-95 duration-200">
             {/* Modal Header */}
-            <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white">
+            <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-blue-500/20 text-blue-400 rounded-2xl border border-blue-400/30">
                   <ArrowRightLeft className="w-5 h-5" />
@@ -2040,12 +2042,12 @@ export const Wallet: React.FC = () => {
             {/* Modal Body */}
             <form onSubmit={handleExecuteSwap} className="p-6 space-y-4">
               {/* FROM CARD */}
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all space-y-2">
-                <div className="flex items-center justify-between text-xs text-slate-500">
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all space-y-2">
+                <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
                   <span className="font-bold">Từ (Bạn đổi):</span>
                   <span className="font-mono font-medium">
                     Khả dụng:{' '}
-                    <strong className="text-slate-900 font-bold">
+                    <strong className="text-slate-900 dark:text-white font-bold">
                       {formatNumber(balanceData?.breakdown?.[swapFromCurrency]?.onChain ?? (balances[swapFromCurrency] ?? 0), 2)}{' '}
                       {swapFromCurrency}
                     </strong>
@@ -2060,7 +2062,7 @@ export const Wallet: React.FC = () => {
                     placeholder="0.0"
                     value={swapAmount}
                     onChange={(e) => setSwapAmount(e.target.value)}
-                    className="w-full text-2xl font-black font-mono bg-transparent text-slate-900 focus:outline-none placeholder:text-slate-300"
+                    className="w-full text-2xl font-black font-mono bg-transparent text-slate-900 dark:text-white focus:outline-none placeholder:text-slate-300 dark:placeholder:text-slate-600"
                   />
 
                   {/* Currency Select */}
@@ -2073,7 +2075,7 @@ export const Wallet: React.FC = () => {
                         setSwapToCurrency(SUPPORTED_CURRENCIES.find(c => c.code !== newFrom)?.code || 'VND');
                       }
                     }}
-                    className="bg-white border border-slate-200 font-bold text-slate-800 text-sm rounded-xl px-3 py-2 focus:outline-none cursor-pointer shadow-sm hover:border-slate-300"
+                    className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-bold text-slate-800 dark:text-slate-200 text-sm rounded-xl px-3 py-2 focus:outline-none cursor-pointer shadow-sm hover:border-slate-300 dark:hover:border-slate-600"
                   >
                     {SUPPORTED_CURRENCIES.map((c) => (
                       <option key={c.code} value={c.code}>
@@ -2095,7 +2097,7 @@ export const Wallet: React.FC = () => {
                           const calculated = (srcBal * pct) / 100;
                           setSwapAmount(calculated.toString());
                         }}
-                        className="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-200/80 text-[11px] font-bold text-slate-600 border border-slate-200 transition-colors cursor-pointer"
+                        className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 hover:bg-slate-200/80 dark:hover:bg-slate-700 text-[11px] font-bold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
                       >
                         {pct === 100 ? 'Tối đa (Max)' : `${pct}%`}
                       </button>
@@ -2114,7 +2116,7 @@ export const Wallet: React.FC = () => {
                     setSwapFromCurrency(prevTo);
                     setSwapToCurrency(prevFrom);
                   }}
-                  className="w-10 h-10 rounded-2xl bg-white border border-slate-200 shadow-md text-blue-600 hover:text-white hover:bg-blue-600 flex items-center justify-center transition-all transform hover:rotate-180 cursor-pointer"
+                  className="w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-md text-blue-600 dark:text-blue-400 hover:text-white hover:bg-blue-600 dark:hover:bg-blue-600 flex items-center justify-center transition-all transform hover:rotate-180 cursor-pointer"
                   title="Đảo chiều quy đổi"
                 >
                   <ArrowUpDown className="w-5 h-5" />
@@ -2122,12 +2124,12 @@ export const Wallet: React.FC = () => {
               </div>
 
               {/* TO CARD */}
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-                <div className="flex items-center justify-between text-xs text-slate-500">
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-2">
+                <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
                   <span className="font-bold">Sang (Bạn nhận ước tính):</span>
                   <span className="font-mono font-medium">
                     Số dư hiện tại:{' '}
-                    <strong className="text-slate-900 font-bold">
+                    <strong className="text-slate-900 dark:text-white font-bold">
                       {formatNumber(balanceData?.breakdown?.[swapToCurrency]?.onChain ?? (balances[swapToCurrency] ?? 0), 2)}{' '}
                       {swapToCurrency}
                     </strong>
@@ -2147,7 +2149,7 @@ export const Wallet: React.FC = () => {
                         type="text"
                         readOnly
                         value={Number(swapAmount) > 0 ? formatNumber(calculatedTarget, targetDecimals) : '0.0'}
-                        className="w-full text-2xl font-black font-mono bg-transparent text-emerald-700 focus:outline-none"
+                        className="w-full text-2xl font-black font-mono bg-transparent text-emerald-700 dark:text-emerald-400 focus:outline-none"
                       />
                     );
                   })()}
@@ -2162,7 +2164,7 @@ export const Wallet: React.FC = () => {
                         setSwapFromCurrency(SUPPORTED_CURRENCIES.find(c => c.code !== newTo)?.code || 'USD');
                       }
                     }}
-                    className="bg-white border border-slate-200 font-bold text-slate-800 text-sm rounded-xl px-3 py-2 focus:outline-none cursor-pointer shadow-sm hover:border-slate-300"
+                    className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-bold text-slate-800 dark:text-slate-200 text-sm rounded-xl px-3 py-2 focus:outline-none cursor-pointer shadow-sm hover:border-slate-300 dark:hover:border-slate-600"
                   >
                     {SUPPORTED_CURRENCIES.map((c) => (
                       <option key={c.code} value={c.code}>
@@ -2174,31 +2176,31 @@ export const Wallet: React.FC = () => {
               </div>
 
               {/* EXCHANGE RATE & FEE BREAKDOWN */}
-              <div className="p-4 rounded-2xl bg-indigo-50/60 border border-indigo-100 text-xs space-y-2">
+              <div className="p-4 rounded-2xl bg-indigo-50/60 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/60 text-xs space-y-2">
                 {(() => {
                   const srcVnd = liveRatesToVnd[swapFromCurrency] || 1;
                   const tgtVnd = liveRatesToVnd[swapToCurrency] || 1;
                   const rate = srcVnd / tgtVnd;
                   return (
-                    <div className="flex items-center justify-between text-indigo-950 font-medium">
+                    <div className="flex items-center justify-between text-indigo-950 dark:text-indigo-200 font-medium">
                       <span className="flex items-center gap-1.5">
-                        <Globe className="w-3.5 h-3.5 text-blue-600" /> Tỷ giá thị trường (ECB):
+                        <Globe className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" /> Tỷ giá thị trường (ECB):
                       </span>
-                      <span className="font-mono font-bold text-blue-700">
+                      <span className="font-mono font-bold text-blue-700 dark:text-blue-400">
                         1 {swapFromCurrency} ≈ {rate < 1 ? rate.toFixed(6) : formatNumber(rate, 2)} {swapToCurrency}
                       </span>
                     </div>
                   );
                 })()}
 
-                <div className="flex items-center justify-between text-slate-600 pt-1 border-t border-indigo-100">
+                <div className="flex items-center justify-between text-slate-600 dark:text-slate-400 pt-1 border-t border-indigo-100 dark:border-indigo-900/60">
                   <span>Phí quy đổi:</span>
-                  <span className="font-bold text-emerald-600">0% (Hoàn toàn miễn phí)</span>
+                  <span className="font-bold text-emerald-600 dark:text-emerald-400">0% (Hoàn toàn miễn phí)</span>
                 </div>
 
-                <div className="flex items-center justify-between text-slate-600">
+                <div className="flex items-center justify-between text-slate-600 dark:text-slate-400">
                   <span>Thời gian xử lý:</span>
-                  <span className="font-bold text-slate-800">Tức thì (&lt; 1 giây • Sổ cái bảo chứng)</span>
+                  <span className="font-bold text-slate-800 dark:text-slate-200">Tức thì (&lt; 1 giây • Sổ cái bảo chứng)</span>
                 </div>
               </div>
 

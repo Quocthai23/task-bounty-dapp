@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { projectService } from '@/services/project.service';
 import { userService } from '@/services/user.service';
 import { metadataService } from '@/services/metadata.service';
+import { useTranslation } from 'react-i18next';
 import { 
   ChevronDown, 
   Search, 
@@ -28,6 +29,7 @@ import { Button } from '@/components/shared/atoms/button';
 
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const { data: user } = useQuery({
     queryKey: ['me'],
@@ -57,7 +59,7 @@ export const Dashboard: React.FC = () => {
   const [selectedJob, setSelectedJob] = useState<any>(null);
 
   const dynamicCategories = useMemo(() => {
-    const list = [{ label: 'Tất cả', value: '' }];
+    const list = [{ label: t('dashboard.allCategories'), value: '' }];
     if (Array.isArray(positionsData)) {
       positionsData.forEach(pos => {
         let icon = '⚡';
@@ -76,7 +78,7 @@ export const Dashboard: React.FC = () => {
       });
     }
     return list;
-  }, [positionsData]);
+  }, [positionsData, t]);
 
   // Filters State
   const [searchTerm, setSearchTerm] = useState('');
@@ -158,13 +160,15 @@ export const Dashboard: React.FC = () => {
     setSelectedJob(job);
   };
 
-  const userName = (user as any)?.firstName || (user as any)?.username || 'Khách hàng';
+  const userName = (user as any)?.firstName 
+    ? `${(user as any)?.firstName} ${(user as any)?.lastName || ''}`.trim() 
+    : (user as any)?.username || 'TaskBounty User';
 
   const sortOptions = [
-    { value: 'latest', label: '✨ Mới nhất' },
-    { value: 'price-desc', label: '💰 Phần thưởng cao nhất' },
-    { value: 'price-asc', label: '💵 Phần thưởng thấp nhất' },
-    { value: 'oldest', label: '⏳ Cũ nhất' },
+    { value: 'latest', label: t('dashboard.sortLatest') },
+    { value: 'price-desc', label: t('dashboard.sortPriceDesc') },
+    { value: 'price-asc', label: t('dashboard.sortPriceAsc') },
+    { value: 'oldest', label: t('dashboard.sortOldest') },
   ];
 
   const currentSortLabel = sortOptions.find(o => o.value === sortOption)?.label;
@@ -174,32 +178,33 @@ export const Dashboard: React.FC = () => {
       <div className="w-full min-h-full flex flex-col font-sans space-y-6 pb-12">
         
         {/* ========================================================================= */}
-        {/* COMPACT HERO BANNER & QUICK STATS (Optimized for 14-inch screens)         */}
+        {/* COMPACT HERO BANNER & QUICK STATS                                         */}
         {/* ========================================================================= */}
         <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-800 rounded-2xl p-4 sm:p-5 text-white shadow-md shadow-blue-500/10 shrink-0">
           <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-3">
               <h1 className="text-xl sm:text-2xl font-black tracking-tight flex items-center gap-2">
-                Chào mừng, {userName} <span className="animate-bounce">👋</span>
+                {t('dashboard.welcomeBack')} {userName} <span className="animate-bounce">👋</span>
               </h1>
               <div className="hidden lg:flex items-center gap-1.5 text-[11px] font-bold text-blue-100 bg-white/15 px-3 py-1 rounded-full border border-white/20">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-300" />
-                <span>100% Ký Quỹ Smart Contract</span>
+                <span>{t('dashboard.smartContract100')}</span>
               </div>
               <div className="hidden xl:flex items-center gap-1.5 text-[11px] font-bold text-blue-100 bg-white/15 px-3 py-1 rounded-full border border-white/20">
                 <Zap className="w-3.5 h-3.5 text-amber-300" />
-                <span>Thanh Toán Tức Thì PayOS</span>
+                <span>{t('dashboard.payOsInstant')}</span>
               </div>
             </div>
 
-            {/* Quick Action Button */}
+            {/* Quick Action Button - Fixed High Contrast */}
             <div className="flex items-center gap-2 self-start md:self-auto shrink-0">
-              <Button
+              <button
                 onClick={() => navigate('/manage-jobs')}
-                className="bg-white hover:bg-blue-50 text-blue-700 font-extrabold text-xs px-4 py-2 rounded-xl shadow-md flex items-center justify-center gap-1.5 transition-all hover:scale-102 cursor-pointer"
+                className="bg-white hover:bg-blue-50 text-blue-700 font-black text-xs px-5 py-2.5 rounded-xl shadow-md flex items-center justify-center gap-2 transition-all hover:scale-105 cursor-pointer"
               >
-                <PlusCircle className="w-3.5 h-3.5" /> Đăng Tuyển Bounty
-              </Button>
+                <PlusCircle className="w-4 h-4 text-blue-700" />
+                <span>{t('dashboard.postBountyBtn')}</span>
+              </button>
             </div>
           </div>
         </div>
@@ -220,7 +225,7 @@ export const Dashboard: React.FC = () => {
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Tìm kiếm nhiệm vụ, kỹ năng (React, Solidity, DeFi, UI/UX)..."
+                  placeholder={t('dashboard.searchPlaceholder')}
                   className="w-full pl-11 pr-10 py-3 text-xs sm:text-sm font-semibold bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-2xl focus:outline-none focus:border-blue-500 transition-colors text-slate-800 dark:text-slate-200"
                 />
                 {searchTerm && (
@@ -275,7 +280,7 @@ export const Dashboard: React.FC = () => {
                         ? 'bg-white dark:bg-slate-700 text-blue-600 shadow-xs' 
                         : 'text-slate-400 hover:text-slate-700'
                     }`}
-                    title="Dạng lưới"
+                    title={t('dashboard.viewGrid')}
                   >
                     <LayoutGrid className="w-4 h-4" />
                   </button>
@@ -286,7 +291,7 @@ export const Dashboard: React.FC = () => {
                         ? 'bg-white dark:bg-slate-700 text-blue-600 shadow-xs' 
                         : 'text-slate-400 hover:text-slate-700'
                     }`}
-                    title="Dạng danh sách"
+                    title={t('dashboard.viewList')}
                   >
                     <List className="w-4 h-4" />
                   </button>
@@ -298,7 +303,7 @@ export const Dashboard: React.FC = () => {
                   className="xl:hidden flex items-center gap-1.5 px-4 py-3 bg-blue-600 text-white rounded-2xl font-bold text-xs shadow-md shadow-blue-500/20 cursor-pointer"
                 >
                   <SlidersHorizontal className="w-3.5 h-3.5" />
-                  <span>Bộ lọc</span>
+                  <span>{t('dashboard.filterBtn')}</span>
                 </button>
               </div>
             </div>
@@ -346,10 +351,10 @@ export const Dashboard: React.FC = () => {
                     <Briefcase className="w-7 h-7" />
                   </div>
                   <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">
-                    Không tìm thấy nhiệm vụ phù hợp
+                    {t('dashboard.emptyTitle')}
                   </h3>
                   <p className="text-xs text-slate-400 max-w-md mx-auto">
-                    Thử tìm kiếm với từ khóa khác hoặc xóa bớt các tiêu chí lọc để xem thêm các cơ hội khác.
+                    {t('dashboard.emptyDesc')}
                   </p>
                   <Button
                     onClick={() => {
@@ -361,9 +366,9 @@ export const Dashboard: React.FC = () => {
                       setEscrowOnly(false);
                     }}
                     variant="neutral-outline"
-                    className="mt-2 text-xs font-bold rounded-xl"
+                    className="mt-2 text-xs font-bold rounded-xl cursor-pointer"
                   >
-                    Xóa toàn bộ bộ lọc
+                    {t('dashboard.resetAllFilters')}
                   </Button>
                 </div>
               ) : (
@@ -412,7 +417,7 @@ export const Dashboard: React.FC = () => {
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex justify-end xl:hidden">
           <div className="w-full max-w-sm bg-white dark:bg-slate-900 h-full overflow-y-auto p-6 space-y-4">
             <div className="flex items-center justify-between pb-2 border-b border-slate-200">
-              <h3 className="font-bold text-sm">Bộ Lọc Nhiệm Vụ</h3>
+              <h3 className="font-bold text-sm">{t('filter.filterTitle')}</h3>
               <button 
                 onClick={() => setIsMobileFilterOpen(false)}
                 className="p-1 text-slate-400 hover:text-slate-600"
@@ -438,9 +443,9 @@ export const Dashboard: React.FC = () => {
             />
             <Button 
               onClick={() => setIsMobileFilterOpen(false)}
-              className="w-full bg-blue-600 text-white rounded-xl text-xs font-bold py-3"
+              className="w-full bg-blue-600 text-white rounded-xl text-xs font-bold py-3 cursor-pointer"
             >
-              Áp dụng bộ lọc
+              {t('dashboard.applyFilter')}
             </Button>
           </div>
         </div>

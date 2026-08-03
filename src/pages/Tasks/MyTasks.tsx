@@ -1,6 +1,7 @@
 import React, { useState, useRef, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { taskService } from '@/services/task.service';
 import { projectService } from '@/services/project.service';
 import { JobSwimlaneBoard, type ProjectGroup } from './components/JobSwimlaneBoard';
@@ -33,6 +34,7 @@ const getSavedCollapsed = (): Record<string, boolean> => {
 };
 
 export const MyTasks: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [viewMode, setViewMode] = useState<'board' | 'list'>('board');
@@ -130,7 +132,7 @@ export const MyTasks: React.FC = () => {
     },
     onError: (_err, _variables, context: any) => {
       queryClient.setQueryData(['joined-tasks'], context.previousTasks);
-      toast.error('Cập nhật trạng thái nhiệm vụ thất bại');
+      toast.error(t('myTasks.statusUpdateFailed'));
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['joined-tasks'] });
@@ -141,7 +143,7 @@ export const MyTasks: React.FC = () => {
     mutationFn: ({ projectId, data }: { projectId: string, data: any }) =>
       taskService.createTask(projectId, data),
     onSuccess: () => {
-      toast.success('Đã tạo task mới thành công!');
+      toast.success(t('myTasks.createTaskSuccess'));
       setIsCreateTaskOpen(false);
       setNewTaskTitle('');
       setNewTaskBudget('');
@@ -150,7 +152,7 @@ export const MyTasks: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['owned-projects'] });
     },
     onError: (err: any) => {
-      toast.error(err?.response?.data?.message || 'Không thể tạo task. Vui lòng kiểm tra quyền hạn.');
+      toast.error(err?.response?.data?.message || t('myTasks.createTaskError'));
     }
   });
 
@@ -166,7 +168,7 @@ export const MyTasks: React.FC = () => {
   const handleCreateTaskSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!targetProjectId || !newTaskTitle.trim()) {
-      toast.error('Vui lòng nhập tiêu đề task');
+      toast.error(t('myTasks.enterTaskTitle'));
       return;
     }
 
@@ -197,7 +199,7 @@ export const MyTasks: React.FC = () => {
       map.set(p.id, {
         id: p.id,
         title: p.title,
-        companyName: p.companyName || p.owner?.companyName || 'Dự án của tôi (PM)',
+        companyName: p.companyName || p.owner?.companyName || t('myTasks.myJobPM'),
         currency: p.currency || 'VND',
         budget: Number(p.budget || 0),
         status: p.status || 'IN_PROGRESS',
@@ -213,7 +215,7 @@ export const MyTasks: React.FC = () => {
         map.set(p.id, {
           id: p.id,
           title: p.title,
-          companyName: p.companyName || 'Dự án tham gia',
+          companyName: p.companyName || t('myTasks.joinedJob'),
           currency: p.currency || 'VND',
           budget: Number(p.budget || 0),
           status: p.status || 'IN_PROGRESS',
@@ -226,7 +228,7 @@ export const MyTasks: React.FC = () => {
     // 3. Assign tasks to their respective project group
     joinedTasks.forEach((t: any) => {
       const pId = t.project?.id || t.projectId || 'other_tasks';
-      const pTitle = t.project?.title || 'Nhiệm vụ cá nhân';
+      const pTitle = t.project?.title || t('myTasks.personalTask');
       const pCompany = t.project?.companyName || 'TaskBounty';
       const pCurrency = t.project?.currency || 'VND';
       const pBudget = Number(t.project?.budget || 0);
@@ -296,7 +298,7 @@ export const MyTasks: React.FC = () => {
         inProgress: totalInProgressCount
       }
     };
-  }, [joinedTasks, joinedProjects, ownedProjects, taskSearch, statusFilter]);
+  }, [joinedTasks, joinedProjects, ownedProjects, taskSearch, statusFilter, t]);
 
   const allCollapsed = allProjectIds.length > 0 && allProjectIds.every(id => Boolean(collapsedMap[id]));
 
@@ -317,11 +319,11 @@ export const MyTasks: React.FC = () => {
               </div>
               <div>
                 <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-                  My Tasks & Workspace
+                  {t('myTasks.title')}
                   {isLoading && <Loader2 size={18} className="animate-spin text-blue-500" />}
                 </h1>
                 <p className="text-xs text-slate-400 font-medium">
-                  Quản lý và kéo thả các nhiệm vụ theo từng Job bạn đang tham gia.
+                  {t('myTasks.subtitle')}
                 </p>
               </div>
             </div>
@@ -330,15 +332,15 @@ export const MyTasks: React.FC = () => {
             <div className="flex flex-wrap items-center gap-2 pt-1">
               <span className="text-xs font-bold px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center gap-1.5 border border-slate-200/60 dark:border-slate-700">
                 <Briefcase className="w-3.5 h-3.5 text-blue-500" />
-                <span>{totalStats.jobs} Job đang làm</span>
+                <span>{t('myTasks.jobsActive', { count: totalStats.jobs })}</span>
               </span>
               <span className="text-xs font-bold px-3 py-1 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 flex items-center gap-1.5 border border-blue-200/60 dark:border-blue-800">
                 <Clock className="w-3.5 h-3.5 text-blue-600" />
-                <span>{totalStats.inProgress} Đang làm</span>
+                <span>{t('myTasks.inProgress', { count: totalStats.inProgress })}</span>
               </span>
               <span className="text-xs font-bold px-3 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5 border border-emerald-200/60 dark:border-emerald-800">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                <span>{totalStats.done}/{totalStats.tasks} Hoàn thành</span>
+                <span>{t('myTasks.completed', { done: totalStats.done, total: totalStats.tasks })}</span>
               </span>
             </div>
           </div>
@@ -353,7 +355,7 @@ export const MyTasks: React.FC = () => {
               className="text-xs font-bold px-3.5 py-2 rounded-xl border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-1.5"
             >
               <ChevronsUpDown size={14} />
-              <span>{allCollapsed ? 'Mở rộng tất cả' : 'Thu gọn tất cả'}</span>
+              <span>{allCollapsed ? t('myTasks.expandAll') : t('myTasks.collapseAll')}</span>
             </Button>
 
             {/* + Tạo Job Mới Button */}
@@ -362,7 +364,7 @@ export const MyTasks: React.FC = () => {
               className="bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs px-4 py-2 rounded-xl shadow-md shadow-blue-500/20 flex items-center gap-1.5 cursor-pointer"
             >
               <PlusCircle size={15} />
-              <span>+ Tạo Job Mới</span>
+              <span>{t('myTasks.createNewJob')}</span>
             </Button>
 
             {/* View Mode Toggle */}
@@ -374,10 +376,10 @@ export const MyTasks: React.FC = () => {
                     ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-xs' 
                     : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
                 }`}
-                title="Xem dạng Swimlane theo Job"
+                title="Board View"
               >
                 <LayoutGrid size={14} />
-                <span>Board</span>
+                <span>{t('myTasks.boardView')}</span>
               </button>
               <button 
                 onClick={() => setViewMode('list')}
@@ -386,10 +388,10 @@ export const MyTasks: React.FC = () => {
                     ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-xs' 
                     : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
                 }`}
-                title="Xem dạng danh sách"
+                title="List View"
               >
                 <List size={14} />
-                <span>List</span>
+                <span>{t('myTasks.listView')}</span>
               </button>
             </div>
           </div>
@@ -404,7 +406,7 @@ export const MyTasks: React.FC = () => {
               type="text"
               value={taskSearch}
               onChange={(e) => setTaskSearch(e.target.value)}
-              placeholder="Lọc nhanh tên nhiệm vụ..."
+              placeholder={t('myTasks.searchPlaceholder')}
               className="w-full h-9 pl-9 pr-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500 transition-colors"
             />
           </div>
@@ -412,11 +414,11 @@ export const MyTasks: React.FC = () => {
           {/* Status Filter Tabs */}
           <div className="flex items-center gap-1 overflow-x-auto custom-scrollbar">
             {[
-              { id: 'ALL', label: 'Tất cả trạng thái' },
-              { id: 'OPEN', label: 'To Do' },
-              { id: 'IN_PROGRESS', label: 'In Progress' },
-              { id: 'REVIEW', label: 'In Review' },
-              { id: 'DONE', label: 'Done' },
+              { id: 'ALL', label: t('myTasks.statusAll') },
+              { id: 'OPEN', label: t('myTasks.statusTodo') },
+              { id: 'IN_PROGRESS', label: t('myTasks.statusInProgress') },
+              { id: 'REVIEW', label: t('myTasks.statusReview') },
+              { id: 'DONE', label: t('myTasks.statusDone') },
             ].map(tab => (
               <button
                 key={tab.id}
@@ -441,7 +443,7 @@ export const MyTasks: React.FC = () => {
         {isLoading && !tasksData ? (
           <div className="h-64 flex flex-col items-center justify-center gap-3 text-slate-400 font-bold">
             <Loader2 size={32} className="animate-spin text-blue-600" />
-            <span>Đang tải không gian làm việc của bạn...</span>
+            <span>{t('myTasks.loadingWorkspace')}</span>
           </div>
         ) : viewMode === 'board' ? (
           <JobSwimlaneBoard 
@@ -471,7 +473,7 @@ export const MyTasks: React.FC = () => {
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
                 <PlusCircle className="w-5 h-5 text-blue-600" />
-                <span>Thêm Task Mới Vào Job</span>
+                <span>{t('myTasks.createTaskModalTitle')}</span>
               </h3>
               <button 
                 onClick={() => setIsCreateTaskOpen(false)}
@@ -484,14 +486,14 @@ export const MyTasks: React.FC = () => {
             <form onSubmit={handleCreateTaskSubmit} className="space-y-3.5">
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Chọn Job / Dự án *
+                  {t('myTasks.selectJob')}
                 </label>
                 <select
                   value={targetProjectId}
                   onChange={(e) => setTargetProjectId(e.target.value)}
                   className="w-full h-10 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
                 >
-                  <option value="">-- Chọn Job --</option>
+                  <option value="">{t('myTasks.chooseJobPlaceholder')}</option>
                   {projectGroups.map(g => (
                     <option key={g.id} value={g.id}>
                       {g.title} ({g.companyName})
@@ -502,12 +504,12 @@ export const MyTasks: React.FC = () => {
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Tiêu đề Task *
+                  {t('myTasks.taskTitle')}
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="Ví dụ: Thiết kế giao diện thanh toán ví PayOS..."
+                  placeholder={t('myTasks.taskTitlePlaceholder')}
                   value={newTaskTitle}
                   onChange={(e) => setNewTaskTitle(e.target.value)}
                   className="w-full h-10 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500"
@@ -516,13 +518,13 @@ export const MyTasks: React.FC = () => {
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Thưởng Bounty Task (VND)
+                  {t('myTasks.taskBounty')}
                 </label>
                 <div className="relative">
                   <Coins className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input
                     type="number"
-                    placeholder="Ví dụ: 2000000"
+                    placeholder={t('myTasks.taskBountyPlaceholder')}
                     value={newTaskBudget}
                     onChange={(e) => setNewTaskBudget(e.target.value)}
                     className="w-full h-10 pl-9 pr-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500"
@@ -532,11 +534,11 @@ export const MyTasks: React.FC = () => {
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Mô tả công việc (Tùy chọn)
+                  {t('myTasks.taskDescription')}
                 </label>
                 <textarea
                   rows={3}
-                  placeholder="Chi tiết yêu cầu, tiêu chí hoàn thành..."
+                  placeholder={t('myTasks.taskDescPlaceholder')}
                   value={newTaskDescription}
                   onChange={(e) => setNewTaskDescription(e.target.value)}
                   className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500 resize-none"
@@ -550,7 +552,7 @@ export const MyTasks: React.FC = () => {
                   onClick={() => setIsCreateTaskOpen(false)}
                   className="text-xs font-bold px-4 py-2 rounded-xl"
                 >
-                  Hủy
+                  {t('myTasks.cancel')}
                 </Button>
                 <Button
                   type="submit"
@@ -558,7 +560,7 @@ export const MyTasks: React.FC = () => {
                   className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-5 py-2 rounded-xl flex items-center gap-1.5"
                 >
                   {createTaskMutation.isPending && <Loader2 size={14} className="animate-spin" />}
-                  <span>Tạo Task Ngay</span>
+                  <span>{t('myTasks.createTaskBtn')}</span>
                 </Button>
               </div>
             </form>

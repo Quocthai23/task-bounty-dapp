@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { metadataService } from '@/services/metadata.service';
 import { 
   Dialog, 
@@ -46,6 +47,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
   onClose,
   onSubmit,
 }) => {
+  const { t } = useTranslation();
   const { data: dynamicSkills } = useQuery({
     queryKey: ['metadata-skills'],
     queryFn: () => metadataService.getSkills(),
@@ -88,11 +90,11 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
     const clean = emailInput.trim().toLowerCase();
     if (!clean) return;
     if (!clean.includes('@') || !clean.includes('.')) {
-      toast.error('Vui lòng nhập định dạng email hợp lệ');
+      toast.error(t('createProjectModal.validationEmailFormat'));
       return;
     }
     if (emails.includes(clean)) {
-      toast.error('Email này đã có trong danh sách');
+      toast.error(t('createProjectModal.validationEmailExists'));
       return;
     }
     setEmails([...emails, clean]);
@@ -113,11 +115,11 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
     e.preventDefault();
 
     if (!title.trim()) {
-      toast.error('Vui lòng nhập tiêu đề dự án');
+      toast.error(t('createProjectModal.validationTitle'));
       return;
     }
     if (!description.trim()) {
-      toast.error('Vui lòng nhập mô tả dự án');
+      toast.error(t('createProjectModal.validationDesc'));
       return;
     }
 
@@ -139,7 +141,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
 
       await onSubmit(payload);
 
-      toast.success('Khởi tạo dự án thành công!');
+      toast.success(t('createProjectModal.createSuccess'));
       onClose();
 
       // Reset
@@ -158,7 +160,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
       if (Array.isArray(errorMsg)) {
         toast.error(errorMsg.join(' • '));
       } else {
-        toast.error(errorMsg || 'Không thể tạo dự án. Vui lòng kiểm tra lại.');
+        toast.error(errorMsg || t('createProjectModal.createError'));
       }
     } finally {
       setIsSubmitting(false);
@@ -175,10 +177,10 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
         <div className="flex items-center justify-between px-8 py-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
           <div>
             <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-              Tạo Dự Án / Tuyển Dụng Mới
+              {t('createProjectModal.title')}
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              Thiết lập thông tin dự án, ngân sách bảo chứng và phân quyền thành viên
+              {t('createProjectModal.subtitle')}
             </p>
           </div>
 
@@ -199,28 +201,28 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
               {/* Title */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
-                  Tên Dự Án / Vị Trí Tuyển Dụng <span className="text-rose-500">*</span>
+                  {t('createProjectModal.projectName')} <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="VD: Xây dựng Hệ thống Thanh toán Fiat-Crypto Bridge"
+                  placeholder={t('createProjectModal.namePlaceholder')}
                   className="w-full px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white transition-all font-medium"
                   required
                 />
 
                 {/* Suggestions */}
                 <div className="flex flex-wrap items-center gap-1.5 mt-2">
-                  <span className="text-[11px] text-slate-400 font-medium">Gợi ý:</span>
-                  {SAMPLE_TITLES.map((t, idx) => (
+                  <span className="text-[11px] text-slate-400 font-medium">{t('createProjectModal.suggestions')}</span>
+                  {SAMPLE_TITLES.map((tText, idx) => (
                     <button
                       type="button"
                       key={idx}
-                      onClick={() => setTitle(t)}
+                      onClick={() => setTitle(tText)}
                       className="text-[11px] font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-2 py-0.5 rounded-md transition-colors"
                     >
-                      {t}
+                      {tText}
                     </button>
                   ))}
                 </div>
@@ -229,13 +231,13 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
               {/* Description */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
-                  Mô Tả Mục Tiêu & Yêu Cầu Dự Án <span className="text-rose-500">*</span>
+                  {t('createProjectModal.descLabel')} <span className="text-rose-500">*</span>
                 </label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   rows={5}
-                  placeholder="Mô tả chi tiết mục tiêu dự án, sản phẩm đầu ra, kiến trúc kỹ thuật hoặc tiêu chuẩn nghiệm thu nhiệm vụ..."
+                  placeholder={t('createProjectModal.descPlaceholder')}
                   className="w-full p-3.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white transition-all leading-relaxed"
                   required
                 />
@@ -244,7 +246,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
               {/* Required Skills */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
-                  Kỹ Năng Yêu Cầu (Tech Stack)
+                  {t('createProjectModal.skillsLabel')}
                 </label>
                 <div className="flex flex-wrap gap-1.5 mb-2.5 max-h-36 overflow-y-auto custom-scrollbar pr-1">
                   {availableSkills.map((skill: string) => {
@@ -277,7 +279,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                         handleAddCustomSkill();
                       }
                     }}
-                    placeholder="Thêm kỹ năng khác (Enter để thêm)..."
+                    placeholder={t('createProjectModal.customSkillPlaceholder')}
                     className="flex-1 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white"
                   />
                   <Button
@@ -286,7 +288,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                     variant="neutral-outline"
                     className="rounded-xl text-xs px-3 py-1.5"
                   >
-                    Thêm
+                    {t('createProjectModal.addBtn')}
                   </Button>
                 </div>
               </div>
@@ -297,7 +299,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
               {/* Budget & Currency */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
-                  Ngân Sách Bảo Chứng Dự Án
+                  {t('createProjectModal.budgetLabel')}
                 </label>
                 <div className="flex gap-2">
                   <select
@@ -342,14 +344,14 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                   ))}
                 </div>
                 <span className="text-[11px] text-slate-400 dark:text-slate-500 block mt-1.5">
-                  Khóa cố định khi có ứng viên apply nhằm đảm bảo minh bạch.
+                  {t('createProjectModal.budgetNote')}
                 </span>
               </div>
 
               {/* Max Members Stepper */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
-                  Số Lượng Thành Viên Tối Đa
+                  {t('createProjectModal.maxMembersLabel')}
                 </label>
                 <div className="flex items-center gap-3 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 p-1.5 rounded-xl">
                   <button
@@ -360,7 +362,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                     -
                   </button>
                   <div className="flex-1 text-center font-bold text-sm">
-                    {maxMembers} <span className="text-xs font-normal text-slate-500">thành viên</span>
+                    {maxMembers} <span className="text-xs font-normal text-slate-500">{t('createProjectModal.membersUnit')}</span>
                   </div>
                   <button
                     type="button"
@@ -375,7 +377,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
               {/* Project Type */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
-                  Chế Độ Dự Án
+                  {t('createProjectModal.modeLabel')}
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   <button
@@ -390,7 +392,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                     <div className="flex items-center gap-1.5 font-bold text-xs">
                       <Globe className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" /> Public
                     </div>
-                    <div className="text-[10px] text-slate-500 mt-0.5">Mở tuyển ngoài cộng đồng</div>
+                    <div className="text-[10px] text-slate-500 mt-0.5">{t('createProjectModal.publicDesc')}</div>
                   </button>
 
                   <button
@@ -405,7 +407,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                     <div className="flex items-center gap-1.5 font-bold text-xs">
                       <Lock className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" /> Private
                     </div>
-                    <div className="text-[10px] text-slate-500 mt-0.5">Chỉ mời qua email</div>
+                    <div className="text-[10px] text-slate-500 mt-0.5">{t('createProjectModal.privateDesc')}</div>
                   </button>
                 </div>
               </div>
@@ -413,7 +415,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
               {/* Deadline */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
-                  Hạn Chót Hoàn Thành (Deadline)
+                  {t('createProjectModal.deadlineLabel')}
                 </label>
                 <input
                   type="date"
@@ -429,7 +431,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                       onClick={() => handleSetDeadlineDays(d)}
                       className="text-[10px] font-medium text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-800 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700 hover:border-slate-400"
                     >
-                      +{d} ngày
+                      {t('createProjectModal.days', { count: d })}
                     </button>
                   ))}
                   {deadline && (
@@ -438,7 +440,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                       onClick={() => setDeadline('')}
                       className="text-[10px] font-medium text-rose-500 hover:underline ml-auto"
                     >
-                      Xóa hạn
+                      {t('createProjectModal.clearDeadline')}
                     </button>
                   )}
                 </div>
@@ -447,7 +449,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
               {/* Invite via Email */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
-                  Gán Email Thành Viên (Tùy chọn)
+                  {t('createProjectModal.inviteEmailLabel')}
                 </label>
                 <div className="flex gap-1.5">
                   <input
@@ -460,7 +462,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                         handleAddEmail();
                       }
                     }}
-                    placeholder="user@example.com"
+                    placeholder={t('createProjectModal.emailPlaceholder')}
                     className="flex-1 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none"
                   />
                   <Button
@@ -468,7 +470,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                     onClick={handleAddEmail}
                     className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl text-xs px-3"
                   >
-                    Thêm
+                    {t('createProjectModal.addBtn')}
                   </Button>
                 </div>
 
@@ -504,7 +506,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
               disabled={isSubmitting}
               className="rounded-xl text-xs font-bold px-5 py-2.5"
             >
-              Hủy Bỏ
+              {t('createProjectModal.cancel')}
             </Button>
 
             <Button
@@ -512,7 +514,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
               disabled={isSubmitting}
               className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 text-white font-bold text-xs px-7 py-2.5 rounded-xl shadow-sm transition-all"
             >
-              {isSubmitting ? 'Đang Khởi Tạo...' : 'Khởi Tạo Dự Án'}
+              {isSubmitting ? t('createProjectModal.creating') : t('createProjectModal.create')}
             </Button>
           </div>
         </form>
@@ -520,3 +522,4 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
     </Dialog>
   );
 };
+

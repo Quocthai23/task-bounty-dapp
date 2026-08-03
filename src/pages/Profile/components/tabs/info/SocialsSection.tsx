@@ -43,13 +43,13 @@ export const SocialsSection = ({ user }: { user: any }) => {
   };
 
   return (
-    <Card className="shadow-lg border-neutral-100/50 bg-white/80 backdrop-blur-xl">
-      <CardHeader className="border-b border-neutral-100 pb-4 flex justify-between flex-row items-center">
-        <CardTitle className="text-xl font-black">Social Profiles</CardTitle>
+    <Card className="shadow-lg border-neutral-100/50 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl">
+      <CardHeader className="border-b border-neutral-100 dark:border-slate-800 pb-4 flex justify-between flex-row items-center">
+        <CardTitle className="text-xl font-black text-slate-900 dark:text-white">Social Profiles</CardTitle>
         {!isEditingSocials && (
           <button 
             onClick={() => setIsEditingSocials(true)}
-            className="text-sm font-bold text-primary-600 hover:text-primary-700 transition-colors"
+            className="text-sm font-bold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors cursor-pointer"
           >
             Edit
           </button>
@@ -60,7 +60,7 @@ export const SocialsSection = ({ user }: { user: any }) => {
           <div className="space-y-4">
             {Object.keys(defaultSocials).map(network => (
               <div key={network} className="space-y-1.5">
-                <label className="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-2">
+                <label className="text-xs font-bold text-neutral-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-2">
                   {socialIcons[network]} {network}
                 </label>
                 <Input
@@ -68,13 +68,13 @@ export const SocialsSection = ({ user }: { user: any }) => {
                   value={(socials as any)[network] || ''}
                   onChange={(e) => setSocials({ ...socials, [network]: e.target.value })}
                   placeholder={`https://${network}.com/`}
-                  className="bg-neutral-50"
+                  className="bg-neutral-50 dark:bg-slate-800 border-neutral-200 dark:border-slate-700 text-slate-900 dark:text-white"
                 />
               </div>
             ))}
             <div className="flex gap-2 pt-2">
               <Button onClick={() => socialsMutation.mutate(socials)} className="flex-1 font-bold">Save</Button>
-              <Button variant="outline" onClick={() => setIsEditingSocials(false)} className="flex-1">Cancel</Button>
+              <Button variant="outline" onClick={() => setIsEditingSocials(false)} className="flex-1 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">Cancel</Button>
             </div>
           </div>
         ) : (
@@ -82,18 +82,18 @@ export const SocialsSection = ({ user }: { user: any }) => {
             {Object.keys(defaultSocials).map(network => {
               const hasLink = !!(socials as any)[network];
               return (
-                <div key={network} className="flex items-center gap-4 p-3 rounded-xl hover:bg-neutral-50 transition-colors group">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${hasLink ? 'bg-primary-50 text-primary-600' : 'bg-neutral-100 text-neutral-400'}`}>
+                <div key={network} className="flex items-center gap-4 p-3 rounded-xl hover:bg-neutral-50 dark:hover:bg-slate-800 transition-colors group">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${hasLink ? 'bg-primary-50 dark:bg-primary-950/50 text-primary-600 dark:text-primary-400' : 'bg-neutral-100 dark:bg-slate-800 text-neutral-400 dark:text-slate-500'}`}>
                     {socialIcons[network]}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-bold text-neutral-900 capitalize">{network}</p>
+                    <p className="text-sm font-bold text-neutral-900 dark:text-white capitalize">{network}</p>
                     {hasLink ? (
-                      <a href={(socials as any)[network]} target="_blank" rel="noreferrer" className="text-xs font-medium text-neutral-500 hover:text-primary-600 truncate block">
+                      <a href={(socials as any)[network]} target="_blank" rel="noreferrer" className="text-xs font-medium text-neutral-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 truncate block">
                         {(socials as any)[network]}
                       </a>
                     ) : (
-                      <p className="text-xs font-medium text-neutral-400 italic">Not connected</p>
+                      <p className="text-xs font-medium text-neutral-400 dark:text-slate-500 italic">Not connected</p>
                     )}
                   </div>
                 </div>

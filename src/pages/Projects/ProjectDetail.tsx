@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { projectService } from '@/services/project.service';
 import { useAuthStore } from '@/store/authStore';
 import { Badge } from '@/components/shared/atoms/badge';
@@ -23,6 +24,7 @@ import {
 import { toast } from 'sonner';
 
 export const ProjectDetail: React.FC = () => {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -41,19 +43,19 @@ export const ProjectDetail: React.FC = () => {
     mutationFn: (data: any) => projectService.applyForProject(id!, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['project-detail', id] });
-      toast.success('Gửi hồ sơ ứng tuyển thành công! PM sẽ xem xét và phê duyệt.');
+      toast.success(t('projects.applySuccess'));
       setIsApplyModalOpen(false);
       setCoverLetter('');
     },
     onError: (err: any) => {
-      toast.error(err?.response?.data?.message || 'Không thể gửi hồ sơ ứng tuyển');
+      toast.error(err?.response?.data?.message || t('projects.applyError'));
     }
   });
 
   if (isLoading) {
     return (
       <div className="w-full max-w-7xl mx-auto p-12 text-center text-slate-400 font-bold">
-        Đang tải thông tin dự án...
+        {t('projects.loadingProject')}
       </div>
     );
   }
@@ -61,7 +63,7 @@ export const ProjectDetail: React.FC = () => {
   if (error || !project) {
     return (
       <div className="w-full max-w-7xl mx-auto p-12 text-center text-rose-500 font-bold">
-        Không tìm thấy dự án
+        {t('projects.projectNotFound')}
       </div>
     );
   }
@@ -86,7 +88,7 @@ export const ProjectDetail: React.FC = () => {
         onClick={() => navigate(-1)}
         className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
       >
-        <ArrowLeft className="w-4 h-4" /> Quay lại
+        <ArrowLeft className="w-4 h-4" /> {t('projects.back')}
       </button>
 
       {/* Main Banner */}
@@ -116,7 +118,7 @@ export const ProjectDetail: React.FC = () => {
               onClick={() => navigate(`/manage-jobs/${project.id}`)}
               className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 text-white font-bold text-xs rounded-xl px-5 py-3 shadow-md shadow-blue-600/20 flex items-center gap-2 shrink-0"
             >
-              <Sliders className="w-4 h-4" /> Trang Quản Trị PM
+              <Sliders className="w-4 h-4" /> {t('projects.pmDashboard')}
             </Button>
           )}
         </div>
@@ -124,7 +126,7 @@ export const ProjectDetail: React.FC = () => {
         {/* Highlight Stats Row */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-6 border-y border-slate-100 dark:border-slate-800">
           <div>
-            <span className="text-[11px] text-slate-400 uppercase tracking-wider font-bold">Chủ Dự Án / PM</span>
+            <span className="text-[11px] text-slate-400 uppercase tracking-wider font-bold">{t('projects.projectOwnerPm')}</span>
             <div className="text-sm font-bold text-slate-900 dark:text-white mt-1">
               {project.owner?.firstName && project.owner?.lastName 
                 ? `${project.owner.firstName} ${project.owner.lastName}` 
@@ -133,26 +135,26 @@ export const ProjectDetail: React.FC = () => {
           </div>
 
           <div>
-            <span className="text-[11px] text-slate-400 uppercase tracking-wider font-bold">Ngân Sách Bảo Chứng</span>
+            <span className="text-[11px] text-slate-400 uppercase tracking-wider font-bold">{t('projects.escrowBudget')}</span>
             <div className="text-xl font-black font-mono text-emerald-600 dark:text-emerald-400 mt-0.5">
               ${(project.budget || 0).toLocaleString()} {project.currency || 'USD'}
             </div>
           </div>
 
           <div>
-            <span className="text-[11px] text-slate-400 uppercase tracking-wider font-bold">Quy Mô Đội Ngũ</span>
+            <span className="text-[11px] text-slate-400 uppercase tracking-wider font-bold">{t('projects.teamScale')}</span>
             <div className="text-sm font-bold text-purple-600 dark:text-purple-400 mt-1">
-              {members.length} / {project.maxMembers || 5} Thành viên
+              {t('projects.membersCount', { current: members.length, max: project.maxMembers || 5 })}
             </div>
           </div>
 
           <div>
-            <span className="text-[11px] text-slate-400 uppercase tracking-wider font-bold">Tình Trạng Tuyển</span>
+            <span className="text-[11px] text-slate-400 uppercase tracking-wider font-bold">{t('projects.hiringStatus')}</span>
             <div className="text-sm font-bold mt-1">
               {project.isRecruiting && members.length < (project.maxMembers || 5) ? (
-                <span className="text-emerald-600">● Đang mở tuyển</span>
+                <span className="text-emerald-600">{t('projects.recruitingOpen')}</span>
               ) : (
-                <span className="text-slate-400">● Đã đủ thành viên</span>
+                <span className="text-slate-400">{t('projects.recruitingFull')}</span>
               )}
             </div>
           </div>
@@ -161,7 +163,7 @@ export const ProjectDetail: React.FC = () => {
         {/* Skills Required */}
         {skills.length > 0 && (
           <div className="space-y-2">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Kỹ Năng Yêu Cầu</span>
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t('projects.skillsRequired')}</span>
             <div className="flex flex-wrap gap-2">
               {skills.map((s, idx) => (
                 <span key={idx} className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold rounded-xl border border-slate-200/80 dark:border-slate-700">
@@ -176,19 +178,19 @@ export const ProjectDetail: React.FC = () => {
         <div className="flex items-center gap-4 pt-2">
           {!isMember && (
             hasApplied ? (
-              <Button disabled className="bg-amber-100 text-amber-800 border border-amber-300 rounded-xl text-xs font-bold px-6 py-2.5">
-                <CheckCircle2 className="w-4 h-4 mr-1.5" /> Bạn Đã Nộp Đơn (Đang Chờ PM Duyệt)
+              <Button disabled className="bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800 rounded-xl text-xs font-bold px-6 py-2.5">
+                <CheckCircle2 className="w-4 h-4 mr-1.5" /> {t('projects.appliedWaiting')}
               </Button>
             ) : project.isRecruiting && members.length < (project.maxMembers || 5) ? (
               <Button
                 onClick={() => setIsApplyModalOpen(true)}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl px-6 py-2.5 shadow-md shadow-emerald-600/20 flex items-center gap-2"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl px-6 py-2.5 shadow-md shadow-emerald-600/20 flex items-center gap-2 cursor-pointer"
               >
-                <Send className="w-4 h-4" /> Ứng Tuyển Vào Dự Án Ngay
+                <Send className="w-4 h-4" /> {t('projects.applyNow')}
               </Button>
             ) : (
-              <Button disabled className="bg-slate-100 text-slate-400 rounded-xl text-xs font-bold px-6 py-2.5">
-                Dự Án Đã Đủ Thành Viên
+              <Button disabled className="bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 rounded-xl text-xs font-bold px-6 py-2.5">
+                {t('projects.teamFull')}
               </Button>
             )
           )}
@@ -198,8 +200,8 @@ export const ProjectDetail: React.FC = () => {
       {/* Task Roadmap List */}
       <div className="space-y-4">
         <div>
-          <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Kế Hoạch & Danh Sách Nhiệm Vụ</h2>
-          <p className="text-xs text-slate-500 mt-0.5">Các đầu việc và mức thưởng bounty dành cho thành viên dự án</p>
+          <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">{t('projects.taskRoadmapTitle')}</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t('projects.taskRoadmapDesc')}</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -207,14 +209,14 @@ export const ProjectDetail: React.FC = () => {
             <div key={task.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 shadow-sm space-y-3">
               <div className="flex justify-between items-center">
                 <Badge className={`text-[10px] font-bold ${
-                  task.status === 'DONE' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-700'
+                  task.status === 'DONE' ? 'bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
                 }`}>
                   {task.status}
                 </Badge>
-                <span className="font-mono font-bold text-xs text-emerald-600">${task.budget || 0}</span>
+                <span className="font-mono font-bold text-xs text-emerald-600 dark:text-emerald-400">${task.budget || 0}</span>
               </div>
               <h3 className="font-bold text-slate-900 dark:text-white text-sm">{task.title}</h3>
-              {task.description && <p className="text-xs text-slate-500 line-clamp-2">{task.description}</p>}
+              {task.description && <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">{task.description}</p>}
             </div>
           ))}
         </div>
@@ -224,22 +226,22 @@ export const ProjectDetail: React.FC = () => {
       <Dialog open={isApplyModalOpen} onOpenChange={setIsApplyModalOpen}>
         <DialogContent className="max-w-lg p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl">
           <DialogHeader>
-            <DialogTitle className="text-xl font-black">Ứng Tuyển Vào Dự Án</DialogTitle>
+            <DialogTitle className="text-xl font-black text-slate-900 dark:text-white">{t('projects.applyModalTitle')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
-            <p className="text-xs text-slate-500 leading-relaxed">
-              Hồ sơ cá nhân, kỹ năng và kinh nghiệm từ trang Profile của bạn sẽ được gửi tới PM của dự án <strong>{project.title}</strong>.
+            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+              {t('projects.applyModalDesc')} <strong>{project.title}</strong>.
             </p>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
-                Thư Giới Thiệu / Lời Nhắn Đến PM (Cover Letter)
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1">
+                {t('projects.coverLetterLabel')}
               </label>
               <textarea
                 value={coverLetter}
                 onChange={(e) => setCoverLetter(e.target.value)}
                 rows={4}
-                placeholder="Giới thiệu nhanh về thế mạnh, kinh nghiệm liên quan và lý do bạn muốn tham gia dự án..."
+                placeholder={t('projects.coverLetterPlaceholder')}
                 className="w-full p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 leading-relaxed"
               />
             </div>
@@ -250,7 +252,7 @@ export const ProjectDetail: React.FC = () => {
               className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl py-3 flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20"
             >
               <Send className="w-4 h-4" />
-              {applyMutation.isPending ? 'Đang Gửi Hồ Sơ...' : 'Xác Nhận Nộp Đơn'}
+              {applyMutation.isPending ? t('projects.submitting') : t('projects.confirmApply')}
             </Button>
           </div>
         </DialogContent>

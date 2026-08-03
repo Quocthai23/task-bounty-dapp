@@ -1,5 +1,6 @@
 import React from 'react';
 import { Slider } from '@/components/shared/atoms/slider';
+import { useTranslation } from 'react-i18next';
 import { 
   Filter, 
   RotateCcw, 
@@ -45,14 +46,6 @@ const POSITION_ICONS: Record<string, string> = {
   'Database': '🗄️'
 };
 
-const DEFAULT_BUDGET_PRESETS = [
-  { label: 'Tất cả', min: '', max: '' },
-  { label: '< 5 Tr', min: '0', max: '5000000' },
-  { label: '5M - 20M', min: '5000000', max: '20000000' },
-  { label: '20M - 50M', min: '20000000', max: '50000000' },
-  { label: '> 50 Tr', min: '50000000', max: '' },
-];
-
 export const JobFilter: React.FC<JobFilterProps> = ({
   positions = [],
   skills = [],
@@ -69,7 +62,17 @@ export const JobFilter: React.FC<JobFilterProps> = ({
   budgetPresets,
   budgetMax = 100000000,
 }) => {
-  const activePresets = budgetPresets && budgetPresets.length > 0 ? budgetPresets : DEFAULT_BUDGET_PRESETS;
+  const { t } = useTranslation();
+
+  const defaultPresets = [
+    { label: t('filter.budgetPresetsAll'), min: '', max: '' },
+    { label: t('filter.budgetPresetsUnder5M'), min: '0', max: '5000000' },
+    { label: t('filter.budgetPresets5to20M'), min: '5000000', max: '20000000' },
+    { label: t('filter.budgetPresets20to50M'), min: '20000000', max: '50000000' },
+    { label: t('filter.budgetPresetsOver50M'), min: '50000000', max: '' },
+  ];
+
+  const activePresets = budgetPresets && budgetPresets.length > 0 ? budgetPresets : defaultPresets;
   const toggleSkill = (skill: string) => {
     if (selectedSkills.includes(skill)) {
       setSelectedSkills(selectedSkills.filter(s => s !== skill));
@@ -104,8 +107,8 @@ export const JobFilter: React.FC<JobFilterProps> = ({
             <Filter className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="text-base font-black text-slate-900 dark:text-white">Bộ Lọc Nhiệm Vụ</h3>
-            <p className="text-[11px] text-slate-400">Tìm kiếm cơ hội phù hợp</p>
+            <h3 className="text-base font-black text-slate-900 dark:text-white">{t('filter.filterTitle')}</h3>
+            <p className="text-[11px] text-slate-400">{t('filter.filterSubtitle')}</p>
           </div>
         </div>
 
@@ -113,10 +116,10 @@ export const JobFilter: React.FC<JobFilterProps> = ({
           <button
             onClick={handleReset}
             className="flex items-center gap-1 text-xs font-bold text-rose-600 hover:text-rose-700 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
-            title="Đặt lại toàn bộ bộ lọc"
+            title={t('filter.resetFilters')}
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            <span>Đặt lại</span>
+            <span>{t('filter.resetFilters')}</span>
           </button>
         )}
       </div>
@@ -129,8 +132,8 @@ export const JobFilter: React.FC<JobFilterProps> = ({
               <ShieldCheck className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-xs font-bold text-slate-800 dark:text-slate-200">Đã Ký Quỹ Escrow</div>
-              <div className="text-[10px] text-slate-400">Chỉ việc đã bảo chứng tiền</div>
+              <div className="text-xs font-bold text-slate-800 dark:text-slate-200">{t('filter.escrowOnlyTitle')}</div>
+              <div className="text-[10px] text-slate-400">{t('filter.escrowOnlySubtitle')}</div>
             </div>
           </div>
           <button
@@ -152,14 +155,14 @@ export const JobFilter: React.FC<JobFilterProps> = ({
       <div>
         <div className="flex items-center justify-between mb-3">
           <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-            <Briefcase className="w-3.5 h-3.5 text-blue-500" /> Vị Trí / Chuyên Môn
+            <Briefcase className="w-3.5 h-3.5 text-blue-500" /> {t('filter.positionsTitle')}
           </h4>
           {selectedPosition && (
             <button 
               onClick={() => setSelectedPosition('')}
-              className="text-[11px] text-blue-600 hover:underline font-bold"
+              className="text-[11px] text-blue-600 hover:underline font-bold cursor-pointer"
             >
-              Xem tất cả
+              {t('filter.viewAll')}
             </button>
           )}
         </div>
@@ -192,7 +195,7 @@ export const JobFilter: React.FC<JobFilterProps> = ({
       {/* Price / Bounty Range */}
       <div>
         <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-          <DollarSign className="w-3.5 h-3.5 text-emerald-500" /> Ngân Sách Bounty (VND)
+          <DollarSign className="w-3.5 h-3.5 text-emerald-500" /> {t('filter.budgetTitle')}
         </h4>
 
         {/* Quick Presets */}
@@ -239,7 +242,7 @@ export const JobFilter: React.FC<JobFilterProps> = ({
               type="number" 
               value={minPrice} 
               onChange={(e) => setMinPrice(e.target.value)}
-              placeholder="Từ 0 ₫"
+              placeholder={t('filter.fromPrice')}
               className="w-full text-xs font-mono font-bold text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-center focus:outline-none focus:border-blue-500 transition-colors" 
             />
             <span className="absolute right-2 top-2.5 text-[10px] text-slate-400 font-bold">VND</span>
@@ -249,7 +252,7 @@ export const JobFilter: React.FC<JobFilterProps> = ({
               type="number" 
               value={maxPrice} 
               onChange={(e) => setMaxPrice(e.target.value)}
-              placeholder="Đến Tối đa"
+              placeholder={t('filter.toMaxPrice')}
               className="w-full text-xs font-mono font-bold text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-center focus:outline-none focus:border-blue-500 transition-colors" 
             />
             <span className="absolute right-2 top-2.5 text-[10px] text-slate-400 font-bold">VND</span>
@@ -261,14 +264,14 @@ export const JobFilter: React.FC<JobFilterProps> = ({
       <div>
         <div className="flex items-center justify-between mb-3">
           <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-            <Code2 className="w-3.5 h-3.5 text-purple-500" /> Kỹ Năng Yêu Cầu ({selectedSkills.length})
+            <Code2 className="w-3.5 h-3.5 text-purple-500" /> {t('filter.selectedSkillsCount', { count: selectedSkills.length })}
           </h4>
           {selectedSkills.length > 0 && (
             <button 
               onClick={() => setSelectedSkills([])}
-              className="text-[11px] text-rose-500 hover:underline font-bold"
+              className="text-[11px] text-rose-500 hover:underline font-bold cursor-pointer"
             >
-              Xóa chọn
+              {t('filter.clearSkills')}
             </button>
           )}
         </div>
@@ -298,3 +301,4 @@ export const JobFilter: React.FC<JobFilterProps> = ({
   );
 };
 export default JobFilter;
+

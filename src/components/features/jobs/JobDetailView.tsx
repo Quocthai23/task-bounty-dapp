@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { format, formatDistanceToNow } from 'date-fns';
-import { vi } from 'date-fns/locale';
+import { vi, enUS } from 'date-fns/locale';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { projectService } from '@/services/project.service';
@@ -8,6 +8,7 @@ import { userService } from '@/services/user.service';
 import { Button } from '@/components/shared/atoms/button';
 import { SheetHeader, SheetTitle } from '@/components/shared/atoms/sheet';
 import ReactMarkdown from 'react-markdown';
+import { useTranslation } from 'react-i18next';
 import { 
   CheckCircle2, 
   CircleDashed, 
@@ -43,6 +44,7 @@ interface JobDetailViewProps {
 export const JobDetailView: React.FC<JobDetailViewProps> = ({ job: initialJob }) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { t, i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState<'overview' | 'tasks' | 'team' | 'escrow'>('overview');
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
   const [coverLetter, setCoverLetter] = useState('');
@@ -64,14 +66,14 @@ export const JobDetailView: React.FC<JobDetailViewProps> = ({ job: initialJob })
   const applyMutation = useMutation({
     mutationFn: (text: string) => projectService.applyForProject(project.id, { coverLetter: text }),
     onSuccess: () => {
-      toast.success('🎉 Đã nộp hồ sơ ứng tuyển thành công! PM sẽ xem xét và phản hồi sớm nhất.');
+      toast.success(t('jobDetail.applySuccessToast'));
       setIsApplyModalOpen(false);
       setCoverLetter('');
       queryClient.invalidateQueries({ queryKey: ['project-detail', project.id] });
       queryClient.invalidateQueries({ queryKey: ['projects'] });
     },
     onError: (err: any) => {
-      const msg = err?.response?.data?.message || 'Có lỗi xảy ra khi nộp hồ sơ. Vui lòng thử lại!';
+      const msg = err?.response?.data?.message || t('jobDetail.applyErrorToast');
       toast.error(msg);
     }
   });
@@ -110,22 +112,24 @@ export const JobDetailView: React.FC<JobDetailViewProps> = ({ job: initialJob })
   const handleCopyLink = () => {
     if (navigator.clipboard) {
       navigator.clipboard.writeText(window.location.href);
-      toast.success('Đã sao chép liên kết dự án vào clipboard!');
+      toast.success(t('jobDetail.copyLinkSuccess'));
     }
   };
 
   const handleCopyId = () => {
     if (navigator.clipboard) {
       navigator.clipboard.writeText(project.id);
-      toast.success('Đã sao chép mã định danh Job ID!');
+      toast.success(t('jobDetail.copyIdSuccess'));
     }
   };
 
-  let formattedDate = 'Gần đây';
+  const dateLocale = i18n.language === 'vi' ? vi : enUS;
+
+  let formattedDate = t('jobs.recently');
   try {
-    formattedDate = format(new Date(project.createdAt), 'dd MMMM, yyyy', { locale: vi });
+    formattedDate = format(new Date(project.createdAt), 'dd MMMM, yyyy', { locale: dateLocale });
   } catch {
-    formattedDate = 'Gần đây';
+    formattedDate = t('jobs.recently');
   }
 
   return (
@@ -142,7 +146,7 @@ export const JobDetailView: React.FC<JobDetailViewProps> = ({ job: initialJob })
               : 'bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300 border border-amber-200 dark:border-amber-800'
           }`}>
             <span className={`w-2 h-2 rounded-full ${project.status === 'OPEN' ? 'bg-emerald-500 animate-ping' : 'bg-amber-500'}`} />
-            {project.status === 'OPEN' ? 'Đang Mở Tuyển (Open)' : 'Đang Thực Hiện (In Progress)'}
+            {project.status === 'OPEN' ? t('jobDetail.statusOpen') : t('jobDetail.statusInProgress')}
           </span>
 
           <span className="text-[11px] font-mono text-slate-400 dark:text-slate-500 hidden sm:inline">
@@ -153,15 +157,15 @@ export const JobDetailView: React.FC<JobDetailViewProps> = ({ job: initialJob })
         <div className="flex items-center gap-1.5">
           <button
             onClick={handleCopyId}
-            className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-            title="Sao chép Job ID"
+            className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+            title={t('jobDetail.copyIdSuccess')}
           >
             <Copy className="w-4 h-4" />
           </button>
           <button
             onClick={handleCopyLink}
-            className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-            title="Chia sẻ liên kết nhiệm vụ"
+            className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+            title={t('jobDetail.copyLinkSuccess')}
           >
             <Share2 className="w-4 h-4" />
           </button>
@@ -181,16 +185,16 @@ export const JobDetailView: React.FC<JobDetailViewProps> = ({ job: initialJob })
                 ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300 border-blue-200 dark:border-blue-800'
                 : 'bg-purple-50 text-purple-700 dark:bg-purple-950/50 dark:text-purple-300 border-purple-200 dark:border-purple-800'
             }`}>
-              {project.type === 'PUBLIC' ? '🌐 Bounty Công Khai' : '🔒 Nhiệm Vụ Kín'}
+              {project.type === 'PUBLIC' ? t('jobDetail.bountyPublic') : t('jobDetail.bountyPrivate')}
             </span>
 
             <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700">
-              Độ ưu tiên: {project.priority || 'Tiêu chuẩn'}
+              {t('jobDetail.priority', { priority: project.priority || 'Standard' })}
             </span>
 
             {isEscrowed && (
               <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 flex items-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Đã Ký Quỹ Bảo Chứng
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> {t('jobDetail.escrowSecured')}
               </span>
             )}
           </div>
@@ -202,17 +206,17 @@ export const JobDetailView: React.FC<JobDetailViewProps> = ({ job: initialJob })
           <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-slate-500 mt-3 pt-2 border-t border-slate-100 dark:border-slate-800">
             <span className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300">
               <Building2 className="w-4 h-4 text-blue-600" />
-              {project.companyName || project.owner?.firstName ? `${project.owner?.firstName} ${project.owner?.lastName || ''}` : 'TaskBounty Client'}
+              {project.companyName || (project.owner?.firstName ? `${project.owner?.firstName} ${project.owner?.lastName || ''}`.trim() : t('jobs.defaultClient'))}
             </span>
             <span>•</span>
             <span className="flex items-center gap-1">
-              <Calendar className="w-3.5 h-3.5" /> Ngày đăng: {formattedDate}
+              <Calendar className="w-3.5 h-3.5" /> {t('jobDetail.postedDate', { date: formattedDate })}
             </span>
             {project.deadline && (
               <>
                 <span>•</span>
                 <span className="flex items-center gap-1 text-amber-600 dark:text-amber-400 font-bold">
-                  <Clock className="w-3.5 h-3.5" /> Hạn chót: {format(new Date(project.deadline), 'dd/MM/yyyy')}
+                  <Clock className="w-3.5 h-3.5" /> {t('jobDetail.deadline', { date: format(new Date(project.deadline), 'dd/MM/yyyy') })}
                 </span>
               </>
             )}
@@ -230,7 +234,7 @@ export const JobDetailView: React.FC<JobDetailViewProps> = ({ job: initialJob })
           <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
               <div className="text-xs text-emerald-800 dark:text-emerald-300 font-bold uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                <Coins className="w-4 h-4 text-emerald-600" /> Tổng Ngân Sách Phần Thưởng (Bounty Escrow)
+                <Coins className="w-4 h-4 text-emerald-600" /> {t('jobDetail.bountyEscrowTotal')}
               </div>
               <div className="flex items-baseline gap-3 flex-wrap">
                 <p className="text-3xl sm:text-4xl font-black text-emerald-600 dark:text-emerald-400 font-mono tracking-tight">
@@ -249,17 +253,17 @@ export const JobDetailView: React.FC<JobDetailViewProps> = ({ job: initialJob })
                 <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-md border border-emerald-500/30 p-4 rounded-2xl inline-flex flex-col items-start md:items-end gap-1 shadow-xs">
                   <span className="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-300 font-black text-xs">
                     <CheckCircle2 size={16} className="text-emerald-600" />
-                    Hợp Đồng Ký Quỹ Đã Khóa Quỹ
+                    {t('jobDetail.escrowLocked')}
                   </span>
                   <span className="text-[10px] text-slate-500 dark:text-slate-400">
-                    Bảo đảm 100% tự động chuyển ví khi nghiệm thu
+                    {t('jobDetail.escrowLockedDesc')}
                   </span>
                 </div>
               ) : (
                 <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-md border border-amber-500/30 p-4 rounded-2xl inline-flex flex-col items-start md:items-end gap-1">
                   <span className="flex items-center gap-1.5 text-amber-600 font-bold text-xs">
                     <Unlock size={16} />
-                    Chưa ký quỹ bảo đảm
+                    {t('jobDetail.escrowNotLocked')}
                   </span>
                 </div>
               )}
@@ -268,7 +272,7 @@ export const JobDetailView: React.FC<JobDetailViewProps> = ({ job: initialJob })
 
           <div className="relative z-10 mt-5 pt-3 border-t border-emerald-500/20 text-xs font-semibold text-emerald-800/80 dark:text-emerald-300/80 flex items-center gap-2">
             <Sparkles className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-            <span>Cơ chế minh chứng tài chính: Ngân sách được khóa an toàn, tự động thanh toán khi PM phê duyệt hoàn thành.</span>
+            <span>{t('jobDetail.financialProofNote')}</span>
           </div>
         </div>
 
@@ -284,7 +288,7 @@ export const JobDetailView: React.FC<JobDetailViewProps> = ({ job: initialJob })
                 : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
-            <FileText className="w-3.5 h-3.5" /> Tổng Quan & Yêu Cầu
+            <FileText className="w-3.5 h-3.5" /> {t('jobDetail.tabOverview')}
           </button>
 
           <button
@@ -295,7 +299,7 @@ export const JobDetailView: React.FC<JobDetailViewProps> = ({ job: initialJob })
                 : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
-            <Layers className="w-3.5 h-3.5" /> Nhiệm Vụ Con ({tasks.length})
+            <Layers className="w-3.5 h-3.5" /> {t('jobDetail.tabTasks', { count: tasks.length })}
           </button>
 
           <button
@@ -306,7 +310,7 @@ export const JobDetailView: React.FC<JobDetailViewProps> = ({ job: initialJob })
                 : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
-            <Users className="w-3.5 h-3.5" /> Đội Ngũ ({members.length})
+            <Users className="w-3.5 h-3.5" /> {t('jobDetail.tabTeam', { count: members.length })}
           </button>
 
           <button
@@ -317,7 +321,7 @@ export const JobDetailView: React.FC<JobDetailViewProps> = ({ job: initialJob })
                 : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
-            <ShieldCheck className="w-3.5 h-3.5" /> Điều Khoản Escrow
+            <ShieldCheck className="w-3.5 h-3.5" /> {t('jobDetail.tabEscrow')}
           </button>
         </div>
 
@@ -329,10 +333,10 @@ export const JobDetailView: React.FC<JobDetailViewProps> = ({ job: initialJob })
             {/* Detailed Overview Markdown */}
             <div>
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
-                <CircleDashed size={14} className="text-blue-600" /> Mô Tả Chi Tiết Mục Tiêu
+                <CircleDashed size={14} className="text-blue-600" /> {t('jobDetail.goalDescription')}
               </h3>
               <div className="prose prose-slate dark:prose-invert max-w-none text-xs sm:text-sm text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/50 p-6 rounded-3xl border border-slate-200/80 dark:border-slate-800 leading-relaxed">
-                <ReactMarkdown>{project.description || 'Chưa có mô tả chi tiết cho nhiệm vụ này.'}</ReactMarkdown>
+                <ReactMarkdown>{project.description || t('jobs.noDescription')}</ReactMarkdown>
               </div>
             </div>
 
@@ -341,7 +345,7 @@ export const JobDetailView: React.FC<JobDetailViewProps> = ({ job: initialJob })
               {/* Required Skills */}
               <div className="p-5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-800 rounded-3xl space-y-3">
                 <p className="text-xs text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                  <Tag className="w-3.5 h-3.5 text-blue-500" /> Kỹ Năng Yêu Cầu (Tech Stack)
+                  <Tag className="w-3.5 h-3.5 text-blue-500" /> {t('jobDetail.techStack')}
                 </p>
                 {skills.length > 0 ? (
                   <div className="flex flex-wrap gap-1.5">
@@ -352,21 +356,21 @@ export const JobDetailView: React.FC<JobDetailViewProps> = ({ job: initialJob })
                     ))}
                   </div>
                 ) : (
-                  <p className="text-xs text-slate-400 italic">Không có yêu cầu kỹ năng cụ thể</p>
+                  <p className="text-xs text-slate-400 italic">{t('jobDetail.noTechStack')}</p>
                 )}
               </div>
 
               {/* Recruitment Slots */}
               <div className="p-5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-800 rounded-3xl flex flex-col justify-between space-y-2">
                 <p className="text-xs text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                  <Users className="w-3.5 h-3.5 text-purple-500" /> Quy Mô & Vị Trí Tuyển Dụng
+                  <Users className="w-3.5 h-3.5 text-purple-500" /> {t('jobDetail.recruitmentScale')}
                 </p>
                 <div className="flex items-center justify-between">
                   <div>
                     <span className="text-2xl font-black text-slate-900 dark:text-white">
                       {members.length} / {project.maxMembers || project.positions || 5}
                     </span>
-                    <span className="text-xs text-slate-400 ml-1.5">thành viên đã gia nhập</span>
+                    <span className="text-xs text-slate-400 ml-1.5">{t('jobDetail.membersJoined')}</span>
                   </div>
                   <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950/50 text-purple-600 flex items-center justify-center font-bold">
                     <Users size={18} />
@@ -384,19 +388,19 @@ export const JobDetailView: React.FC<JobDetailViewProps> = ({ job: initialJob })
           <div className="space-y-4 animate-in fade-in duration-200">
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                Các Gói Nhiệm Vụ Con ({tasks.length})
+                {t('jobDetail.subtasksHeader', { count: tasks.length })}
               </h3>
               <span className="text-xs text-slate-500 font-medium">
-                Nhiệm vụ được phân công và nghiệm thu theo tiến độ
+                {t('jobDetail.subtasksSub')}
               </span>
             </div>
 
             {tasks.length === 0 ? (
               <div className="p-10 border border-dashed border-slate-200 dark:border-slate-800 rounded-3xl text-center space-y-2">
                 <Layers className="w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto" />
-                <p className="text-xs font-bold text-slate-700 dark:text-slate-300">Chưa có task con nào được tạo</p>
+                <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{t('jobDetail.noSubtasks')}</p>
                 <p className="text-[11px] text-slate-400 max-w-sm mx-auto">
-                  Project Manager sẽ khởi tạo và phân chia các task con cụ thể ngay sau khi hoàn tất tuyển chọn thành viên.
+                  {t('jobDetail.noSubtasksDesc')}
                 </p>
               </div>
             ) : (
@@ -425,13 +429,13 @@ export const JobDetailView: React.FC<JobDetailViewProps> = ({ job: initialJob })
                           </h4>
                           {taskItem.assignee ? (
                             <p className="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1">
-                              <span>Phụ trách:</span>
+                              <span>{t('jobDetail.assignedTo')}</span>
                               <span className="font-bold text-slate-600 dark:text-slate-300">
                                 {taskItem.assignee.firstName || taskItem.assignee.email}
                               </span>
                             </p>
                           ) : (
-                            <p className="text-[11px] text-slate-400 mt-0.5">Chưa phân công</p>
+                            <p className="text-[11px] text-slate-400 mt-0.5">{t('jobDetail.unassigned')}</p>
                           )}
                         </div>
                       </div>
@@ -462,7 +466,7 @@ export const JobDetailView: React.FC<JobDetailViewProps> = ({ job: initialJob })
             {/* PM Card */}
             <div>
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
-                Chủ Dự Án / Project Manager (PM)
+                {t('jobDetail.projectManager')}
               </h3>
               <div className="p-5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 rounded-3xl flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3.5">
@@ -474,7 +478,7 @@ export const JobDetailView: React.FC<JobDetailViewProps> = ({ job: initialJob })
                   <div>
                     <div className="flex items-center gap-1.5">
                       <span className="text-sm font-bold text-slate-900 dark:text-white">
-                        {project.owner?.firstName ? `${project.owner.firstName} ${project.owner.lastName || ''}` : 'TaskBounty Manager'}
+                        {project.owner?.firstName ? `${project.owner.firstName} ${project.owner.lastName || ''}`.trim() : 'TaskBounty Manager'}
                       </span>
                       <span title="Xác thực PM">
                         <BadgeCheck className="w-4 h-4 text-blue-500" />
@@ -494,12 +498,12 @@ export const JobDetailView: React.FC<JobDetailViewProps> = ({ job: initialJob })
             <div>
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                  Thành Viên Dự Án ({members.length})
+                  {t('jobDetail.teamMembers', { count: members.length })}
                 </h3>
               </div>
 
               {members.length === 0 ? (
-                <p className="text-xs text-slate-400 italic">Chưa có thành viên nào tham gia</p>
+                <p className="text-xs text-slate-400 italic">{t('jobDetail.noTeamMembers')}</p>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {members.map((m: any, idx: number) => {
@@ -517,7 +521,7 @@ export const JobDetailView: React.FC<JobDetailViewProps> = ({ job: initialJob })
                           />
                           <div>
                             <p className="text-xs font-bold text-slate-900 dark:text-white line-clamp-1">
-                              {u.firstName ? `${u.firstName} ${u.lastName || ''}` : u.email || 'Member'}
+                              {u.firstName ? `${u.firstName} ${u.lastName || ''}`.trim() : u.email || 'Member'}
                             </p>
                             <p className="text-[10px] text-slate-400">{m.role || 'Contributor'}</p>
                           </div>
@@ -542,39 +546,39 @@ export const JobDetailView: React.FC<JobDetailViewProps> = ({ job: initialJob })
           <div className="space-y-4 animate-in fade-in duration-200">
             <div className="p-6 bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 rounded-3xl space-y-4">
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-600" /> Quy Trình & Cam Kết Bounty Minh Bạch
+                <ShieldCheck className="w-4 h-4 text-emerald-600" /> {t('jobDetail.escrowProcessTitle')}
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                 <div className="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 space-y-1.5">
                   <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 font-bold text-xs flex items-center justify-center">1</div>
-                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">1. Nộp hồ sơ ứng tuyển</h4>
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">{t('jobDetail.step1Title')}</h4>
                   <p className="text-[11px] text-slate-500 leading-relaxed">
-                    Gửi thư tự giới thiệu, kỹ năng phù hợp và sản phẩm đã thực hiện để PM duyệt hồ sơ.
+                    {t('jobDetail.step1Desc')}
                   </p>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 space-y-1.5">
                   <div className="w-7 h-7 rounded-lg bg-purple-50 text-purple-600 font-bold text-xs flex items-center justify-center">2</div>
-                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">2. Phê duyệt & Phân quyền</h4>
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">{t('jobDetail.step2Title')}</h4>
                   <p className="text-[11px] text-slate-500 leading-relaxed">
-                    PM chấp thuận sẽ cấp quyền truy cập bảng nhiệm vụ Kanban nội bộ và phân chia task.
+                    {t('jobDetail.step2Desc')}
                   </p>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 space-y-1.5">
                   <div className="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 font-bold text-xs flex items-center justify-center">3</div>
-                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">3. Thực thi & Báo cáo</h4>
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">{t('jobDetail.step3Title')}</h4>
                   <p className="text-[11px] text-slate-500 leading-relaxed">
-                    Thực hiện nhiệm vụ, trao đổi trực tiếp trong task slider và gửi yêu cầu Review khi xong.
+                    {t('jobDetail.step3Desc')}
                   </p>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 space-y-1.5">
                   <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 font-bold text-xs flex items-center justify-center">4</div>
-                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">4. Nghiệm thu & Rút tiền</h4>
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">{t('jobDetail.step4Title')}</h4>
                   <p className="text-[11px] text-slate-500 leading-relaxed">
-                    Tiền thưởng Bounty được giải ngân tự động từ quỹ Escrow trực tiếp vào ví của bạn.
+                    {t('jobDetail.step4Desc')}
                   </p>
                 </div>
               </div>
@@ -591,25 +595,25 @@ export const JobDetailView: React.FC<JobDetailViewProps> = ({ job: initialJob })
         {isOwner ? (
           <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-3">
             <span className="text-xs font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1.5">
-              <BadgeCheck className="w-4 h-4" /> Bạn là Quản trị viên (PM) của dự án này
+              <BadgeCheck className="w-4 h-4" /> {t('jobDetail.youArePM')}
             </span>
             <Button
               onClick={() => navigate(`/manage-jobs/${project.id}`)}
               className="w-full sm:w-auto h-12 px-6 rounded-2xl text-xs font-bold bg-slate-900 hover:bg-slate-800 dark:bg-white dark:text-slate-900 text-white shadow-md cursor-pointer flex items-center gap-2"
             >
-              Vào Trung Tâm Quản Trị PM <ChevronRight className="w-4 h-4" />
+              {t('jobDetail.goToPMCtr')} <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
         ) : isMember ? (
           <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-3">
             <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4" /> Bạn đã là thành viên trong dự án này
+              <CheckCircle2 className="w-4 h-4" /> {t('jobDetail.youAreMember')}
             </span>
             <Button
               onClick={() => navigate('/my-tasks')}
               className="w-full sm:w-auto h-12 px-6 rounded-2xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md cursor-pointer flex items-center gap-2"
             >
-              Vào Bảng Không Gian Nhiệm Vụ <ChevronRight className="w-4 h-4" />
+              {t('jobDetail.goToWorkspace')} <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
         ) : isApplied ? (
@@ -617,7 +621,7 @@ export const JobDetailView: React.FC<JobDetailViewProps> = ({ job: initialJob })
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-amber-600" />
               <span className="text-xs font-bold text-amber-900 dark:text-amber-300">
-                Đã nộp hồ sơ ứng tuyển (Đang chờ PM xét duyệt)
+                {t('jobDetail.pendingReview')}
               </span>
             </div>
             <span className="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-amber-200 dark:bg-amber-800 text-amber-900 dark:text-amber-100">
@@ -629,7 +633,7 @@ export const JobDetailView: React.FC<JobDetailViewProps> = ({ job: initialJob })
             onClick={() => setIsApplyModalOpen(true)}
             className="w-full h-12 rounded-2xl text-xs sm:text-sm font-black bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/25 transition-all hover:scale-101 cursor-pointer flex items-center justify-center gap-2"
           >
-            <UserPlus className="w-4 h-4" /> Ứng Tuyển Nhiệm Vụ (Apply Now) 🚀
+            <UserPlus className="w-4 h-4" /> {t('jobDetail.applyNowBtn')}
           </Button>
         )}
       </div>
@@ -643,15 +647,15 @@ export const JobDetailView: React.FC<JobDetailViewProps> = ({ job: initialJob })
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
               <div>
                 <h3 className="text-lg font-black text-slate-900 dark:text-white">
-                  Nộp Hồ Sơ Ứng Tuyển Nhiệm Vụ
+                  {t('jobDetail.applyModalTitle')}
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Dự án: {project.title}
+                  {t('jobDetail.applyModalProject', { title: project.title })}
                 </p>
               </div>
               <button
                 onClick={() => setIsApplyModalOpen(false)}
-                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800"
+                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
               >
                 ✕
               </button>
@@ -666,21 +670,21 @@ export const JobDetailView: React.FC<JobDetailViewProps> = ({ job: initialJob })
             >
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
-                  Thư Giới Thiệu & Năng Lực (Cover Letter) <span className="text-rose-500">*</span>
+                  {t('jobDetail.coverLetterLabel')} <span className="text-rose-500">*</span>
                 </label>
                 <textarea
                   value={coverLetter}
                   onChange={(e) => setCoverLetter(e.target.value)}
                   rows={4}
                   required
-                  placeholder="Mô tả kinh nghiệm của bạn, link portfolio / github hoặc lý do bạn phù hợp với nhiệm vụ này..."
+                  placeholder={t('jobDetail.coverLetterPlaceholder')}
                   className="w-full p-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-2xl text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600"
                 />
               </div>
 
               <div className="p-3.5 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 rounded-2xl text-[11px] text-blue-800 dark:text-blue-300 flex items-start gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-blue-600" />
-                <span>Hồ sơ và thông tin profile của bạn sẽ được gửi trực tiếp đến Project Manager để xem xét và cấp quyền thực thi.</span>
+                <span>{t('jobDetail.applyAlert')}</span>
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-2">
@@ -689,16 +693,16 @@ export const JobDetailView: React.FC<JobDetailViewProps> = ({ job: initialJob })
                   variant="neutral-outline"
                   onClick={() => setIsApplyModalOpen(false)}
                   disabled={applyMutation.isPending}
-                  className="rounded-xl text-xs px-4"
+                  className="rounded-xl text-xs px-4 cursor-pointer"
                 >
-                  Hủy
+                  {t('jobDetail.cancelBtn')}
                 </Button>
                 <Button
                   type="submit"
                   disabled={applyMutation.isPending || !coverLetter.trim()}
-                  className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold px-6 shadow-sm"
+                  className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold px-6 shadow-sm cursor-pointer"
                 >
-                  {applyMutation.isPending ? 'Đang Gửi...' : 'Gửi Hồ Sơ Ứng Tuyển'}
+                  {applyMutation.isPending ? t('jobDetail.submittingBtn') : t('jobDetail.submitApplyBtn')}
                 </Button>
               </div>
             </form>

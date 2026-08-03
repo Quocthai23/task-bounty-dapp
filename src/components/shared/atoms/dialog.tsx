@@ -52,7 +52,7 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          'bg-white data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded border p-6 shadow-lg duration-200 outline-none sm:max-w-lg',
+          'bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-neutral-200 dark:border-slate-800 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-3xl border p-6 shadow-lg duration-200 outline-none sm:max-w-lg',
           className,
         )}
         {...props}
@@ -61,7 +61,7 @@ function DialogContent({
         {showCloseButton && (
           <DialogPrimitive.Close
             data-slot="dialog-close"
-            className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 z-20 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+            className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 z-20 rounded-full p-1 opacity-70 transition-opacity hover:opacity-100 hover:bg-neutral-100 dark:hover:bg-slate-800 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none cursor-pointer [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
           >
             <X className="size-4" />
             <span className="sr-only">Close</span>
@@ -86,7 +86,7 @@ function SheetContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          'fixed inset-y-0 right-0 z-50 h-full w-full sm:max-w-xl bg-white border-l border-white/20 shadow-[-10px_0_30px_-15px_rgba(0,0,0,0.3)] data-[state=open]:animate-sheet-in data-[state=closed]:animate-sheet-out outline-none flex flex-col',
+          'fixed inset-y-0 right-0 z-50 h-full w-full sm:max-w-xl bg-white dark:bg-slate-900 border-l border-neutral-200 dark:border-slate-800 shadow-[-10px_0_30px_-15px_rgba(0,0,0,0.3)] data-[state=open]:animate-sheet-in data-[state=closed]:animate-sheet-out outline-none flex flex-col text-slate-900 dark:text-white',
           className,
         )}
         {...props}
@@ -95,7 +95,7 @@ function SheetContent({
         {showCloseButton && (
           <DialogPrimitive.Close
             data-slot="dialog-close"
-            className="absolute top-4 right-4 z-20 rounded-full p-2 bg-neutral-100 text-neutral-500 opacity-70 transition-all hover:opacity-100 hover:bg-neutral-200 focus:outline-none"
+            className="absolute top-4 right-4 z-20 rounded-full p-2 bg-neutral-100 dark:bg-slate-800 text-neutral-500 dark:text-slate-400 opacity-70 transition-all hover:opacity-100 hover:bg-neutral-200 dark:hover:bg-slate-700 focus:outline-none cursor-pointer"
           >
             <X className="size-4" />
             <span className="sr-only">Close</span>

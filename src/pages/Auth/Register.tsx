@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { authService } from '@/services/auth.service';
 import { Input } from '@/components/shared/atoms/input';
 import { Button } from '@/components/shared/atoms/button';
@@ -8,6 +9,7 @@ import { User, Mail, Lock, Eye, EyeOff, ShieldCheck, ArrowLeft } from 'lucide-re
 import { toast } from 'sonner';
 
 export const Register: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [step, setStep] = useState<1 | 2>(1);
   const [otp, setOtp] = useState('');
@@ -28,11 +30,11 @@ export const Register: React.FC = () => {
   const sendOtpMutation = useMutation({
     mutationFn: (email: string) => authService.sendOtp({ email, context: 'REGISTER' }),
     onSuccess: () => {
-      toast.success('OTP sent to your email!');
+      toast.success(t('auth.otpSentToast'));
       setStep(2);
     },
     onError: (err: any) => {
-      setError(err.response?.data?.message || 'Failed to send OTP');
+      setError(err.response?.data?.message || t('auth.failedToSendOtp'));
     }
   });
 
@@ -52,14 +54,14 @@ export const Register: React.FC = () => {
       });
     },
     onError: (err: any) => {
-      setError(err.response?.data?.message || 'Invalid OTP');
+      setError(err.response?.data?.message || t('auth.invalidOtp'));
     }
   });
 
   const registerMutation = useMutation({
     mutationFn: (params: { data: any, challengeToken: string }) => authService.register(params.data, params.challengeToken),
     onSuccess: () => {
-      toast.success('Registration successful!');
+      toast.success(t('auth.registerSuccess'));
       navigate('/login');
     },
     onError: (err: any) => {
@@ -80,12 +82,12 @@ export const Register: React.FC = () => {
     setError('');
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('auth.passwordsDoNotMatch'));
       return;
     }
     
     if (!formData.agreeTerms) {
-      setError('You must agree to the terms');
+      setError(t('auth.agreeTermsError'));
       return;
     }
 
@@ -97,7 +99,7 @@ export const Register: React.FC = () => {
     setError('');
     
     if (otp.length < 6) {
-      setError('Please enter a valid 6-digit OTP');
+      setError(t('auth.pleaseEnterOtp'));
       return;
     }
 
@@ -111,8 +113,8 @@ export const Register: React.FC = () => {
         {/* Left Side - Illustration */}
         <div className="hidden w-1/2 items-center justify-center bg-blue-600 p-8 md:flex">
           <div className="text-center text-white">
-            <h1 className="text-4xl font-bold mb-4">Join Task Bounty</h1>
-            <p className="text-blue-100 text-lg">Start building and earning today.</p>
+            <h1 className="text-4xl font-bold mb-4">{t('auth.joinTaskBounty')}</h1>
+            <p className="text-blue-100 text-lg">{t('auth.joinSubtitle')}</p>
           </div>
         </div>
 
@@ -121,7 +123,7 @@ export const Register: React.FC = () => {
           {step === 1 && (
             <>
               <h2 className="mb-6 text-3xl font-bold text-slate-900 text-center md:text-left">
-                Sign Up
+                {t('auth.signUpTitle')}
               </h2>
 
               {error && (
@@ -135,7 +137,7 @@ export const Register: React.FC = () => {
                   <div className="flex-1 relative">
                     <Input
                       name="firstName"
-                      placeholder="First Name"
+                      placeholder={t('auth.firstName')}
                       value={formData.firstName}
                       onChange={handleChange}
                       className="h-12 pl-11 bg-slate-50 border-slate-200 focus:border-blue-500 focus:ring-blue-500 rounded-xl transition-all"
@@ -146,7 +148,7 @@ export const Register: React.FC = () => {
                   <div className="flex-1 relative">
                     <Input
                       name="lastName"
-                      placeholder="Last Name"
+                      placeholder={t('auth.lastName')}
                       value={formData.lastName}
                       onChange={handleChange}
                       className="h-12 pl-11 bg-slate-50 border-slate-200 focus:border-blue-500 focus:ring-blue-500 rounded-xl transition-all"
@@ -159,7 +161,7 @@ export const Register: React.FC = () => {
                 <div className="relative">
                   <Input
                     name="username"
-                    placeholder="Username"
+                    placeholder={t('auth.username')}
                     value={formData.username}
                     onChange={handleChange}
                     className="h-12 pl-11 bg-slate-50 border-slate-200 focus:border-blue-500 focus:ring-blue-500 rounded-xl transition-all"
@@ -172,7 +174,7 @@ export const Register: React.FC = () => {
                   <Input
                     name="email"
                     type="email"
-                    placeholder="Email Address"
+                    placeholder={t('auth.emailAddress')}
                     value={formData.email}
                     onChange={handleChange}
                     className="h-12 pl-11 bg-slate-50 border-slate-200 focus:border-blue-500 focus:ring-blue-500 rounded-xl transition-all"
@@ -185,7 +187,7 @@ export const Register: React.FC = () => {
                   <Input
                     name="password"
                     type={isPasswordVisible ? 'text' : 'password'}
-                    placeholder="Password"
+                    placeholder={t('auth.password')}
                     value={formData.password}
                     onChange={handleChange}
                     className="h-12 pl-11 pr-11 bg-slate-50 border-slate-200 focus:border-blue-500 focus:ring-blue-500 rounded-xl transition-all"
@@ -205,7 +207,7 @@ export const Register: React.FC = () => {
                   <Input
                     name="confirmPassword"
                     type={isConfirmPasswordVisible ? 'text' : 'password'}
-                    placeholder="Confirm Password"
+                    placeholder={t('auth.confirmPassword')}
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     className="h-12 pl-11 pr-11 bg-slate-50 border-slate-200 focus:border-blue-500 focus:ring-blue-500 rounded-xl transition-all"
@@ -231,7 +233,10 @@ export const Register: React.FC = () => {
                     className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                   />
                   <label htmlFor="agreeTerms" className="text-sm font-medium text-slate-600">
-                    I agree to the <Link to="/terms" className="text-blue-600 font-bold hover:underline">Terms</Link> and <Link to="/privacy" className="text-blue-600 font-bold hover:underline">Privacy Policy</Link>
+                    {t('auth.agreeTerms')}{' '}
+                    <Link to="/terms" className="text-blue-600 font-bold hover:underline">{t('auth.terms')}</Link>{' '}
+                    {t('auth.and')}{' '}
+                    <Link to="/privacy" className="text-blue-600 font-bold hover:underline">{t('auth.privacy')}</Link>
                   </label>
                 </div>
 
@@ -240,13 +245,13 @@ export const Register: React.FC = () => {
                   className="mt-4 h-12 rounded-xl text-base font-bold transition-transform active:scale-[0.98] bg-blue-600 hover:bg-blue-700 text-white"
                   disabled={sendOtpMutation.isPending}
                 >
-                  {sendOtpMutation.isPending ? 'Sending OTP...' : 'Next Step'}
+                  {sendOtpMutation.isPending ? t('auth.sendingOtp') : t('auth.nextStep')}
                 </Button>
 
                 <p className="mt-6 text-center text-sm font-medium text-slate-600">
-                  Already have an account?{' '}
+                  {t('auth.alreadyHaveAccount')}{' '}
                   <Link to="/login" className="text-blue-600 font-bold hover:underline">
-                    Log In
+                    {t('auth.signInNow')}
                   </Link>
                 </p>
               </form>
@@ -259,7 +264,7 @@ export const Register: React.FC = () => {
                 onClick={() => setStep(1)} 
                 className="flex items-center text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors mb-6 w-fit"
               >
-                <ArrowLeft size={16} className="mr-1" /> Back
+                <ArrowLeft size={16} className="mr-1" /> {t('auth.back')}
               </button>
               
               <div className="flex-1 flex flex-col justify-center items-center">
@@ -268,10 +273,10 @@ export const Register: React.FC = () => {
                 </div>
                 
                 <h2 className="mb-2 text-2xl font-bold text-slate-900 text-center">
-                  Verify Your Email
+                  {t('auth.verifyEmailTitle')}
                 </h2>
                 <p className="text-slate-500 text-center mb-8">
-                  We've sent a 6-digit verification code to <br/>
+                  {t('auth.verifyEmailDesc')} <br/>
                   <span className="font-bold text-slate-900">{formData.email}</span>
                 </p>
 
@@ -285,7 +290,7 @@ export const Register: React.FC = () => {
                   <div className="relative">
                     <Input
                       name="otp"
-                      placeholder="Enter 6-digit OTP"
+                      placeholder={t('auth.enterOtpPlaceholder')}
                       value={otp}
                       onChange={(e) => setOtp(e.target.value)}
                       className="h-14 text-center text-2xl tracking-widest bg-slate-50 border-slate-200 focus:border-blue-500 focus:ring-blue-500 rounded-xl transition-all font-bold"
@@ -299,7 +304,7 @@ export const Register: React.FC = () => {
                     className="mt-4 h-12 w-full rounded-xl text-base font-bold transition-transform active:scale-[0.98] bg-blue-600 hover:bg-blue-700 text-white"
                     disabled={verifyOtpMutation.isPending || registerMutation.isPending}
                   >
-                    {(verifyOtpMutation.isPending || registerMutation.isPending) ? 'Verifying...' : 'Create Account'}
+                    {(verifyOtpMutation.isPending || registerMutation.isPending) ? t('auth.verifying') : t('auth.registerBtn')}
                   </Button>
                 </form>
               </div>

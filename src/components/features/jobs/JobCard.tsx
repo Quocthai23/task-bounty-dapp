@@ -1,8 +1,9 @@
 import React from 'react';
 import { format, formatDistanceToNow } from 'date-fns';
-import { vi } from 'date-fns/locale';
+import { vi, enUS } from 'date-fns/locale';
 import { Button } from '@/components/shared/atoms/button';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { 
   Building2, 
   ShieldCheck, 
@@ -24,6 +25,7 @@ interface JobCardProps {
 
 export const JobCard: React.FC<JobCardProps> = ({ job, onClick, isJoined }) => {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
 
   const handleActionClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -52,17 +54,19 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onClick, isJoined }) => {
   const budget = Number(job.budget || 0);
   const budgetUsd = (budget / 25450).toFixed(1);
   const totalPositions = Number(job.positions || 1);
-  const filledPositions = Math.min(1, totalPositions); // Demo logic
+  const filledPositions = Math.min(1, totalPositions);
   const fillPercentage = Math.round((filledPositions / totalPositions) * 100);
 
   const isEscrowed = job.isEscrowed ?? true;
   const isUrgent = job.priority === 'High' || job.priority === 'Urgent';
 
+  const dateLocale = i18n.language === 'vi' ? vi : enUS;
+
   let timeAgo = '';
   try {
-    timeAgo = formatDistanceToNow(new Date(job.createdAt), { addSuffix: true, locale: vi });
+    timeAgo = formatDistanceToNow(new Date(job.createdAt), { addSuffix: true, locale: dateLocale });
   } catch {
-    timeAgo = 'Gần đây';
+    timeAgo = t('jobs.recently');
   }
 
   return (
@@ -83,9 +87,9 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onClick, isJoined }) => {
           <div>
             <div className="flex items-center gap-1.5">
               <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                {job.companyName || 'TaskBounty Client'}
+                {job.companyName || t('jobs.defaultClient')}
               </span>
-              <span title="Doanh nghiệp đã xác thực">
+              <span title={t('jobs.verifiedClient')}>
                 <CheckCircle2 className="w-3.5 h-3.5 text-blue-500 shrink-0" />
               </span>
             </div>
@@ -95,7 +99,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onClick, isJoined }) => {
               </span>
               <span>•</span>
               <span className="text-slate-500 font-medium">
-                {job.type === 'PUBLIC' ? '🌐 Công khai' : '🔒 Riêng tư'}
+                {job.type === 'PUBLIC' ? `🌐 ${t('jobs.publicJob')}` : `🔒 ${t('jobs.privateJob')}`}
               </span>
             </div>
           </div>
@@ -104,13 +108,13 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onClick, isJoined }) => {
         {/* Right: Bounty Value Highlight */}
         <div className="sm:text-right bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/50 px-3.5 py-2 rounded-2xl self-start sm:self-auto flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-1">
           <div className="text-[10px] uppercase font-bold tracking-wider text-emerald-700 dark:text-emerald-400 flex items-center gap-1">
-            <Coins className="w-3 h-3" /> Phần thưởng Bounty
+            <Coins className="w-3 h-3" /> {t('jobs.bountyReward')}
           </div>
           <div className="text-lg sm:text-xl font-black font-mono text-emerald-600 dark:text-emerald-400">
             {budget.toLocaleString()} <span className="text-xs font-sans font-bold">₫</span>
           </div>
           <div className="text-[10px] font-semibold text-emerald-700/60 dark:text-emerald-400/60 font-mono hidden sm:block">
-            ≈ ${budgetUsd} USD
+            {t('jobs.approxUsd', { amount: budgetUsd })}
           </div>
         </div>
       </div>
@@ -121,22 +125,22 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onClick, isJoined }) => {
           {/* Priority Badge */}
           {isUrgent ? (
             <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-300 border border-rose-200 dark:border-rose-800 flex items-center gap-1">
-              <Sparkles className="w-3 h-3 text-rose-500" /> Tuyển gấp
+              <Sparkles className="w-3 h-3 text-rose-500" /> {t('jobs.urgentHiring')}
             </span>
           ) : (
             <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800">
-              {job.priority || 'Tiêu chuẩn'}
+              {job.priority || t('jobs.standardHiring')}
             </span>
           )}
 
           {/* Escrow Status Badge */}
           {isEscrowed ? (
             <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800 flex items-center gap-1">
-              <ShieldCheck className="w-3 h-3 text-emerald-600" /> Đã ký quỹ Smart Contract
+              <ShieldCheck className="w-3 h-3 text-emerald-600" /> {t('jobs.escrowSmartContract')}
             </span>
           ) : (
             <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border border-slate-200 dark:border-slate-700 flex items-center gap-1">
-              <Lock className="w-3 h-3" /> Đang bảo chứng
+              <Lock className="w-3 h-3" /> {t('jobs.escrowSecured')}
             </span>
           )}
         </div>
@@ -146,7 +150,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onClick, isJoined }) => {
         </h3>
 
         <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed mt-2">
-          {job.description || 'Chưa có mô tả chi tiết cho nhiệm vụ này.'}
+          {job.description || t('jobs.noDescription')}
         </p>
       </div>
 
@@ -175,7 +179,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onClick, isJoined }) => {
           <div className="flex items-center gap-2">
             <Users className="w-3.5 h-3.5 text-slate-400" />
             <span className="font-semibold text-slate-700 dark:text-slate-300">
-              {filledPositions}/{totalPositions} Thành viên
+              {t('jobs.slotsMembers', { filled: filledPositions, total: totalPositions })}
             </span>
             <div className="w-16 h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
               <div 
@@ -188,7 +192,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onClick, isJoined }) => {
           {job.deadline && (
             <div className="hidden md:flex items-center gap-1 text-slate-400">
               <span>•</span>
-              <span>Hạn: {format(new Date(job.deadline), 'dd/MM/yyyy')}</span>
+              <span>{t('jobs.deadline', { date: format(new Date(job.deadline), 'dd/MM/yyyy') })}</span>
             </div>
           )}
         </div>
@@ -196,13 +200,13 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onClick, isJoined }) => {
         {/* Action Button */}
         <Button
           onClick={handleActionClick}
-          className={`h-9 px-5 rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 self-end sm:self-auto ${
+          className={`h-9 px-5 rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 self-end sm:self-auto cursor-pointer ${
             isJoined 
               ? 'bg-slate-100 hover:bg-slate-200 text-slate-800 dark:bg-slate-800 dark:text-slate-200' 
               : 'bg-blue-600 hover:bg-blue-700 text-white shadow-blue-600/20 group-hover:scale-102'
           }`}
         >
-          <span>{isJoined ? 'Vào Không Gian' : 'Xem Chi Tiết'}</span>
+          <span>{isJoined ? t('jobs.enterWorkspace') : t('jobs.viewDetail')}</span>
           <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
         </Button>
       </div>
@@ -210,3 +214,4 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onClick, isJoined }) => {
   );
 };
 export default JobCard;
+
