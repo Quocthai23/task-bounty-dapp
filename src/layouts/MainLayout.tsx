@@ -90,26 +90,34 @@ export const MainLayout: React.FC = () => {
   return (
     <div className="flex flex-col h-screen bg-[var(--app-bg)] text-[var(--app-text)] transition-colors duration-300">
       {/* Top Header */}
-      <header className="h-20 bg-[var(--app-surface)]/50 backdrop-blur-md flex items-center px-4 md:px-8 border-b border-[var(--app-border)] shrink-0 z-10 transition-colors">
+      <header className="h-14 bg-[var(--app-surface)]/80 backdrop-blur-md flex items-center px-4 md:px-6 border-b border-[var(--app-border)] shrink-0 z-20 transition-colors">
         {/* Brand */}
-        <div className="w-64 shrink-0 flex items-center">
-          <Link to="/dashboard" className="text-2xl font-black text-[var(--app-text)] tracking-tight">
-            TaskBounty
+        <div className="w-56 shrink-0 flex items-center">
+          <Link to="/dashboard" className="text-xl font-black text-[var(--app-text)] tracking-tight flex items-center gap-2">
+            <span className="w-7 h-7 rounded-xl bg-blue-600 text-white flex items-center justify-center text-xs font-black shadow-xs">TB</span>
+            <span>TaskBounty</span>
           </Link>
         </div>
 
-        {/* Search Bar */}
-        <div className="flex-1 flex justify-center px-4">
-          <div className="relative w-full max-w-2xl flex items-center">
-            <input
-              type="text"
-              placeholder={t('header.searchPlaceholder')}
-              className="w-full h-12 bg-[var(--app-surface-muted)] text-[var(--app-text)] rounded-full pl-6 pr-14 text-sm border border-[var(--app-border)] focus:outline-none focus:border-[var(--color-primary-500)] shadow-[0_2px_10px_rgba(0,0,0,0.04)] transition-colors"
-            />
-            <button className="absolute right-2 h-8 w-8 bg-[var(--color-primary-500)] text-white rounded-full flex items-center justify-center hover:bg-[var(--color-primary-600)] transition-colors shadow-sm">
-              <Search size={14} strokeWidth={3} />
-            </button>
-          </div>
+        {/* Search Bar or Platform Tag */}
+        <div className="flex-1 flex items-center px-4">
+          {location.pathname !== '/dashboard' ? (
+            <div className="relative w-full max-w-md flex items-center">
+              <input
+                type="text"
+                placeholder={t('header.searchPlaceholder')}
+                className="w-full h-9 bg-[var(--app-surface-muted)] text-[var(--app-text)] rounded-full pl-4 pr-10 text-xs border border-[var(--app-border)] focus:outline-none focus:border-[var(--color-primary-500)] transition-colors"
+              />
+              <button className="absolute right-1.5 h-6 w-6 bg-[var(--color-primary-500)] text-white rounded-full flex items-center justify-center hover:bg-[var(--color-primary-600)] transition-colors">
+                <Search size={12} strokeWidth={3} />
+              </button>
+            </div>
+          ) : (
+            <div className="hidden md:flex items-center gap-2 text-xs font-semibold text-slate-400">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Web3 Bounty & Gig Platform</span>
+            </div>
+          )}
         </div>
 
         {/* Right Actions */}
