@@ -26,16 +26,6 @@ import { JobDetailView } from '@/components/features/jobs/JobDetailView';
 import { Sheet, SheetContent } from '@/components/shared/atoms/sheet';
 import { Button } from '@/components/shared/atoms/button';
 
-const QUICK_CATEGORIES = [
-  { label: 'Tất cả', value: '' },
-  { label: '⚡ Smart Contract', value: 'Smart Contract' },
-  { label: '💻 Front End', value: 'Front End' },
-  { label: '⚙️ Back End', value: 'Back End' },
-  { label: '🚀 Full Stack', value: 'Full Stack' },
-  { label: '🎨 UI/UX Design', value: 'Design' },
-  { label: '🪙 DeFi', value: 'DeFi' },
-];
-
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
 
@@ -59,7 +49,34 @@ export const Dashboard: React.FC = () => {
     queryFn: () => metadataService.getPositions()
   });
 
+  const { data: budgetRangesData } = useQuery({
+    queryKey: ['metadata-budget-ranges'],
+    queryFn: () => metadataService.getBudgetRanges()
+  });
+
   const [selectedJob, setSelectedJob] = useState<any>(null);
+
+  const dynamicCategories = useMemo(() => {
+    const list = [{ label: 'Tất cả', value: '' }];
+    if (Array.isArray(positionsData)) {
+      positionsData.forEach(pos => {
+        let icon = '⚡';
+        const lower = pos.toLowerCase();
+        if (lower.includes('front')) icon = '💻';
+        else if (lower.includes('back')) icon = '⚙️';
+        else if (lower.includes('full')) icon = '🚀';
+        else if (lower.includes('contract') || lower.includes('solidity')) icon = '⛓️';
+        else if (lower.includes('design') || lower.includes('ui')) icon = '🎨';
+        else if (lower.includes('defi')) icon = '🪙';
+        else if (lower.includes('mobile')) icon = '📱';
+        else if (lower.includes('qa') || lower.includes('test')) icon = '🧪';
+        else if (lower.includes('devops')) icon = '☁️';
+        else if (lower.includes('manager') || lower.includes('pm')) icon = '📋';
+        list.push({ label: `${icon} ${pos}`, value: pos });
+      });
+    }
+    return list;
+  }, [positionsData]);
 
   // Filters State
   const [searchTerm, setSearchTerm] = useState('');
@@ -154,7 +171,7 @@ export const Dashboard: React.FC = () => {
 
   return (
     <>
-      <div className="h-full flex flex-col font-sans space-y-6 pb-8">
+      <div className="w-full min-h-full flex flex-col font-sans space-y-6 pb-12">
         
         {/* ========================================================================= */}
         {/* COMPACT HERO BANNER & QUICK STATS (Optimized for 14-inch screens)         */}
@@ -288,7 +305,7 @@ export const Dashboard: React.FC = () => {
 
             {/* Quick Category Chips */}
             <div className="flex items-center gap-2 overflow-x-auto custom-scrollbar pb-1">
-              {QUICK_CATEGORIES.map(cat => {
+              {dynamicCategories.map(cat => {
                 const isSelected = selectedPosition === cat.value;
                 return (
                   <button
@@ -381,6 +398,8 @@ export const Dashboard: React.FC = () => {
                 setMaxPrice={setMaxPrice}
                 escrowOnly={escrowOnly}
                 setEscrowOnly={setEscrowOnly}
+                budgetPresets={budgetRangesData?.presets}
+                budgetMax={budgetRangesData?.max}
               />
             </div>
 
@@ -414,6 +433,8 @@ export const Dashboard: React.FC = () => {
               setMaxPrice={setMaxPrice}
               escrowOnly={escrowOnly}
               setEscrowOnly={setEscrowOnly}
+              budgetPresets={budgetRangesData?.presets}
+              budgetMax={budgetRangesData?.max}
             />
             <Button 
               onClick={() => setIsMobileFilterOpen(false)}

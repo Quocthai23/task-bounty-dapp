@@ -95,6 +95,10 @@ export const projectService = {
     const response = await api.put(`/projects/${projectId}/applications/${applicationId}`, { status });
     return response.data;
   },
+  updateApplicationStatus: async (projectId: string, applicationId: string, status: 'APPROVED' | 'REJECTED') => {
+    const response = await api.put(`/projects/${projectId}/applications/${applicationId}`, { status });
+    return response.data;
+  },
   assignRole: async (projectId: string, data: { userId: string; role: string }) => {
     const response = await api.post(`/projects/${projectId}/members`, data);
     return response.data;

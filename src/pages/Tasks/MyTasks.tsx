@@ -301,7 +301,7 @@ export const MyTasks: React.FC = () => {
   const allCollapsed = allProjectIds.length > 0 && allProjectIds.every(id => Boolean(collapsedMap[id]));
 
   return (
-    <div className="h-full flex flex-col font-sans space-y-5 pb-8">
+    <div className="w-full min-h-full flex flex-col font-sans space-y-5 pb-12">
       
       {/* ========================================================================= */}
       {/* WORKSPACE STATS & CONTROLS HEADER (Optimized for 14-inch screens)          */}

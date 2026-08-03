@@ -31,4 +31,36 @@ export const metadataService = {
       return DEFAULT_POSITIONS;
     }
   },
+
+  async getBudgetRanges(): Promise<{ min: number; max: number; presets: { label: string; min: string; max: string }[] }> {
+    try {
+      const res = await axios.get(`${API_URL}/metadata/budget-ranges`, { timeout: 3000 });
+      if (res.data && res.data.presets) {
+        return res.data;
+      }
+      return {
+        min: 0,
+        max: 100000000,
+        presets: [
+          { label: 'Tất cả', min: '', max: '' },
+          { label: '< 5 Tr', min: '0', max: '5000000' },
+          { label: '5M - 20M', min: '5000000', max: '20000000' },
+          { label: '20M - 50M', min: '20000000', max: '50000000' },
+          { label: '> 50 Tr', min: '50000000', max: '' },
+        ]
+      };
+    } catch {
+      return {
+        min: 0,
+        max: 100000000,
+        presets: [
+          { label: 'Tất cả', min: '', max: '' },
+          { label: '< 5 Tr', min: '0', max: '5000000' },
+          { label: '5M - 20M', min: '5000000', max: '20000000' },
+          { label: '20M - 50M', min: '20000000', max: '50000000' },
+          { label: '> 50 Tr', min: '50000000', max: '' },
+        ]
+      };
+    }
+  }
 };

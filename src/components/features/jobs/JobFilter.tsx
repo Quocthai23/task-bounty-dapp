@@ -25,6 +25,8 @@ interface JobFilterProps {
   setMaxPrice: (price: string) => void;
   escrowOnly?: boolean;
   setEscrowOnly?: (val: boolean) => void;
+  budgetPresets?: { label: string; min: string; max: string }[];
+  budgetMax?: number;
 }
 
 const POSITION_ICONS: Record<string, string> = {
@@ -43,7 +45,7 @@ const POSITION_ICONS: Record<string, string> = {
   'Database': '🗄️'
 };
 
-const BUDGET_PRESETS = [
+const DEFAULT_BUDGET_PRESETS = [
   { label: 'Tất cả', min: '', max: '' },
   { label: '< 5 Tr', min: '0', max: '5000000' },
   { label: '5M - 20M', min: '5000000', max: '20000000' },
@@ -63,8 +65,11 @@ export const JobFilter: React.FC<JobFilterProps> = ({
   maxPrice,
   setMaxPrice,
   escrowOnly = false,
-  setEscrowOnly
+  setEscrowOnly,
+  budgetPresets,
+  budgetMax = 100000000,
 }) => {
+  const activePresets = budgetPresets && budgetPresets.length > 0 ? budgetPresets : DEFAULT_BUDGET_PRESETS;
   const toggleSkill = (skill: string) => {
     if (selectedSkills.includes(skill)) {
       setSelectedSkills(selectedSkills.filter(s => s !== skill));
@@ -192,7 +197,7 @@ export const JobFilter: React.FC<JobFilterProps> = ({
 
         {/* Quick Presets */}
         <div className="grid grid-cols-3 gap-1.5 mb-4">
-          {BUDGET_PRESETS.map((preset) => {
+          {activePresets.map((preset) => {
             const isActive = minPrice === preset.min && maxPrice === preset.max;
             return (
               <button
@@ -217,9 +222,9 @@ export const JobFilter: React.FC<JobFilterProps> = ({
         <div className="px-2 mb-4">
           <Slider 
             min={0}
-            max={100000000}
+            max={budgetMax}
             step={1000000}
-            value={[minPrice ? parseInt(minPrice) : 0, maxPrice ? parseInt(maxPrice) : 100000000]}
+            value={[minPrice ? parseInt(minPrice) : 0, maxPrice ? parseInt(maxPrice) : budgetMax]}
             onValueChange={(val) => {
               setMinPrice(val[0].toString());
               setMaxPrice(val[1].toString());

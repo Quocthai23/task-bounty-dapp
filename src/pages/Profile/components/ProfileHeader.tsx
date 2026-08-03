@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/shared/atoms/button';
 import { BadgeCheck, Edit2 } from 'lucide-react';
 import { EditProfileModal } from './EditProfileModal';
+import { UserAvatar } from '@/components/shared/atoms/Avatar';
 
 interface ProfileHeaderProps {
   user: any; // Using any for now as the exact type matching frontend usage is complex, will fix if possible.
@@ -29,8 +30,8 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, activeTab, o
         {/* Profile Info */}
         <div className="px-8 pb-4 relative flex flex-col md:flex-row md:items-center md:justify-between -mt-10 z-10">
           <div className="flex flex-col md:flex-row items-center md:items-center gap-4">
-            <div className="w-20 h-20 rounded-full border-4 border-white overflow-hidden bg-white shadow-lg shrink-0">
-              <img src={user?.avatarUrl || "/assets/avatar.png"} alt="Avatar" className="w-full h-full object-cover" />
+            <div className="rounded-full border-4 border-white overflow-hidden bg-white shadow-lg shrink-0">
+              <UserAvatar user={user} size="2xl" />
             </div>
             <div className="text-center md:text-left mt-2 md:mt-0">
               <h1 className="text-2xl font-black text-neutral-900 flex items-center justify-center md:justify-start gap-2">

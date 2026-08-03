@@ -4,7 +4,7 @@ import { projectService } from '@/services/project.service';
 import { Card } from '@/components/shared/atoms/card';
 import { Badge } from '@/components/shared/atoms/badge';
 import { Input } from '@/components/shared/atoms/input';
-import { SkeletonCard } from '@/components/shared/atoms/Skeleton';
+import { SkeletonCard } from '@/components/shared/atoms/skeleton';
 import type { ProjectResponseDto } from '@/types/api.types';
 
 export const ProjectList: React.FC = () => {

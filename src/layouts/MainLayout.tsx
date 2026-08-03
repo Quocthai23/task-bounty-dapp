@@ -6,8 +6,9 @@ import { authService } from '@/services/auth.service';
 import { notificationService } from '@/services/notification.service';
 import { useAuthStore } from '@/store/authStore';
 import { useTheme } from '@/hooks/useTheme';
-import { Sun, Moon, Bell, LogOut, ChevronLeft, ChevronRight, Search, LayoutGrid, AlertCircle, Settings, ListTodo, Wallet as WalletIcon, Briefcase } from 'lucide-react';
+import { Sun, Moon, Bell, LogOut, ChevronLeft, ChevronRight, Search, LayoutGrid, AlertCircle, Settings, ListTodo, Wallet as WalletIcon, Briefcase, History } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { UserAvatar } from '@/components/shared/atoms/Avatar';
 import { PersonalInfoModal } from '@/components/features/profile/PersonalInfoModal';
 import { SkillsModal } from '@/components/features/profile/SkillsModal';
 import { ChangePasswordModal } from '@/components/features/profile/ChangePasswordModal';
@@ -83,7 +84,7 @@ export const MainLayout: React.FC = () => {
     { name: t('sidebar.myProfile'), path: '/profile', icon: AlertCircle },
     { name: t('sidebar.payment') || 'Payment', path: '/wallet', icon: WalletIcon },
     { name: t('sidebar.myTask'), path: '/my-tasks', icon: ListTodo },
-    { name: t('sidebar.taskHistory'), path: '/history', icon: ListTodo },
+    { name: t('sidebar.taskHistory') || 'Lịch Sử Task', path: '/history', icon: History },
     { name: t('sidebar.settings'), path: '#', icon: Settings, action: () => setIsSettingsOpen(true) },
   ];
 
@@ -146,12 +147,16 @@ export const MainLayout: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-3 ml-2">
-            <img src="/assets/avatar.png" alt="Avatar" className="w-10 h-10 rounded-full border-2 border-[var(--app-surface)] shadow-sm object-cover transition-colors" />
+            <Link to="/profile" className="hover:opacity-90 transition-opacity">
+              <UserAvatar user={user} size="md" showOnlineStatus />
+            </Link>
             <div className="hidden md:flex flex-col">
               <span className="text-sm font-bold text-[var(--app-text)] leading-tight">
                 {isLoading ? '...' : (user as any)?.firstName || (user as any)?.username || 'User'}
               </span>
-              <span className="text-xs text-[var(--color-primary-500)] font-medium leading-tight">{t('header.role')}</span>
+              <span className="text-xs text-[var(--color-primary-500)] font-medium leading-tight">
+                {(user as any)?.profile?.title || t('header.role')}
+              </span>
             </div>
           </div>
         </div>
@@ -175,13 +180,17 @@ export const MainLayout: React.FC = () => {
             style={{ backgroundColor: 'var(--color-primary-500)' }}
           >
             {/* Avatar Overlap */}
-            <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 rounded-full border-4 border-white overflow-hidden shadow-md z-20">
-              <img src="/assets/avatar.png" alt="Profile" className="w-full h-full object-cover" />
-            </div>
+            <Link 
+              to="/profile" 
+              className="absolute -top-10 left-1/2 -translate-x-1/2 rounded-full border-4 border-white dark:border-slate-900 shadow-lg z-20 hover:scale-105 transition-transform"
+              title="Chỉnh sửa hồ sơ"
+            >
+              <UserAvatar user={user} size="2xl" showOnlineStatus />
+            </Link>
 
-            <div className="pt-16 pb-6 px-6 flex flex-col items-center border-b border-white/10 shrink-0">
-              <h3 className="text-white font-bold text-lg">{(user as any)?.firstName || (user as any)?.username || 'User'}</h3>
-              <p className="text-white/70 text-xs">{(user as any)?.email}</p>
+            <div className="pt-14 pb-5 px-6 flex flex-col items-center border-b border-white/10 shrink-0">
+              <h3 className="text-white font-bold text-lg leading-tight">{(user as any)?.firstName || (user as any)?.username || 'User'}</h3>
+              <p className="text-white/70 text-xs font-medium truncate max-w-[200px]">{(user as any)?.email}</p>
             </div>
 
             <nav className="flex-1 py-6 px-4 space-y-2 overflow-y-auto">
@@ -245,7 +254,7 @@ export const MainLayout: React.FC = () => {
         )}
 
         {/* Main Content Area */}
-        <main className="flex-1 flex flex-col h-full overflow-hidden p-8 transition-all duration-300">
+        <main className="flex-1 flex flex-col h-full overflow-y-auto custom-scrollbar p-4 md:p-6 transition-all duration-300">
           <Outlet context={{ isSidebarOpen, setIsSidebarOpen }} />
         </main>
       </div>

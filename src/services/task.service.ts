@@ -28,5 +28,17 @@ export const taskService = {
   getJoinedTasks: async (page = 1, limit = 10) => {
     const response = await api.get('/tasks/joined', { params: { page, limit } });
     return response.data;
+  },
+  getTaskHistory: async (params?: {
+    projectId?: string;
+    action?: string;
+    search?: string;
+    startDate?: string;
+    endDate?: string;
+    page?: number;
+    limit?: number;
+  }) => {
+    const response = await api.get('/tasks/history', { params });
+    return response.data;
   }
 };

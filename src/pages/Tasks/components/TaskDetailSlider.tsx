@@ -1,9 +1,31 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { taskService } from '@/services/task.service';
-import { X, Send, Clock, CheckCircle, AlertCircle, Circle, DollarSign, Calendar } from 'lucide-react';
+import { 
+  X, 
+  Send, 
+  Clock, 
+  CheckCircle2, 
+  AlertCircle, 
+  Circle, 
+  Coins, 
+  Calendar,
+  User,
+  ShieldCheck,
+  Tag,
+  Copy,
+  ChevronRight,
+  Sparkles,
+  MessageSquare,
+  FileText,
+  Layers,
+  ArrowRight
+} from 'lucide-react';
 import { Button } from '@/components/shared/atoms/button';
 import { toast } from 'sonner';
+import { format, formatDistanceToNow } from 'date-fns';
+import { vi } from 'date-fns/locale';
+import { UserAvatar } from '@/components/shared/atoms/Avatar';
 
 interface TaskDetailSliderProps {
   task: any | null;
@@ -11,14 +33,46 @@ interface TaskDetailSliderProps {
   onStatusChange: (taskId: string, status: string) => void;
 }
 
+const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; border: string; icon: any }> = {
+  OPEN: { 
+    label: 'To Do (Cần làm)', 
+    bg: 'bg-slate-100 dark:bg-slate-800', 
+    text: 'text-slate-700 dark:text-slate-300', 
+    border: 'border-slate-300 dark:border-slate-700',
+    icon: <Circle className="w-3.5 h-3.5" />
+  },
+  IN_PROGRESS: { 
+    label: 'In Progress (Đang làm)', 
+    bg: 'bg-blue-50 dark:bg-blue-950/50', 
+    text: 'text-blue-700 dark:text-blue-300', 
+    border: 'border-blue-200 dark:border-blue-800',
+    icon: <Clock className="w-3.5 h-3.5" />
+  },
+  REVIEW: { 
+    label: 'In Review (Đang duyệt)', 
+    bg: 'bg-amber-50 dark:bg-amber-950/50', 
+    text: 'text-amber-700 dark:text-amber-300', 
+    border: 'border-amber-200 dark:border-amber-800',
+    icon: <AlertCircle className="w-3.5 h-3.5" />
+  },
+  DONE: { 
+    label: 'Done (Hoàn thành)', 
+    bg: 'bg-emerald-50 dark:bg-emerald-950/50', 
+    text: 'text-emerald-700 dark:text-emerald-300', 
+    border: 'border-emerald-200 dark:border-emerald-800',
+    icon: <CheckCircle2 className="w-3.5 h-3.5" />
+  },
+};
+
 export const TaskDetailSlider: React.FC<TaskDetailSliderProps> = ({ task, onClose, onStatusChange }) => {
   const queryClient = useQueryClient();
   const [commentText, setCommentText] = useState('');
+  const [activeTab, setActiveTab] = useState<'details' | 'comments'>('details');
 
   const { data: commentsData, isLoading: commentsLoading } = useQuery({
     queryKey: ['task-comments', task?.id],
     queryFn: () => taskService.getTaskComments(task!.id),
-    enabled: !!task
+    enabled: !!task?.id
   });
 
   const commentMutation = useMutation({
@@ -26,120 +80,298 @@ export const TaskDetailSlider: React.FC<TaskDetailSliderProps> = ({ task, onClos
     onSuccess: () => {
       setCommentText('');
       queryClient.invalidateQueries({ queryKey: ['task-comments', task!.id] });
+      toast.success('Đã gửi phản hồi thành công!');
     },
-    onError: () => toast.error("Failed to post comment")
+    onError: () => toast.error('Không thể gửi bình luận. Vui lòng thử lại!')
   });
 
   if (!task) return null;
 
-  const comments = commentsData || [];
+  const comments = Array.isArray(commentsData) ? commentsData : [];
+  const currentStatus = STATUS_CONFIG[task.status] || STATUS_CONFIG.OPEN;
+  const budget = Number(task.budget || 0);
 
   const handlePostComment = (e: React.FormEvent) => {
     e.preventDefault();
     if (!commentText.trim()) return;
-    commentMutation.mutate(commentText);
+    commentMutation.mutate(commentText.trim());
   };
 
+  const handleCopyId = () => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(task.id);
+      toast.success('Đã sao chép Task ID!');
+    }
+  };
+
+  let formattedDeadline = '';
+  if (task.deadline) {
+    try {
+      formattedDeadline = format(new Date(task.deadline), 'dd/MM/yyyy');
+    } catch {
+      formattedDeadline = '';
+    }
+  }
+
+  let formattedCreated = 'Gần đây';
+  if (task.createdAt) {
+    try {
+      formattedCreated = formatDistanceToNow(new Date(task.createdAt), { addSuffix: true, locale: vi });
+    } catch {
+      formattedCreated = 'Gần đây';
+    }
+  }
+
   return (
-    <div className="fixed inset-0 z-50 flex justify-end animate-in fade-in bg-black/20 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex justify-end animate-in fade-in bg-slate-900/60 backdrop-blur-xs">
       <div className="absolute inset-0" onClick={onClose} />
       
-      <div className="relative w-full max-w-2xl bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right-8 duration-300">
+      <div className="relative w-full max-w-2xl bg-white dark:bg-slate-900 h-full shadow-2xl flex flex-col animate-in slide-in-from-right-8 duration-300 border-l border-slate-200 dark:border-slate-800">
         
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-neutral-100 flex items-center justify-between shrink-0 bg-white z-10">
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-black text-primary-600 bg-primary-50 px-3 py-1 rounded-full uppercase tracking-wider">
-              {task.project?.title || 'Unknown Project'}
+        {/* ========================================================================= */}
+        {/* HEADER BAR                                                                */}
+        {/* ========================================================================= */}
+        <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between shrink-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md z-10">
+          <div className="flex items-center gap-2 overflow-hidden">
+            <span className="text-xs font-bold text-blue-600 bg-blue-50 dark:bg-blue-950/50 dark:text-blue-300 border border-blue-200 dark:border-blue-800 px-3 py-1 rounded-full uppercase tracking-wider truncate max-w-[200px]">
+              {task.project?.title || 'Dự Án'}
             </span>
+            <button
+              onClick={handleCopyId}
+              className="text-[11px] font-mono text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 flex items-center gap-1 px-2 py-0.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              title="Sao chép ID"
+            >
+              #{task.id?.slice(0, 8)} <Copy className="w-3 h-3" />
+            </button>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-neutral-100 rounded-full text-neutral-500 transition-colors">
-            <X size={20} />
+
+          <button 
+            onClick={onClose} 
+            className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors cursor-pointer"
+          >
+            <X size={18} />
           </button>
         </div>
 
-        {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-8 bg-neutral-50/30">
+        {/* ========================================================================= */}
+        {/* SCROLLABLE BODY CONTENT                                                   */}
+        {/* ========================================================================= */}
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-6 sm:p-7 space-y-6">
           
-          <div className="space-y-4">
-            <h2 className="text-3xl font-black text-neutral-900 leading-tight">{task.title}</h2>
+          {/* Title & Priority */}
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700">
+                Độ ưu tiên: {task.priority || 'Tiêu chuẩn'}
+              </span>
+              <span className="text-[11px] text-slate-400">
+                Tạo {formattedCreated}
+              </span>
+            </div>
+
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white leading-tight">
+              {task.title}
+            </h1>
+          </div>
+
+          {/* Status & Bounty Cards Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             
-            <div className="flex flex-wrap items-center gap-4 text-sm font-semibold text-neutral-500">
-              <div className="flex items-center gap-2 bg-white px-4 py-2 border border-neutral-200 rounded-xl shadow-sm">
-                <span className="text-neutral-400">Status:</span>
+            {/* Status Selector Card */}
+            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/80 space-y-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                <Layers className="w-3.5 h-3.5 text-blue-500" /> Trạng Thái Nhiệm Vụ
+              </span>
+              <div className="relative">
                 <select 
                   value={task.status} 
                   onChange={(e) => onStatusChange(task.id, e.target.value)}
-                  className="bg-transparent font-black text-neutral-900 outline-none cursor-pointer"
+                  className={`w-full px-3 py-2 rounded-xl font-bold text-xs border ${currentStatus.bg} ${currentStatus.text} ${currentStatus.border} outline-none cursor-pointer appearance-none`}
                 >
-                  <option value="OPEN">To Do</option>
-                  <option value="IN_PROGRESS">In Progress</option>
-                  <option value="REVIEW">In Review</option>
-                  <option value="DONE">Done</option>
+                  <option value="OPEN">⚪ To Do (Cần làm)</option>
+                  <option value="IN_PROGRESS">🔵 In Progress (Đang làm)</option>
+                  <option value="REVIEW">🟡 In Review (Đang duyệt)</option>
+                  <option value="DONE">🟢 Done (Hoàn thành)</option>
                 </select>
               </div>
+            </div>
 
-              {task.budget > 0 && (
-                <div className="flex items-center gap-1.5 bg-green-50 text-green-700 px-4 py-2 rounded-xl font-black">
-                  <DollarSign size={16} /> {task.budget.toLocaleString()} ₫
-                </div>
-              )}
+            {/* Bounty Card */}
+            <div className="p-4 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-teal-500/5 border border-emerald-500/30 space-y-1">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5">
+                <Coins className="w-3.5 h-3.5 text-emerald-600" /> Thù Lao Nhiệm Vụ
+              </span>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-black font-mono text-emerald-600 dark:text-emerald-400">
+                  {budget > 0 ? `${budget.toLocaleString()} ₫` : 'Theo tổng dự án'}
+                </span>
+              </div>
+              <span className="text-[10px] text-emerald-700/80 dark:text-emerald-300/80 flex items-center gap-1">
+                <ShieldCheck className="w-3 h-3" /> Bảo chứng ký quỹ Escrow
+              </span>
+            </div>
+
+          </div>
+
+          {/* Assignee & Deadline Bar */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            {/* Assignee */}
+            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/80 flex items-center gap-3">
+              <UserAvatar user={task.assignee} size="md" />
+              <div>
+                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Người Phụ Trách</span>
+                <span className="text-xs font-bold text-slate-900 dark:text-white">
+                  {task.assignee ? `${task.assignee.firstName || ''} ${task.assignee.lastName || task.assignee.email || ''}` : 'Chưa phân công'}
+                </span>
+              </div>
+            </div>
+
+            {/* Deadline */}
+            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/80 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 flex items-center justify-center font-bold">
+                <Calendar size={18} />
+              </div>
+              <div>
+                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Hạn Hoàn Thành</span>
+                <span className="text-xs font-bold text-slate-900 dark:text-white">
+                  {formattedDeadline || 'Không có thời hạn cố định'}
+                </span>
+              </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 border border-neutral-200 shadow-sm">
-            <h3 className="text-sm font-black uppercase text-neutral-400 tracking-wider mb-4">Description</h3>
-            <div className="text-neutral-700 leading-relaxed whitespace-pre-wrap">
-              {task.description || <span className="text-neutral-400 italic">No description provided.</span>}
-            </div>
+          {/* Navigation Sub-Tabs */}
+          <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-1">
+            <button
+              onClick={() => setActiveTab('details')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                activeTab === 'details'
+                  ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-xs'
+                  : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+              }`}
+            >
+              <FileText className="w-3.5 h-3.5" /> Mô Tả Chi Tiết
+            </button>
+
+            <button
+              onClick={() => setActiveTab('comments')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                activeTab === 'comments'
+                  ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-xs'
+                  : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+              }`}
+            >
+              <MessageSquare className="w-3.5 h-3.5" /> Thảo Luận ({comments.length})
+            </button>
           </div>
 
-          <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm overflow-hidden flex flex-col h-[400px]">
-            <div className="p-4 border-b border-neutral-100 bg-neutral-50/50">
-              <h3 className="text-sm font-black uppercase text-neutral-500 tracking-wider">Discussion & Activity</h3>
+          {/* TAB 1: DETAILS */}
+          {activeTab === 'details' && (
+            <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/80 space-y-3 animate-in fade-in">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                Nội Dung Thực Hiện & Tiêu Chuẩn Nghiệm Thu
+              </h3>
+              <div className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
+                {task.description || <span className="text-slate-400 italic">Không có mô tả chi tiết cho nhiệm vụ này.</span>}
+              </div>
             </div>
-            
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
-              {commentsLoading ? (
-                <div className="text-center text-neutral-400 text-sm font-medium py-4">Loading comments...</div>
-              ) : comments.length === 0 ? (
-                <div className="text-center text-neutral-400 text-sm font-medium py-8 italic">No comments yet. Start the conversation!</div>
-              ) : (
-                comments.map((comment: any) => (
-                  <div key={comment.id} className="flex gap-4">
-                    <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${comment.user?.id}`} className="w-8 h-8 rounded-full border border-neutral-200 shrink-0 bg-neutral-50" />
-                    <div className="flex-1">
-                      <div className="flex items-baseline gap-2 mb-1">
-                        <span className="font-bold text-neutral-900 text-sm">{comment.user?.firstName || 'User'}</span>
-                        <span className="text-xs text-neutral-400 font-medium">{new Date(comment.createdAt).toLocaleString()}</span>
-                      </div>
-                      <div className="bg-neutral-100/80 px-4 py-2.5 rounded-2xl rounded-tl-sm text-sm text-neutral-700">
-                        {comment.content}
+          )}
+
+          {/* TAB 2: COMMENTS / ACTIVITY */}
+          {activeTab === 'comments' && (
+            <div className="space-y-4 animate-in fade-in">
+              <div className="space-y-3 max-h-80 overflow-y-auto custom-scrollbar pr-1">
+                {commentsLoading ? (
+                  <div className="text-center text-slate-400 text-xs py-6">Đang tải thảo luận...</div>
+                ) : comments.length === 0 ? (
+                  <div className="text-center text-slate-400 text-xs py-8 italic bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700">
+                    Chưa có bình luận nào. Hãy gửi phản hồi đầu tiên!
+                  </div>
+                ) : (
+                  comments.map((comment: any) => (
+                    <div key={comment.id} className="flex gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60">
+                      <UserAvatar user={comment.user} size="sm" />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-baseline gap-2 mb-1">
+                          <span className="font-bold text-slate-900 dark:text-white text-xs">
+                            {comment.user?.firstName ? `${comment.user.firstName} ${comment.user.lastName || ''}` : comment.user?.email || 'Thành viên'}
+                          </span>
+                          <span className="text-[10px] text-slate-400">
+                            {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true, locale: vi })}
+                          </span>
+                        </div>
+                        <div className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed break-words">
+                          {comment.content}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))
-              )}
-            </div>
+                  ))
+                )}
+              </div>
 
-            <div className="p-4 border-t border-neutral-100 bg-white">
-              <form onSubmit={handlePostComment} className="flex gap-2">
-                <input 
-                  type="text" 
+              {/* Add Comment Form */}
+              <form onSubmit={handlePostComment} className="flex gap-2 pt-2">
+                <input
+                  type="text"
                   value={commentText}
                   onChange={(e) => setCommentText(e.target.value)}
-                  placeholder="Write a comment..." 
-                  className="flex-1 px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 text-sm"
+                  placeholder="Viết phản hồi hoặc cập nhật tiến độ..."
+                  className="flex-1 px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                <Button type="submit" disabled={!commentText.trim() || commentMutation.isPending} className="bg-primary-500 hover:bg-primary-600 text-white rounded-xl px-4 shrink-0 shadow-md">
-                  <Send size={18} />
+                <Button
+                  type="submit"
+                  disabled={commentMutation.isPending || !commentText.trim()}
+                  className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs px-4 flex items-center gap-1.5"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  <span>Gửi</span>
                 </Button>
               </form>
             </div>
-          </div>
+          )}
 
         </div>
+
+        {/* ========================================================================= */}
+        {/* FOOTER QUICK TRANSITION ACTIONS                                           */}
+        {/* ========================================================================= */}
+        <div className="p-4 sm:p-5 border-t border-slate-100 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md shrink-0 flex items-center justify-between gap-2">
+          <span className="text-xs font-bold text-slate-500">
+            Chuyển nhanh trạng thái:
+          </span>
+
+          <div className="flex items-center gap-2">
+            {task.status !== 'IN_PROGRESS' && (
+              <Button
+                onClick={() => onStatusChange(task.id, 'IN_PROGRESS')}
+                className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl h-9 px-3.5"
+              >
+                Bắt đầu làm 🚀
+              </Button>
+            )}
+
+            {task.status === 'IN_PROGRESS' && (
+              <Button
+                onClick={() => onStatusChange(task.id, 'REVIEW')}
+                className="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl h-9 px-3.5"
+              >
+                Gửi Review 🔍
+              </Button>
+            )}
+
+            {task.status === 'REVIEW' && (
+              <Button
+                onClick={() => onStatusChange(task.id, 'DONE')}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl h-9 px-3.5"
+              >
+                Hoàn thành ✅
+              </Button>
+            )}
+          </div>
+        </div>
+
       </div>
     </div>
   );
 };
+export default TaskDetailSlider;

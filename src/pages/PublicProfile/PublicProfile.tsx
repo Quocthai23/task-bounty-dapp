@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { api } from '@/services/api';
 import { BadgeCheck, Calendar, Briefcase, Mail, Code, Globe, Star } from 'lucide-react';
 import { Button } from '@/components/shared/atoms/button';
+import { UserAvatar } from '@/components/shared/atoms/Avatar';
 
 export const PublicProfile: React.FC = () => {
   const { username } = useParams<{ username: string }>();
@@ -19,7 +20,7 @@ export const PublicProfile: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-full min-h-[500px]">
+      <div className="flex-1 flex items-center justify-center min-h-[60vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
       </div>
     );
@@ -27,21 +28,32 @@ export const PublicProfile: React.FC = () => {
 
   if (isError || !profile) {
     return (
-      <div className="flex flex-col items-center justify-center h-full min-h-[500px] text-neutral-500">
-        <h2 className="text-2xl font-black mb-2 text-neutral-900">Profile Not Found</h2>
-        <p className="mb-6">The user @{username} does not exist or their profile is private.</p>
-        <Button onClick={() => navigate('/dashboard')} variant="outline">Back to Dashboard</Button>
+      <div className="flex-1 flex flex-col items-center justify-center min-h-[60vh] gap-4">
+        <h2 className="text-2xl font-bold text-neutral-800">Không tìm thấy hồ sơ người dùng</h2>
+        <p className="text-neutral-500">Người dùng @{username} có thể không tồn tại hoặc đã thay đổi thông tin.</p>
+        <Button onClick={() => navigate('/dashboard')} variant="primary-contained">Về trang chủ</Button>
       </div>
     );
   }
 
-  const role = profile.profile?.title || 'Member';
-  const joinDate = new Date(profile.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  const role = profile.profile?.title || 'Chuyên gia Web3 / Freelancer';
+  const joinDate = new Date(profile.createdAt).toLocaleDateString('vi-VN', { month: 'long', year: 'numeric' });
   const skills = profile.profile?.skills ? JSON.parse(profile.profile.skills) : [];
   const languages = profile.profile?.languages ? JSON.parse(profile.profile.languages) : [];
 
   return (
-    <div className="max-w-6xl mx-auto p-4 md:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="flex-1 overflow-y-auto p-4 md:p-8 bg-neutral-50/50">
+      {/* Top Navigation */}
+      <div className="mb-6">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={() => navigate(-1)}
+          className="rounded-full bg-white font-bold"
+        >
+          ← Quay lại
+        </Button>
+      </div>
 
       {/* Hero Bento Box */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
@@ -51,8 +63,8 @@ export const PublicProfile: React.FC = () => {
             <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px]"></div>
           </div>
           <div className="px-8 pb-8 relative flex-1 flex flex-col">
-            <div className="w-32 h-32 rounded-3xl border-4 border-white bg-white shadow-xl -mt-16 mb-4 overflow-hidden shrink-0">
-              <img src={profile.avatarUrl || "/assets/avatar.png"} alt={profile.firstName} className="w-full h-full object-cover" />
+            <div className="rounded-3xl border-4 border-white bg-white shadow-xl -mt-16 mb-4 overflow-hidden shrink-0 inline-block w-fit">
+              <UserAvatar user={profile} size="2xl" />
             </div>
             <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
               <div>
@@ -113,27 +125,39 @@ export const PublicProfile: React.FC = () => {
             </p>
           </div>
 
-          {/* Work History (Mocked for UI) */}
+          {/* Real Work & Project History */}
           <div className="bg-white rounded-3xl p-8 border border-neutral-100 shadow-sm">
-            <h3 className="text-xl font-black text-neutral-900 mb-6">Recent Work</h3>
-            {profile.stats?.totalJobs > 0 ? (
+            <h3 className="text-xl font-black text-neutral-900 mb-6">Lịch sử Dự Án & Nhiệm Vụ</h3>
+            {(profile.completedTasks?.length > 0 || profile.projects?.length > 0) ? (
               <div className="space-y-4">
-                {[1, 2].map((i) => (
-                  <div key={i} className="p-4 rounded-2xl border border-neutral-100 bg-neutral-50/50 hover:bg-neutral-50 transition-colors">
-                    <div className="flex justify-between items-start mb-2">
-                      <h4 className="font-bold text-neutral-900 text-lg">Senior Smart Contract Developer</h4>
-                      <span className="bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full">Completed</span>
+                {profile.completedTasks?.map((t: any) => (
+                  <div key={t.id} className="p-4 rounded-2xl border border-neutral-100 bg-neutral-50/50 hover:bg-neutral-50 transition-colors">
+                    <div className="flex justify-between items-start mb-1">
+                      <h4 className="font-bold text-neutral-900 text-base">{t.title}</h4>
+                      <span className="bg-emerald-100 text-emerald-700 text-[11px] font-bold px-2.5 py-0.5 rounded-full">Đã hoàn thành</span>
                     </div>
-                    <p className="text-neutral-500 text-sm mb-3">Developed and audited a staking contract on Ethereum with zero vulnerabilities.</p>
+                    {t.budget > 0 && (
+                      <p className="text-neutral-500 text-xs font-mono font-bold mb-2">Thù lao: {Number(t.budget).toLocaleString()} ₫</p>
+                    )}
                     <div className="flex items-center gap-2">
-                      <div className="flex text-yellow-400"><Star size={14} fill="currentColor" /><Star size={14} fill="currentColor" /><Star size={14} fill="currentColor" /><Star size={14} fill="currentColor" /><Star size={14} fill="currentColor" /></div>
+                      <div className="flex text-amber-400"><Star size={13} fill="currentColor" /><Star size={13} fill="currentColor" /><Star size={13} fill="currentColor" /><Star size={13} fill="currentColor" /><Star size={13} fill="currentColor" /></div>
                       <span className="text-xs font-bold text-neutral-400">5.0</span>
                     </div>
                   </div>
                 ))}
+
+                {profile.projects?.map((p: any) => (
+                  <div key={p.id} className="p-4 rounded-2xl border border-neutral-100 bg-neutral-50/50 hover:bg-neutral-50 transition-colors">
+                    <div className="flex justify-between items-start mb-1">
+                      <h4 className="font-bold text-neutral-900 text-base">{p.title}</h4>
+                      <span className="bg-blue-100 text-blue-700 text-[11px] font-bold px-2.5 py-0.5 rounded-full">Dự án tham gia</span>
+                    </div>
+                    <p className="text-neutral-500 text-xs">Loại: {p.type} • Ngân sách: {Number(p.budget || 0).toLocaleString()} {p.currency || 'USD'}</p>
+                  </div>
+                ))}
               </div>
             ) : (
-              <p className="text-neutral-500 font-medium text-center py-8">No public jobs completed yet.</p>
+              <p className="text-neutral-500 font-medium text-center py-8">Chưa có nhiệm vụ hoặc dự án công khai nào.</p>
             )}
           </div>
         </div>

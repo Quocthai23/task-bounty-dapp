@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { metadataService } from '@/services/metadata.service';
 import { 
   Dialog, 
   DialogContent 
@@ -25,7 +27,7 @@ interface CreateProjectModalProps {
   onSubmit: (data: any) => Promise<void>;
 }
 
-const POPULAR_SKILLS = [
+const DEFAULT_POPULAR_SKILLS = [
   'React', 'TypeScript', 'Solidity', 'Node.js', 'Next.js', 
   'Smart Contract', 'Rust', 'TailwindCSS', 'Python', 'Web3.js', 'UI/UX'
 ];
@@ -44,6 +46,13 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
   onClose,
   onSubmit,
 }) => {
+  const { data: dynamicSkills } = useQuery({
+    queryKey: ['metadata-skills'],
+    queryFn: () => metadataService.getSkills(),
+  });
+
+  const availableSkills = (dynamicSkills && dynamicSkills.length > 0) ? dynamicSkills : DEFAULT_POPULAR_SKILLS;
+
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [budget, setBudget] = useState<number>(1000);
@@ -237,8 +246,8 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
                   Kỹ Năng Yêu Cầu (Tech Stack)
                 </label>
-                <div className="flex flex-wrap gap-1.5 mb-2.5">
-                  {POPULAR_SKILLS.map((skill) => {
+                <div className="flex flex-wrap gap-1.5 mb-2.5 max-h-36 overflow-y-auto custom-scrollbar pr-1">
+                  {availableSkills.map((skill: string) => {
                     const isSelected = selectedSkills.includes(skill);
                     return (
                       <button
