@@ -1,0 +1,26 @@
+{
+  "sidebar": {
+    "discover": "Khám phá",
+    "myProfile": "Hồ sơ của tôi",
+    "payment": "Thanh toán",
+    "myTask": "Công việc của tôi",
+    "taskHistory": "Lịch sử công việc",
+    "settings": "Cài đặt",
+    "logout": "Đăng xuất"
+  },
+  "settings": {
+    "title": "Cài đặt chung",
+    "language": "Ngôn ngữ hiển thị",
+    "english": "Tiếng Anh",
+    "vietnamese": "Tiếng Việt",
+    "theme": "Giao diện",
+    "darkMode": "Chế độ ban đêm",
+    "darkModeDesc": "Bật/tắt chế độ màn hình tối"
+  },
+  "header": {
+    "searchPlaceholder": "Tìm kiếm công việc ở đây...",
+    "notifications": "Thông báo",
+    "noNotifications": "Không có thông báo mới",
+    "role": "Lập trình viên"
+  }
+}

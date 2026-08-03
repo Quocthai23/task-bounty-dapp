@@ -2,20 +2,27 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { userService } from '@/services/user.service';
+import { authService } from '@/services/auth.service';
+import { notificationService } from '@/services/notification.service';
+import { useAuthStore } from '@/store/authStore';
 import { useTheme } from '@/hooks/useTheme';
-import { Sun, Moon, Bell, LogOut, User, Key, ChevronLeft, ChevronRight, Search, LayoutGrid, AlertCircle, Settings, HelpCircle, ListTodo } from 'lucide-react';
+import { Sun, Moon, Bell, LogOut, ChevronLeft, ChevronRight, Search, LayoutGrid, AlertCircle, Settings, ListTodo, Wallet as WalletIcon, Briefcase } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PersonalInfoModal } from '@/components/features/profile/PersonalInfoModal';
 import { SkillsModal } from '@/components/features/profile/SkillsModal';
 import { ChangePasswordModal } from '@/components/features/profile/ChangePasswordModal';
+import { SettingsModal } from '@/components/features/settings/SettingsModal';
+import { useTranslation } from 'react-i18next';
 
 export const MainLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
+  const { t } = useTranslation();
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const [activeModal, setActiveModal] = useState<'personal' | 'skills' | 'password' | null>(null);
   const notifRef = useRef<HTMLDivElement>(null);
@@ -25,20 +32,15 @@ export const MainLayout: React.FC = () => {
     queryFn: userService.getMe,
   });
 
+  const logoutStore = useAuthStore(state => state.logout);
+
   const handleLogout = async () => {
     try {
-      // Call logout API if needed
-      await fetch('/api/auth/logout', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-        }
-      });
+      await authService.logout();
     } catch (e) {
-      // Ignore errors on logout
+      console.error('Logout error', e);
     }
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
+    logoutStore();
     navigate('/login');
   };
 
@@ -52,22 +54,46 @@ export const MainLayout: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (user) {
+      notificationService.connectSocket();
+      
+      const handleRiskAlert = (data: any) => {
+        // You could use toast or custom UI here
+        console.log('Risk Alert:', data);
+      };
+      const handleBalanceWarning = (data: any) => {
+        console.log('Balance Warning:', data);
+      };
+
+      notificationService.socket?.on('risk-alert', handleRiskAlert);
+      notificationService.socket?.on('balance-warning', handleBalanceWarning);
+
+      return () => {
+        notificationService.socket?.off('risk-alert', handleRiskAlert);
+        notificationService.socket?.off('balance-warning', handleBalanceWarning);
+        notificationService.disconnectSocket();
+      };
+    }
+  }, [user]);
+
   const navItems = [
-    { name: 'Discover', path: '/dashboard', icon: LayoutGrid },
-    { name: 'My Profile', path: '/profile', icon: AlertCircle },
-    { name: 'My Task', path: '/my-tasks', icon: ListTodo },
-    { name: 'Task History', path: '/history', icon: ListTodo },
-    { name: 'Settings', path: '/settings', icon: Settings },
-    { name: 'Help', path: '/help', icon: HelpCircle },
+    { name: t('sidebar.discover'), path: '/dashboard', icon: LayoutGrid },
+    { name: 'Quản Lý Job (PM)', path: '/manage-jobs', icon: Briefcase },
+    { name: t('sidebar.myProfile'), path: '/profile', icon: AlertCircle },
+    { name: t('sidebar.payment') || 'Payment', path: '/wallet', icon: WalletIcon },
+    { name: t('sidebar.myTask'), path: '/my-tasks', icon: ListTodo },
+    { name: t('sidebar.taskHistory'), path: '/history', icon: ListTodo },
+    { name: t('sidebar.settings'), path: '#', icon: Settings, action: () => setIsSettingsOpen(true) },
   ];
 
   return (
-    <div className="flex flex-col h-screen bg-neutral-50 text-foreground transition-colors duration-300">
+    <div className="flex flex-col h-screen bg-[var(--app-bg)] text-[var(--app-text)] transition-colors duration-300">
       {/* Top Header */}
-      <header className="h-20 bg-white/50 backdrop-blur-md flex items-center px-4 md:px-8 border-b border-neutral-100 shrink-0 z-10">
+      <header className="h-20 bg-[var(--app-surface)]/50 backdrop-blur-md flex items-center px-4 md:px-8 border-b border-[var(--app-border)] shrink-0 z-10 transition-colors">
         {/* Brand */}
         <div className="w-64 shrink-0 flex items-center">
-          <Link to="/dashboard" className="text-2xl font-black text-neutral-900 tracking-tight">
+          <Link to="/dashboard" className="text-2xl font-black text-[var(--app-text)] tracking-tight">
             TaskBounty
           </Link>
         </div>
@@ -77,10 +103,10 @@ export const MainLayout: React.FC = () => {
           <div className="relative w-full max-w-2xl flex items-center">
             <input
               type="text"
-              placeholder="Search your jobs here..."
-              className="w-full h-12 bg-white rounded-full pl-6 pr-14 text-sm focus:outline-none shadow-[0_2px_10px_rgba(0,0,0,0.04)]"
+              placeholder={t('header.searchPlaceholder')}
+              className="w-full h-12 bg-[var(--app-surface-muted)] text-[var(--app-text)] rounded-full pl-6 pr-14 text-sm border border-[var(--app-border)] focus:outline-none focus:border-[var(--color-primary-500)] shadow-[0_2px_10px_rgba(0,0,0,0.04)] transition-colors"
             />
-            <button className="absolute right-2 h-8 w-8 bg-primary-500 text-white rounded-full flex items-center justify-center hover:bg-red-500 transition-colors shadow-sm">
+            <button className="absolute right-2 h-8 w-8 bg-[var(--color-primary-500)] text-white rounded-full flex items-center justify-center hover:bg-[var(--color-primary-600)] transition-colors shadow-sm">
               <Search size={14} strokeWidth={3} />
             </button>
           </div>
@@ -90,7 +116,7 @@ export const MainLayout: React.FC = () => {
         <div className="flex items-center gap-4 shrink-0">
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-full hover:bg-neutral-100 transition-colors text-neutral-500"
+            className="p-2 rounded-full hover:bg-[var(--app-surface-muted)] transition-colors text-[var(--app-text-muted)]"
             title="Toggle Theme"
           >
             {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
@@ -99,25 +125,25 @@ export const MainLayout: React.FC = () => {
           <div className="relative" ref={notifRef}>
             <button
               onClick={() => setIsNotifOpen(!isNotifOpen)}
-              className="p-2 rounded-full bg-primary-500 text-white hover:bg-red-500 transition-colors relative shadow-sm"
+              className="p-2 rounded-full bg-[var(--color-primary-500)] text-white hover:bg-[var(--color-primary-600)] transition-colors relative shadow-sm"
             >
               <Bell size={18} />
             </button>
             {isNotifOpen && (
-              <div className="absolute right-0 mt-2 w-80 bg-white border border-neutral-100 rounded-xl shadow-xl z-50 overflow-hidden">
-                <div className="p-4 border-b border-neutral-100 font-semibold">Notifications</div>
-                <div className="p-4 text-sm text-neutral-500 text-center">No new notifications</div>
+              <div className="absolute right-0 mt-2 w-80 bg-[var(--app-surface)] border border-[var(--app-border)] rounded-xl shadow-xl z-50 overflow-hidden transition-colors">
+                <div className="p-4 border-b border-[var(--app-border)] font-semibold">{t('header.notifications')}</div>
+                <div className="p-4 text-sm text-[var(--app-text-muted)] text-center">{t('header.noNotifications')}</div>
               </div>
             )}
           </div>
 
           <div className="flex items-center gap-3 ml-2">
-            <img src="/assets/avatar.png" alt="Avatar" className="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover" />
+            <img src="/assets/avatar.png" alt="Avatar" className="w-10 h-10 rounded-full border-2 border-[var(--app-surface)] shadow-sm object-cover transition-colors" />
             <div className="hidden md:flex flex-col">
-              <span className="text-sm font-bold text-neutral-900 leading-tight">
+              <span className="text-sm font-bold text-[var(--app-text)] leading-tight">
                 {isLoading ? '...' : (user as any)?.firstName || (user as any)?.username || 'User'}
               </span>
-              <span className="text-xs text-primary-500 font-medium leading-tight">Software developer</span>
+              <span className="text-xs text-[var(--color-primary-500)] font-medium leading-tight">{t('header.role')}</span>
             </div>
           </div>
         </div>
@@ -186,7 +212,7 @@ export const MainLayout: React.FC = () => {
                 className="w-full flex items-center gap-4 px-5 py-3.5 rounded-2xl text-white/80 hover:bg-white/10 hover:text-white transition-all group text-sm font-bold"
               >
                 <LogOut size={18} className="group-hover:-translate-x-1 transition-transform" />
-                Logout
+                {t('sidebar.logout')}
               </button>
             </div>
 
@@ -220,6 +246,7 @@ export const MainLayout: React.FC = () => {
       {activeModal === 'personal' && <PersonalInfoModal user={user} onClose={() => setActiveModal(null)} />}
       {activeModal === 'skills' && <SkillsModal user={user} onClose={() => setActiveModal(null)} />}
       {activeModal === 'password' && <ChangePasswordModal onClose={() => setActiveModal(null)} />}
+      {isSettingsOpen && <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />}
     </div>
   );
 };

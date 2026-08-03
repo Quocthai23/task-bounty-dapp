@@ -30,7 +30,7 @@ export const Profile: React.FC = () => {
             {activeTab === 'Information' && <ProfileInformation user={user} />}
             {activeTab === 'Jobs' && <ProfileJobs />}
             {activeTab === 'History Log' && <ProfileHistory />}
-            {activeTab === 'Payment History' && <ProfilePayment />}
+            {(activeTab === 'Payment' || activeTab === 'Payment History') && <ProfilePayment />}
             {activeTab === 'Job Manager' && <ProfileJobManager />}
           </>
         )}

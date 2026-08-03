@@ -8,9 +8,10 @@ import { ProjectList } from './pages/Projects/ProjectList';
 import { ProjectDetail } from './pages/Projects/ProjectDetail';
 import { Wallet } from './pages/Wallet/Wallet';
 import { MyTasks } from './pages/Tasks/MyTasks';
+import { ManageJobs } from './pages/ManageJobs/ManageJobs';
+import { ManageJobDetail } from './pages/ManageJobs/ManageJobDetail';
 import { MainLayout } from './layouts/MainLayout';
 import { ProtectedRoute } from './layouts/ProtectedRoute';
-import './App.css';
 
 function App() {
   return (
@@ -27,8 +28,11 @@ function App() {
           <Route path="/u/:username" element={<PublicProfile />} />
           <Route path="/projects" element={<ProjectList />} />
           <Route path="/projects/:id" element={<ProjectDetail />} />
+          <Route path="/manage-jobs" element={<ManageJobs />} />
+          <Route path="/manage-jobs/:id" element={<ManageJobDetail />} />
           <Route path="/my-tasks" element={<MyTasks />} />
           <Route path="/wallet" element={<Wallet />} />
+          <Route path="/payment" element={<Wallet />} />
         </Route>
       </Routes>
     </BrowserRouter>

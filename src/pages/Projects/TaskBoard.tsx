@@ -1,7 +1,6 @@
 import React from 'react';
 import { Card } from '@/components/shared/atoms/card';
 import { Badge } from '@/components/shared/atoms/badge';
-import './Projects.css';
 
 interface Task {
   id: string;
@@ -29,23 +28,23 @@ export const TaskBoard: React.FC = () => {
   ];
 
   return (
-    <div className="task-board">
+    <div className="flex gap-6 overflow-x-auto pb-4 min-h-[500px]">
       {columns.map(col => {
         const colTasks = tasks.filter(t => t.status === col.id);
         return (
-          <div key={col.id} className="board-column glass-panel">
-            <div className="board-column-header">
-              <h3>{col.title}</h3>
-              <span className="task-count">{colTasks.length}</span>
+          <div key={col.id} className="flex-none w-80 flex flex-col bg-neutral-50/50 rounded-xl p-4 border border-neutral-200">
+            <div className="flex justify-between items-center mb-6 px-2">
+              <h3 className="text-base uppercase tracking-wider font-semibold text-neutral-500">{col.title}</h3>
+              <span className="bg-white px-2 py-1 rounded-full text-xs font-bold text-neutral-500 shadow-sm border border-neutral-100">{colTasks.length}</span>
             </div>
             
-            <div className="board-column-content">
+            <div className="flex flex-col gap-4 flex-grow">
               {colTasks.map(task => (
-                <Card key={task.id} className="board-task-card">
-                  <h4>{task.title}</h4>
+                <Card key={task.id} className="p-5 cursor-pointer hover:shadow-md transition-shadow bg-white rounded-xl border border-neutral-200">
+                  <h4 className="text-base font-medium mb-4 leading-snug text-neutral-800">{task.title}</h4>
                   
-                  <div className="board-task-meta">
-                    <span className="board-task-bounty">${task.bounty}</span>
+                  <div className="flex justify-between items-center border-t border-neutral-100 pt-3 mt-2">
+                    <span className="font-bold text-green-600">${task.bounty}</span>
                     
                     {task.riskScore !== undefined && task.status === 'IN_PROGRESS' && (
                       <Badge 

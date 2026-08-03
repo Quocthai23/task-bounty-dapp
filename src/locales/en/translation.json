@@ -1,0 +1,26 @@
+{
+  "sidebar": {
+    "discover": "Discover",
+    "myProfile": "My Profile",
+    "payment": "Payment",
+    "myTask": "My Task",
+    "taskHistory": "Task History",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "english": "English",
+    "vietnamese": "Vietnamese",
+    "theme": "Theme",
+    "darkMode": "Dark Mode",
+    "darkModeDesc": "Toggle dark mode on or off"
+  },
+  "header": {
+    "searchPlaceholder": "Search your jobs here...",
+    "notifications": "Notifications",
+    "noNotifications": "No new notifications",
+    "role": "Software developer"
+  }
+}

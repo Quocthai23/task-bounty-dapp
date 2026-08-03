@@ -1,15 +1,19 @@
 import { api } from './api';
 
 export const profileService = {
-  getProfile: async () => {
-    const res = await api.get('/profile/me');
+  getProfile: async (url: string = '/profile/me') => {
+    const res = await api.get(url);
     return res.data;
   },
 
   getHistory: async (startDate?: string, endDate?: string) => {
-    let url = '/profile/history?';
-    if (startDate) url += `startDate=${startDate}&`;
-    if (endDate) url += `endDate=${endDate}&`;
+    const params = new URLSearchParams();
+    if (startDate) params.append('startDate', startDate);
+    if (endDate) params.append('endDate', endDate);
+    
+    const queryString = params.toString();
+    const url = queryString ? `/profile/history?${queryString}` : '/profile/history';
+    
     const res = await api.get(url);
     return res.data;
   },
