@@ -1,15 +1,52 @@
 import { api, API_URL } from './api';
 import { io, Socket } from 'socket.io-client';
 
+export interface NotificationItem {
+  id: string;
+  userId: string;
+  content: string;
+  type: string;
+  isRead: boolean;
+  createdAt: string;
+  updatedAt?: string;
+  details?: any;
+}
+
 class NotificationService {
   public socket: Socket | null = null;
 
-  async getNotifications(page: number = 1, limit: number = 10) {
-    const response = await api.get('/notifications', { params: { page, limit } });
+  async getNotifications(
+    page: number = 1,
+    limit: number = 20,
+    category?: string,
+    startDate?: string,
+    endDate?: string
+  ) {
+    const params: any = { page, limit };
+    if (category && category !== 'ALL') params.category = category;
+    if (startDate) params.startDate = startDate;
+    if (endDate) params.endDate = endDate;
+
+    const response = await api.get('/notifications', { params });
     return response.data;
   }
 
-  connectSocket() {
+  async scanDeadlines() {
+    const response = await api.get('/notifications/scan-deadlines');
+    return response.data;
+  }
+
+  async markAsRead(id: string) {
+    const response = await api.put(`/notifications/${id}/read`);
+    return response.data;
+  }
+
+  async markAllAsRead() {
+    const response = await api.put('/notifications/read-all');
+    return response.data;
+  }
+
+  connectSocket(userId?: string) {
     if (this.socket) {
       this.socket.disconnect();
     }
@@ -40,11 +77,13 @@ class NotificationService {
 
   onNotification(callback: (data: any) => void) {
     if (!this.socket) return;
+    this.socket.on('notification', callback);
     this.socket.on('newNotification', callback);
   }
 
   offNotification(callback: (data: any) => void) {
     if (!this.socket) return;
+    this.socket.off('notification', callback);
     this.socket.off('newNotification', callback);
   }
 }
