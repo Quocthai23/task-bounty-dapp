@@ -57,7 +57,7 @@ const SUPPORTED_CURRENCIES: CurrencyInfo[] = [
     flag: '🇻🇳',
     decimals: 0,
     presets: [50000, 100000, 200000, 500000, 1000000, 2000000, 5000000],
-    contractAddress: '0xe7f1725e7734ce288f8367e1bb143e90bb3f0512',
+    contractAddress: '0x5fbdb2315678afecb367f032d93f642f64180aa3',
     color: '#10b981', // Emerald
     isDepositSupported: true,
   },
@@ -68,7 +68,7 @@ const SUPPORTED_CURRENCIES: CurrencyInfo[] = [
     flag: '🇺🇸',
     decimals: 2,
     presets: [10, 25, 50, 100, 500],
-    contractAddress: '0x9fe46736679d2d9a65f0992f2272de9f3c7fa6e0',
+    contractAddress: '0xe7f1725e7734ce288f8367e1bb143e90bb3f0512',
     color: '#0ea5e9', // Sky Blue
     isDepositSupported: false,
   },
@@ -79,7 +79,7 @@ const SUPPORTED_CURRENCIES: CurrencyInfo[] = [
     flag: '🇪🇺',
     decimals: 2,
     presets: [10, 25, 50, 100, 500],
-    contractAddress: '0xcf7ed3acca5a467e9e704c703e8d87f634fb0fc9',
+    contractAddress: '0x9fe46736679d2d9a65f0992f2272de9f3c7fa6e0',
     color: '#6366f1', // Indigo
     isDepositSupported: false,
   },
@@ -90,7 +90,7 @@ const SUPPORTED_CURRENCIES: CurrencyInfo[] = [
     flag: '🇯🇵',
     decimals: 0,
     presets: [1000, 3000, 5000, 10000, 50000],
-    contractAddress: '0xdc64a140aa3e981100a9beca4e685f962f0cf6c9',
+    contractAddress: '0xcf7ed3acca5a467e9e704c703e8d87f634fb0fc9',
     color: '#f43f5e', // Rose
     isDepositSupported: false,
   },
@@ -101,7 +101,7 @@ const SUPPORTED_CURRENCIES: CurrencyInfo[] = [
     flag: '🇨🇳',
     decimals: 2,
     presets: [50, 100, 200, 500, 1000],
-    contractAddress: '0x5fc8d32690cc91d4c39d9d3abcbd16989f875707',
+    contractAddress: '0xdc64a140aa3e981100a9beca4e685f962f0cf6c9',
     color: '#f59e0b', // Amber
     isDepositSupported: false,
   }

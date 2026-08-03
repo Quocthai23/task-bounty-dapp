@@ -35,12 +35,16 @@ export const ProfilePayment: React.FC = () => {
   });
 
   const balances = balanceData?.balances || {
+    VND: balanceData?.balance || 0,
     USD: balanceData?.balance || 0,
     USDT: balanceData?.onChainBalance || 0,
     VNDT: 0,
   };
 
-  const transactions = (transactionsData?.transactions || transactionsData || []).slice(0, 4);
+  const rawTxList = Array.isArray(transactionsData)
+    ? transactionsData
+    : (transactionsData?.data || (transactionsData as any)?.transactions || []);
+  const transactions = Array.isArray(rawTxList) ? rawTxList.slice(0, 4) : [];
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
@@ -77,7 +81,7 @@ export const ProfilePayment: React.FC = () => {
             </span>
           </div>
           <div className="text-2xl sm:text-3xl font-black font-mono mt-2 text-emerald-600 dark:text-emerald-400">
-            {Number(balances.VNDT || 0).toLocaleString()} <span className="text-sm font-sans font-bold">₫</span>
+            {Number(balances.VND ?? balances.VNDT ?? 0).toLocaleString()} <span className="text-sm font-sans font-bold">₫</span>
           </div>
           <div className="text-[11px] text-slate-400 mt-2">
             Hỗ trợ nạp QR PayOS & rút về ngân hàng Việt Nam 24/7
@@ -93,7 +97,7 @@ export const ProfilePayment: React.FC = () => {
             </span>
           </div>
           <div className="text-2xl sm:text-3xl font-black font-mono mt-2 text-blue-600 dark:text-blue-400">
-            {Number(balances.USDT || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span className="text-sm font-sans font-bold">₮</span>
+            {Number(balances.USDT ?? balances.USD ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span className="text-sm font-sans font-bold">₮</span>
           </div>
           <div className="text-[11px] text-slate-400 mt-2">
             Ví Custodial on-chain bảo đảm minh bạch Smart Contract
@@ -109,7 +113,7 @@ export const ProfilePayment: React.FC = () => {
             </span>
           </div>
           <div className="text-2xl sm:text-3xl font-black font-mono mt-2 text-slate-900 dark:text-white">
-            ${Number(balances.USD || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            ${Number(balances.USD ?? balanceData?.systemCredit ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
           <div className="text-[11px] text-slate-400 mt-2">
             Số dư tín dụng thanh toán phần thưởng nhiệm vụ
