@@ -9,6 +9,10 @@ export const bountyService = {
     const response = await api.post('/bounty/approve-payout', data);
     return response.data;
   },
+  refundEscrow: async (data: any) => {
+    const response = await api.post('/bounty/refund-escrow', data);
+    return response.data;
+  },
   syncBounty: async () => {
     const response = await api.post('/bounty/sync');
     return response.data;

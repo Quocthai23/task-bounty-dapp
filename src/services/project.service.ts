@@ -39,6 +39,7 @@ export interface UpdateMemberPermissionsPayload {
 export interface RewardMemberPayload {
   amount: number;
   currency?: string;
+  source?: 'CREDIT' | 'ON_CHAIN';
   reason: string;
 }
 
@@ -73,6 +74,14 @@ export const projectService = {
   },
   addMemberByEmail: async (projectId: string, data: AddMemberByEmailPayload) => {
     const response = await api.post(`/projects/${projectId}/members/email`, data);
+    return response.data;
+  },
+  acceptInvitation: async (projectId: string) => {
+    const response = await api.post(`/projects/${projectId}/invitation/accept`);
+    return response.data;
+  },
+  rejectInvitation: async (projectId: string) => {
+    const response = await api.post(`/projects/${projectId}/invitation/reject`);
     return response.data;
   },
   updateMemberPermissions: async (projectId: string, memberId: string, data: UpdateMemberPermissionsPayload) => {

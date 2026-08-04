@@ -7,6 +7,7 @@ import { projectService } from '@/services/project.service';
 import { JobSwimlaneBoard, type ProjectGroup } from './components/JobSwimlaneBoard';
 import { TaskList } from './components/TaskList';
 import { TaskDetailSlider } from './components/TaskDetailSlider';
+import { CreateTaskModal } from '@/components/features/tasks/CreateTaskModal';
 import { 
   LayoutGrid, 
   List, 
@@ -42,12 +43,9 @@ export const MyTasks: React.FC = () => {
   const [taskSearch, setTaskSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
 
-  // Quick Task Modal State
+  // Task Creation Modal State
   const [isCreateTaskOpen, setIsCreateTaskOpen] = useState(false);
   const [targetProjectId, setTargetProjectId] = useState<string>('');
-  const [newTaskTitle, setNewTaskTitle] = useState('');
-  const [newTaskBudget, setNewTaskBudget] = useState('');
-  const [newTaskDescription, setNewTaskDescription] = useState('');
 
   // =========================================================================
   // useRef FOR STATE MEMORIZATION (Collapsed State & View State)
@@ -139,23 +137,6 @@ export const MyTasks: React.FC = () => {
     }
   });
 
-  const createTaskMutation = useMutation({
-    mutationFn: ({ projectId, data }: { projectId: string, data: any }) =>
-      taskService.createTask(projectId, data),
-    onSuccess: () => {
-      toast.success(t('myTasks.createTaskSuccess'));
-      setIsCreateTaskOpen(false);
-      setNewTaskTitle('');
-      setNewTaskBudget('');
-      setNewTaskDescription('');
-      queryClient.invalidateQueries({ queryKey: ['joined-tasks'] });
-      queryClient.invalidateQueries({ queryKey: ['owned-projects'] });
-    },
-    onError: (err: any) => {
-      toast.error(err?.response?.data?.message || t('myTasks.createTaskError'));
-    }
-  });
-
   const handleTaskMove = (taskId: string, newStatus: string) => {
     updateStatusMutation.mutate({ taskId, status: newStatus });
   };
@@ -163,24 +144,6 @@ export const MyTasks: React.FC = () => {
   const handleOpenQuickAdd = (projectId: string) => {
     setTargetProjectId(projectId);
     setIsCreateTaskOpen(true);
-  };
-
-  const handleCreateTaskSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!targetProjectId || !newTaskTitle.trim()) {
-      toast.error(t('myTasks.enterTaskTitle'));
-      return;
-    }
-
-    createTaskMutation.mutate({
-      projectId: targetProjectId,
-      data: {
-        title: newTaskTitle.trim(),
-        description: newTaskDescription.trim(),
-        budget: Number(newTaskBudget) || 0,
-        status: 'OPEN'
-      }
-    });
   };
 
   // =========================================================================
@@ -465,108 +428,18 @@ export const MyTasks: React.FC = () => {
       </div>
 
       {/* ========================================================================= */}
-      {/* QUICK TASK CREATION MODAL                                                 */}
+      {/* TASK CREATION MODAL (Multi-step Wizard with Escrow, Tags & Subtasks)      */}
       {/* ========================================================================= */}
-      {isCreateTaskOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-              <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
-                <PlusCircle className="w-5 h-5 text-blue-600" />
-                <span>{t('myTasks.createTaskModalTitle')}</span>
-              </h3>
-              <button 
-                onClick={() => setIsCreateTaskOpen(false)}
-                className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            <form onSubmit={handleCreateTaskSubmit} className="space-y-3.5">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  {t('myTasks.selectJob')}
-                </label>
-                <select
-                  value={targetProjectId}
-                  onChange={(e) => setTargetProjectId(e.target.value)}
-                  className="w-full h-10 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
-                >
-                  <option value="">{t('myTasks.chooseJobPlaceholder')}</option>
-                  {projectGroups.map(g => (
-                    <option key={g.id} value={g.id}>
-                      {g.title} ({g.companyName})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  {t('myTasks.taskTitle')}
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder={t('myTasks.taskTitlePlaceholder')}
-                  value={newTaskTitle}
-                  onChange={(e) => setNewTaskTitle(e.target.value)}
-                  className="w-full h-10 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  {t('myTasks.taskBounty')}
-                </label>
-                <div className="relative">
-                  <Coins className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                  <input
-                    type="number"
-                    placeholder={t('myTasks.taskBountyPlaceholder')}
-                    value={newTaskBudget}
-                    onChange={(e) => setNewTaskBudget(e.target.value)}
-                    className="w-full h-10 pl-9 pr-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  {t('myTasks.taskDescription')}
-                </label>
-                <textarea
-                  rows={3}
-                  placeholder={t('myTasks.taskDescPlaceholder')}
-                  value={newTaskDescription}
-                  onChange={(e) => setNewTaskDescription(e.target.value)}
-                  className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500 resize-none"
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setIsCreateTaskOpen(false)}
-                  className="text-xs font-bold px-4 py-2 rounded-xl"
-                >
-                  {t('myTasks.cancel')}
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={createTaskMutation.isPending}
-                  className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-5 py-2 rounded-xl flex items-center gap-1.5"
-                >
-                  {createTaskMutation.isPending && <Loader2 size={14} className="animate-spin" />}
-                  <span>{t('myTasks.createTaskBtn')}</span>
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <CreateTaskModal
+        isOpen={isCreateTaskOpen}
+        onClose={() => setIsCreateTaskOpen(false)}
+        projectId={targetProjectId}
+        availableProjects={projectGroups}
+        onSuccess={() => {
+          queryClient.invalidateQueries({ queryKey: ['joined-tasks'] });
+          queryClient.invalidateQueries({ queryKey: ['owned-projects'] });
+        }}
+      />
 
       {/* ========================================================================= */}
       {/* TASK DETAIL SLIDER                                                        */}

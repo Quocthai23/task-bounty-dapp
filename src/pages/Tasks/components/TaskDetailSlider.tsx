@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { taskService } from '@/services/task.service';
+import { bountyService } from '@/services/bounty.service';
 import { 
   X, 
   Send, 
@@ -12,6 +13,9 @@ import {
   Calendar,
   User,
   ShieldCheck,
+  ShieldAlert,
+  Lock,
+  ExternalLink,
   Tag,
   Copy,
   ChevronRight,
@@ -19,7 +23,8 @@ import {
   MessageSquare,
   FileText,
   Layers,
-  ArrowRight
+  ArrowRight,
+  Loader2
 } from 'lucide-react';
 import { Button } from '@/components/shared/atoms/button';
 import { toast } from 'sonner';
@@ -83,6 +88,24 @@ export const TaskDetailSlider: React.FC<TaskDetailSliderProps> = ({ task, onClos
       toast.success('Đã gửi phản hồi thành công!');
     },
     onError: () => toast.error('Không thể gửi bình luận. Vui lòng thử lại!')
+  });
+
+  const lockFundMutation = useMutation({
+    mutationFn: () => bountyService.lockFund({ taskId: task!.id }),
+    onSuccess: (data: any) => {
+      toast.success(data?.message || 'Đã khóa quỹ thành công vào ví Fiat-Bridge!');
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['project'] });
+      queryClient.invalidateQueries({ queryKey: ['my-tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['wallet-info'] });
+      if (task) {
+        task.isEscrowed = true;
+        task.escrowTxHash = data?.txHash;
+      }
+    },
+    onError: (err: any) => {
+      toast.error(err?.response?.data?.message || 'Khóa quỹ thất bại!');
+    }
   });
 
   if (!task) return null;
@@ -230,19 +253,76 @@ export const TaskDetailSlider: React.FC<TaskDetailSliderProps> = ({ task, onClos
               </div>
             </div>
 
-            {/* Bounty Card */}
-            <div className="p-4 rounded-2xl bg-linear-to-br from-emerald-500/10 to-teal-500/5 border border-emerald-500/30 space-y-1">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5">
-                <Coins className="w-3.5 h-3.5 text-emerald-600" /> Thù Lao Nhiệm Vụ
-              </span>
+            {/* Bounty & Escrow Card */}
+            <div className="p-4 rounded-2xl bg-linear-to-br from-emerald-500/10 to-teal-500/5 border border-emerald-500/30 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5">
+                  <Coins className="w-3.5 h-3.5 text-emerald-600" /> Thù Lao Nhiệm Vụ
+                </span>
+                {task.isEscrowed ? (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700">
+                    <ShieldCheck className="w-3 h-3 text-emerald-600" /> Đã Ký Quỹ
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
+                    <ShieldAlert className="w-3 h-3 text-amber-600" /> Chưa Khóa Quỹ
+                  </span>
+                )}
+              </div>
+
               <div className="flex items-baseline gap-2">
                 <span className="text-2xl font-black font-mono text-emerald-600 dark:text-emerald-400">
                   {budget > 0 ? `${budget.toLocaleString()} ₫` : 'Theo tổng dự án'}
                 </span>
               </div>
-              <span className="text-[10px] text-emerald-700/80 dark:text-emerald-300/80 flex items-center gap-1">
-                <ShieldCheck className="w-3 h-3" /> Bảo chứng ký quỹ Escrow
-              </span>
+
+              {task.isEscrowed ? (
+                <div className="text-[11px] text-emerald-700 dark:text-emerald-300 space-y-1">
+                  <div className="flex items-center gap-1">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Bảo chứng bởi Ví Ký Quỹ Fiat-Bridge</span>
+                  </div>
+                  {task.escrowTxHash && (
+                    <div className="flex items-center gap-1.5 font-mono text-[10px] bg-emerald-500/10 px-2 py-1 rounded-md border border-emerald-500/20">
+                      <span className="truncate">Tx: {task.escrowTxHash}</span>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(task.escrowTxHash);
+                          toast.success('Đã sao chép TxHash on-chain!');
+                        }}
+                        className="p-0.5 hover:text-emerald-900 dark:hover:text-white cursor-pointer"
+                        title="Sao chép TxHash"
+                      >
+                        <Copy className="w-3 h-3" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                budget > 0 && (
+                  <div className="pt-1">
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={() => lockFundMutation.mutate()}
+                      disabled={lockFundMutation.isPending}
+                      className="w-full bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-xs py-1.5 rounded-xl shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
+                    >
+                      {lockFundMutation.isPending ? (
+                        <>
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          Đang Khóa Quỹ On-Chain...
+                        </>
+                      ) : (
+                        <>
+                          <Lock className="w-3.5 h-3.5" />
+                          Khóa Quỹ (Ví PM ➔ Fiat-Bridge)
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                )
+              )}
             </div>
 
           </div>

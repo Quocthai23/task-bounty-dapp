@@ -121,10 +121,16 @@ const SortableTask = ({ task, onTaskClick }: { task: any, onTaskClick: (task: an
           }`}>
             {task.priority || 'Moderate'}
           </span>
-          {task.isEscrowed && (
-            <span className="text-[10px] text-emerald-600 font-bold flex items-center gap-0.5">
+          {task.isEscrowed ? (
+            <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-0.5 bg-emerald-50 dark:bg-emerald-950/40 px-1.5 py-0.5 rounded border border-emerald-200 dark:border-emerald-800" title="Đã ký quỹ vào Ví Fiat-Bridge">
               <ShieldCheck className="w-3 h-3" /> Escrow
             </span>
+          ) : (
+            Number(task.budget) > 0 && (
+              <span className="text-[10px] text-amber-600 dark:text-amber-400 font-bold flex items-center gap-0.5 bg-amber-50 dark:bg-amber-950/40 px-1.5 py-0.5 rounded border border-amber-200 dark:border-amber-800" title="Chưa khóa quỹ Escrow">
+                <ShieldCheck className="w-3 h-3 text-amber-500" /> Chưa Ký Quỹ
+              </span>
+            )
           )}
         </div>
 

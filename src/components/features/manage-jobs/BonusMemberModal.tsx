@@ -5,7 +5,7 @@ import {
   DialogContent, 
 } from '@/components/shared/atoms/dialog';
 import { Button } from '@/components/shared/atoms/button';
-import { Gift, Award, Sparkles, X } from 'lucide-react';
+import { Gift, Award, Sparkles, X, Coins, Link2, Info } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface BonusMemberModalProps {
@@ -13,7 +13,7 @@ interface BonusMemberModalProps {
   onClose: () => void;
   member: any;
   project: any;
-  onConfirmBonus: (memberId: string, amount: number, currency: string, reason: string) => Promise<void>;
+  onConfirmBonus: (memberId: string, amount: number, currency: string, reason: string, source: 'CREDIT' | 'ON_CHAIN') => Promise<void>;
 }
 
 export const BonusMemberModal: React.FC<BonusMemberModalProps> = ({
@@ -26,7 +26,8 @@ export const BonusMemberModal: React.FC<BonusMemberModalProps> = ({
   const { t } = useTranslation();
   const [amount, setAmount] = useState<number | ''>(50);
   const [currency, setCurrency] = useState('USD');
-  const [reason, setReason] = useState(t('bonusMemberModal.defaultReason'));
+  const [source, setSource] = useState<'CREDIT' | 'ON_CHAIN'>('CREDIT');
+  const [reason, setReason] = useState(t('bonusMemberModal.defaultReason') || 'Khen thưởng hoàn thành xuất sắc nhiệm vụ!');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!member) return null;
@@ -36,25 +37,26 @@ export const BonusMemberModal: React.FC<BonusMemberModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!amount || Number(amount) <= 0) {
-      toast.error(t('bonusMemberModal.validationAmount'));
+      toast.error(t('bonusMemberModal.validationAmount') || 'Vui lòng nhập số tiền thưởng hợp lệ');
       return;
     }
     if (!reason.trim()) {
-      toast.error(t('bonusMemberModal.validationReason'));
+      toast.error(t('bonusMemberModal.validationReason') || 'Vui lòng nhập lý do khen thưởng');
+      return;
+    }
+
+    if (source === 'ON_CHAIN' && !user.walletAddress) {
+      toast.error('Thành viên này chưa liên kết địa chỉ ví nhận on-chain. Vui lòng chọn nguồn Credit!');
       return;
     }
 
     try {
       setIsSubmitting(true);
-      await onConfirmBonus(member.id, Number(amount), currency, reason);
-      toast.success(t('bonusMemberModal.successToast', {
-        amount,
-        currency,
-        name: user.firstName || user.email
-      }));
+      await onConfirmBonus(member.id, Number(amount), currency, reason, source);
+      toast.success(`Đã trao thưởng ${amount} ${currency} (${source === 'ON_CHAIN' ? 'On-Chain' : 'Credit'}) thành công!`);
       onClose();
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || t('bonusMemberModal.errorToast'));
+      toast.error(err?.response?.data?.message || 'Có lỗi xảy ra khi trao thưởng');
     } finally {
       setIsSubmitting(false);
     }
@@ -66,15 +68,15 @@ export const BonusMemberModal: React.FC<BonusMemberModalProps> = ({
         showCloseButton={false}
         className="max-w-md p-0 overflow-hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl"
       >
-        {/* Header - Clean White */}
+        {/* Header */}
         <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-10 h-10 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 flex items-center justify-center">
               <Gift className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-black text-slate-900 dark:text-white">{t('bonusMemberModal.title')}</h2>
-              <p className="text-xs text-slate-500">{t('bonusMemberModal.project', { title: project?.title })}</p>
+              <h2 className="text-lg font-black text-slate-900 dark:text-white">Khen Thưởng Thành Viên</h2>
+              <p className="text-xs text-slate-500">{project?.title}</p>
             </div>
           </div>
 
@@ -102,19 +104,62 @@ export const BonusMemberModal: React.FC<BonusMemberModalProps> = ({
               </div>
               <div className="text-xs text-slate-500 truncate">{user.email}</div>
               <div className="text-[11px] text-amber-600 dark:text-amber-400 font-semibold mt-0.5">
-                {t('bonusMemberModal.roleAndBonus', {
-                  role: member.role,
-                  amount: (member.bonusReceived || 0).toLocaleString()
-                })}
+                Vai trò: {member.role} • Đã nhận thưởng: ${(member.bonusReceived || 0).toLocaleString()}
               </div>
             </div>
           </div>
 
+          {/* Explanation Alert */}
+          <div className="bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/60 rounded-2xl p-3 flex gap-2.5 items-start text-xs text-amber-800 dark:text-amber-300">
+            <Info className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+            <p className="leading-relaxed text-[11px]">
+              Khoản thưởng này được trích từ tài khoản cá nhân của PM, hoàn toàn độc lập và không làm hao hụt tiền bảo chứng (Escrow) của dự án.
+            </p>
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Source Selection */}
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1.5">
+                Nguồn Trích Thưởng
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setSource('CREDIT')}
+                  className={`p-3 rounded-2xl border text-left transition-all ${
+                    source === 'CREDIT'
+                      ? 'border-amber-500 bg-amber-50/50 dark:bg-amber-950/30 text-amber-900 dark:text-amber-200'
+                      : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400'
+                  }`}
+                >
+                  <div className="flex items-center gap-1.5 font-bold text-xs">
+                    <Coins className="w-3.5 h-3.5 text-amber-600" /> Credit Hệ Thống
+                  </div>
+                  <p className="text-[10px] text-slate-500 mt-1">Trừ từ ví Credit cá nhân của PM</p>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setSource('ON_CHAIN')}
+                  className={`p-3 rounded-2xl border text-left transition-all ${
+                    source === 'ON_CHAIN'
+                      ? 'border-amber-500 bg-amber-50/50 dark:bg-amber-950/30 text-amber-900 dark:text-amber-200'
+                      : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400'
+                  }`}
+                >
+                  <div className="flex items-center gap-1.5 font-bold text-xs">
+                    <Link2 className="w-3.5 h-3.5 text-purple-600" /> Token On-Chain
+                  </div>
+                  <p className="text-[10px] text-slate-500 mt-1">Chuyển trực tiếp qua Blockchain</p>
+                </button>
+              </div>
+            </div>
+
             {/* Amount & Currency */}
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1.5">
-                {t('bonusMemberModal.amountLabel')}
+                {t('bonusMemberModal.amountLabel') || 'Số Tiền Thưởng'}
               </label>
               <div className="flex gap-2">
                 <div className="relative flex-1">
@@ -161,14 +206,14 @@ export const BonusMemberModal: React.FC<BonusMemberModalProps> = ({
             {/* Reason */}
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1.5">
-                {t('bonusMemberModal.reasonLabel')}
+                {t('bonusMemberModal.reasonLabel') || 'Lý Do Khen Thưởng'}
               </label>
               <textarea
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
                 rows={3}
                 className="w-full p-3 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 outline-none resize-none leading-relaxed"
-                placeholder={t('bonusMemberModal.reasonPlaceholder')}
+                placeholder={t('bonusMemberModal.reasonPlaceholder') || 'Nhập lý do khen thưởng thành viên...'}
               />
             </div>
 
@@ -180,14 +225,14 @@ export const BonusMemberModal: React.FC<BonusMemberModalProps> = ({
                 onClick={onClose}
                 className="text-xs text-slate-500"
               >
-                {t('bonusMemberModal.cancel')}
+                {t('bonusMemberModal.cancel') || 'Hủy Bỏ'}
               </Button>
               <Button
                 type="submit"
                 disabled={isSubmitting}
                 className="bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-xl px-6 py-2.5 shadow-md shadow-amber-500/20"
               >
-                {isSubmitting ? t('bonusMemberModal.sending') : t('bonusMemberModal.confirm')}
+                {isSubmitting ? 'Đang Xử Lý...' : 'Xác Nhận Trao Thưởng'}
               </Button>
             </div>
           </form>

@@ -13,6 +13,7 @@ import { PersonalInfoModal } from '@/components/features/profile/PersonalInfoMod
 import { SkillsModal } from '@/components/features/profile/SkillsModal';
 import { ChangePasswordModal } from '@/components/features/profile/ChangePasswordModal';
 import { SettingsModal } from '@/components/features/settings/SettingsModal';
+import { NotificationDropdown } from '@/components/features/notifications/NotificationDropdown';
 import { useTranslation } from 'react-i18next';
 
 export const MainLayout: React.FC = () => {
@@ -150,21 +151,8 @@ export const MainLayout: React.FC = () => {
             {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
           </button>
 
-          {/* Notification Button */}
-          <div className="relative" ref={notifRef}>
-            <button
-              onClick={() => setIsNotifOpen(!isNotifOpen)}
-              className="p-2 rounded-full bg-[var(--color-primary-500)] text-white hover:bg-[var(--color-primary-600)] transition-colors relative shadow-sm cursor-pointer"
-            >
-              <Bell size={16} />
-            </button>
-            {isNotifOpen && (
-              <div className="absolute right-0 mt-2 w-80 bg-[var(--app-surface)] border border-[var(--app-border)] rounded-xl shadow-xl z-50 overflow-hidden transition-colors">
-                <div className="p-4 border-b border-[var(--app-border)] font-semibold">{t('header.notifications')}</div>
-                <div className="p-4 text-sm text-[var(--app-text-muted)] text-center">{t('header.noNotifications')}</div>
-              </div>
-            )}
-          </div>
+          {/* Real-time Interactive Notification Bell & Dropdown */}
+          <NotificationDropdown />
 
           {/* User Profile Header Chip */}
           <div className="flex items-center gap-2.5 ml-1">
