@@ -9,6 +9,9 @@ import { Badge } from '@/components/shared/atoms/badge';
 import { Dialog, DialogContent } from '@/components/shared/atoms/dialog';
 import { CandidateProfileModal } from '@/components/features/manage-jobs/CandidateProfileModal';
 import { BonusMemberModal } from '@/components/features/manage-jobs/BonusMemberModal';
+import { CreateTaskModal } from '@/components/features/tasks/CreateTaskModal';
+import { CompleteProjectModal } from '@/components/features/projects/CompleteProjectModal';
+import { TaskDetailSlider } from '@/pages/Tasks/components/TaskDetailSlider';
 import { 
   Briefcase, 
   Users, 
@@ -31,7 +34,11 @@ import {
   Clock, 
   X,
   Wallet,
-  Coins
+  Coins,
+  Award,
+  Tag,
+  Paperclip,
+  Check
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -53,17 +60,16 @@ export const ManageJobDetail: React.FC = () => {
   const [isAddBudgetModalOpen, setIsAddBudgetModalOpen] = useState(false);
   const [addBudgetAmount, setAddBudgetAmount] = useState<number>(500);
 
+  const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
+  const [selectedTaskForSlider, setSelectedTaskForSlider] = useState<any | null>(null);
+
   // Invite by email state
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState<'DEV' | 'LEAD_DEV' | 'REVIEWER' | 'PM'>('DEV');
   const [isInviting, setIsInviting] = useState(false);
 
-  // Task creation state
+  // Task creation modal state
   const [isCreateTaskOpen, setIsCreateTaskOpen] = useState(false);
-  const [taskTitle, setTaskTitle] = useState('');
-  const [taskDesc, setTaskDesc] = useState('');
-  const [taskBudget, setTaskBudget] = useState(100);
-  const [taskAssigneeId, setTaskAssigneeId] = useState('');
 
   // Fetch Project Detail
   const { data: project, isLoading, error } = useQuery({
@@ -155,22 +161,6 @@ export const ManageJobDetail: React.FC = () => {
     },
     onError: (err: any) => {
       toast.error(err?.response?.data?.message || t('manageJobDetail.toastActionError'));
-    }
-  });
-
-  // Create Task Mutation
-  const createTaskMutation = useMutation({
-    mutationFn: (data: any) => taskService.createTask(projectId!, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['manage-project-detail', projectId] });
-      toast.success(t('manageJobDetail.toastCreateTaskSuccess'));
-      setIsCreateTaskOpen(false);
-      setTaskTitle('');
-      setTaskDesc('');
-      setTaskAssigneeId('');
-    },
-    onError: (err: any) => {
-      toast.error(err?.response?.data?.message || t('manageJobDetail.toastCreateTaskError'));
     }
   });
 
@@ -301,10 +291,23 @@ export const ManageJobDetail: React.FC = () => {
 
             <Button
               onClick={() => setIsAddBudgetModalOpen(true)}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-5 py-3.5 rounded-2xl shadow-md shadow-emerald-600/20 flex items-center gap-2"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-5 py-3.5 rounded-2xl shadow-md shadow-emerald-600/20 flex items-center gap-2 cursor-pointer"
             >
               <Coins className="w-4 h-4" /> {t('manageJobDetail.addBudgetBtn')}
             </Button>
+
+            {project.status !== 'COMPLETED' ? (
+              <Button
+                onClick={() => setIsCompleteModalOpen(true)}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-5 py-3.5 rounded-2xl shadow-md shadow-indigo-600/20 flex items-center gap-2 cursor-pointer"
+              >
+                <Award className="w-4 h-4" /> Nghiệm Thu & Hoàn Tất Dự Án
+              </Button>
+            ) : (
+              <div className="bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 font-bold text-xs px-4 py-3 rounded-2xl flex items-center gap-1.5">
+                <Check className="w-4 h-4" /> Đã nghiệm thu hoàn tất
+              </div>
+            )}
           </div>
         </div>
 
@@ -860,7 +863,8 @@ export const ManageJobDetail: React.FC = () => {
         <div className="space-y-6">
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h3 className="text-lg font-black text-slate-900 dark:text-white">
+              <h3 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
+                <ListTodo className="w-5 h-5 text-blue-600" />
                 {t('manageJobDetail.tasksBoardTitle', { count: tasks.length })}
               </h3>
               <p className="text-xs text-slate-500 mt-0.5">
@@ -870,151 +874,167 @@ export const ManageJobDetail: React.FC = () => {
 
             <Button
               onClick={() => setIsCreateTaskOpen(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl px-4 py-2.5 flex items-center gap-2 shadow-sm"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-2xl px-5 py-3 flex items-center gap-2 shadow-md shadow-blue-600/20 cursor-pointer"
             >
               <Plus className="w-4 h-4" /> {t('manageJobDetail.createNewTaskBtn')}
             </Button>
           </div>
 
-          {/* Create Task Modal / Drawer */}
-          {isCreateTaskOpen && (
-            <div className="bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 space-y-4 animate-in fade-in">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
-                <Plus className="w-4 h-4 text-blue-600" /> {t('manageJobDetail.createTaskCardTitle')}
-              </h4>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-500 mb-1">{t('manageJobDetail.taskTitleRequired')}</label>
-                  <input
-                    type="text"
-                    value={taskTitle}
-                    onChange={(e) => setTaskTitle(e.target.value)}
-                    placeholder={t('manageJobDetail.taskTitlePlaceholder')}
-                    className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-500 mb-1">{t('manageJobDetail.taskAssigneeLabel')}</label>
-                  <select
-                    value={taskAssigneeId}
-                    onChange={(e) => setTaskAssigneeId(e.target.value)}
-                    className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">{t('manageJobDetail.taskAssigneeUnassigned')}</option>
-                    {members.map((m: any) => (
-                      <option key={m.userId} value={m.userId}>
-                        {m.user?.firstName || m.user?.email} ({m.role})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold text-slate-500 mb-1">{t('manageJobDetail.taskDescLabel')}</label>
-                <textarea
-                  value={taskDesc}
-                  onChange={(e) => setTaskDesc(e.target.value)}
-                  rows={2}
-                  placeholder={t('manageJobDetail.taskDescPlaceholder')}
-                  className="w-full p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              <div className="flex justify-end gap-2">
-                <Button variant="ghost" onClick={() => setIsCreateTaskOpen(false)} className="text-xs">
-                  {t('manageJobDetail.taskCancelBtn')}
-                </Button>
-                <Button
-                  onClick={() => {
-                    if (!taskTitle.trim()) {
-                      toast.error(t('manageJobDetail.toastTaskTitleValidation'));
-                      return;
-                    }
-                    createTaskMutation.mutate({
-                      title: taskTitle,
-                      description: taskDesc,
-                      budget: Number(taskBudget) || 0,
-                      assigneeId: taskAssigneeId || undefined,
-                      status: 'OPEN',
-                    });
-                  }}
-                  disabled={createTaskMutation.isPending}
-                  className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl px-4 py-2"
-                >
-                  {createTaskMutation.isPending ? t('manageJobDetail.taskCreatingBtn') : t('manageJobDetail.taskCreateBtn')}
-                </Button>
-              </div>
-            </div>
-          )}
+          {/* Create Task Modal Component */}
+          <CreateTaskModal
+            isOpen={isCreateTaskOpen}
+            onClose={() => setIsCreateTaskOpen(false)}
+            project={project}
+            tasks={tasks}
+            onSuccess={() => {
+              queryClient.invalidateQueries({ queryKey: ['manage-project-detail', projectId] });
+            }}
+          />
 
           {/* Tasks Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {tasks.map((task: any) => {
-              const assignee = task.assignee || {};
+          {tasks.length === 0 ? (
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-12 text-center space-y-3 shadow-sm">
+              <div className="w-14 h-14 bg-blue-50 dark:bg-blue-950/40 text-blue-600 rounded-2xl flex items-center justify-center mx-auto">
+                <ListTodo className="w-7 h-7" />
+              </div>
+              <h4 className="text-base font-bold text-slate-900 dark:text-white">Chưa có nhiệm vụ nào</h4>
+              <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                Hãy bắt đầu phân chia công việc trong dự án thành các nhiệm vụ rõ ràng có gắn thù lao ký quỹ và deadline.
+              </p>
+              <Button
+                onClick={() => setIsCreateTaskOpen(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl px-4 py-2 mt-2"
+              >
+                <Plus className="w-4 h-4 mr-1.5" /> Tạo nhiệm vụ đầu tiên
+              </Button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {tasks.map((task: any) => {
+                const assignee = task.assignee || {};
+                
+                // Parse tags
+                let tagsList: string[] = [];
+                if (Array.isArray(task.tags)) tagsList = task.tags;
+                else if (typeof task.tags === 'string' && task.tags.trim()) {
+                  try {
+                    const p = JSON.parse(task.tags);
+                    tagsList = Array.isArray(p) ? p : [task.tags];
+                  } catch {
+                    tagsList = task.tags.split(',').map((s: string) => s.trim()).filter(Boolean);
+                  }
+                }
 
-              return (
-                <div
-                  key={task.id}
-                  className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 shadow-sm space-y-3 flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="flex items-center justify-between gap-2 mb-2">
-                      <Badge className={`text-[10px] font-bold ${
-                        task.status === 'DONE'
-                          ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300'
-                          : task.status === 'IN_PROGRESS'
-                          ? 'bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300'
-                          : 'bg-slate-100 text-slate-700 dark:bg-slate-800'
-                      }`}>
-                        {task.status}
-                      </Badge>
-                      <span className="font-mono font-bold text-xs text-emerald-600">
-                        ${task.budget || 0}
-                      </span>
-                    </div>
+                // Parse attachments count
+                let attCount = 0;
+                if (Array.isArray(task.attachments)) attCount = task.attachments.length;
+                else if (typeof task.attachments === 'string' && task.attachments.trim()) {
+                  try {
+                    const p = JSON.parse(task.attachments);
+                    attCount = Array.isArray(p) ? p.length : 1;
+                  } catch {}
+                }
 
-                    <h4 className="font-bold text-slate-900 dark:text-white text-sm">{task.title}</h4>
-                    {task.description && (
-                      <p className="text-xs text-slate-500 mt-1 line-clamp-2">{task.description}</p>
-                    )}
-                  </div>
+                return (
+                  <div
+                    key={task.id}
+                    onClick={() => setSelectedTaskForSlider(task)}
+                    className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-600 rounded-3xl p-5 shadow-xs hover:shadow-md transition-all space-y-3 flex flex-col justify-between cursor-pointer group"
+                  >
+                    <div>
+                      {/* Priority & Status & Budget */}
+                      <div className="flex items-center justify-between gap-2 mb-2">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <Badge className={`text-[10px] font-bold ${
+                            task.status === 'DONE'
+                              ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300'
+                              : task.status === 'IN_PROGRESS'
+                              ? 'bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300'
+                              : task.status === 'REVIEW'
+                              ? 'bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300'
+                              : 'bg-slate-100 text-slate-700 dark:bg-slate-800'
+                          }`}>
+                            {task.status}
+                          </Badge>
+                          {task.priority && (
+                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${
+                              task.priority === 'Urgent' ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                              task.priority === 'High' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                              'bg-slate-50 text-slate-600 border-slate-200'
+                            }`}>
+                              {task.priority}
+                            </span>
+                          )}
+                        </div>
 
-                  <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-1.5 text-xs text-slate-400">
-                      {assignee.email ? (
-                        <>
-                          <div className="w-5 h-5 rounded-full bg-blue-500 text-white flex items-center justify-center text-[10px] font-bold">
-                            {assignee.firstName?.[0] || assignee.email?.[0]?.toUpperCase()}
-                          </div>
-                          <span className="truncate max-w-[100px] text-slate-600 dark:text-slate-300 font-medium">
-                            {assignee.firstName || assignee.email.split('@')[0]}
+                        <span className="font-mono font-black text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                          <Coins className="w-3.5 h-3.5" />
+                          ${Number(task.budget || 0).toLocaleString()}
+                        </span>
+                      </div>
+
+                      <h4 className="font-bold text-slate-900 dark:text-white text-sm group-hover:text-blue-600 transition-colors">
+                        {task.title}
+                      </h4>
+                      {task.description && (
+                        <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">
+                          {task.description}
+                        </p>
+                      )}
+
+                      {/* Tags & Attachments */}
+                      <div className="flex flex-wrap items-center gap-1.5 pt-2">
+                        {tagsList.slice(0, 3).map((tag, idx) => (
+                          <span key={idx} className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 flex items-center gap-1">
+                            <Tag className="w-2.5 h-2.5" />
+                            {tag}
                           </span>
-                        </>
-                      ) : (
-                        <span>{t('manageJobDetail.taskUnassigned')}</span>
-                      )}
+                        ))}
+                        {tagsList.length > 3 && (
+                          <span className="text-[10px] text-slate-400 font-bold">+{tagsList.length - 3}</span>
+                        )}
+                        {attCount > 0 && (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center gap-1 ml-auto">
+                            <Paperclip className="w-2.5 h-2.5" />
+                            {attCount}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
-                    {/* Status change buttons */}
-                    <div className="flex items-center gap-1">
-                      {task.status !== 'DONE' && (
-                        <Button
-                          onClick={() => updateTaskStatusMutation.mutate({ taskId: task.id, status: 'DONE' })}
-                          className="bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg"
-                        >
-                          {t('manageJobDetail.taskDoneBtn')}
-                        </Button>
-                      )}
+                    <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-1.5 text-xs text-slate-400">
+                        {assignee.email ? (
+                          <>
+                            <div className="w-5 h-5 rounded-full bg-blue-500 text-white flex items-center justify-center text-[10px] font-bold">
+                              {assignee.firstName?.[0] || assignee.email?.[0]?.toUpperCase()}
+                            </div>
+                            <span className="truncate max-w-[100px] text-slate-600 dark:text-slate-300 font-semibold">
+                              {assignee.firstName || assignee.email.split('@')[0]}
+                            </span>
+                          </>
+                        ) : (
+                          <span className="text-slate-400 italic text-[11px]">{t('manageJobDetail.taskUnassigned')}</span>
+                        )}
+                      </div>
+
+                      {/* Status change or detail button */}
+                      <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                        {task.status !== 'DONE' && (
+                          <Button
+                            onClick={() => updateTaskStatusMutation.mutate({ taskId: task.id, status: 'DONE' })}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold px-2.5 py-1 rounded-xl cursor-pointer"
+                          >
+                            {t('manageJobDetail.taskDoneBtn')}
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 
@@ -1136,6 +1156,30 @@ export const ManageJobDetail: React.FC = () => {
           queryClient.invalidateQueries({ queryKey: ['manage-project-detail', projectId] });
         }}
       />
+
+      {/* Complete Project Modal */}
+      <CompleteProjectModal
+        isOpen={isCompleteModalOpen}
+        onClose={() => setIsCompleteModalOpen(false)}
+        project={project}
+        tasks={tasks}
+        onSuccess={() => {
+          queryClient.invalidateQueries({ queryKey: ['manage-project-detail', projectId] });
+        }}
+      />
+
+      {/* Task Detail Slider */}
+      {selectedTaskForSlider && (
+        <TaskDetailSlider
+          task={{ ...selectedTaskForSlider, project }}
+          onClose={() => setSelectedTaskForSlider(null)}
+          onStatusChange={(taskId, status) => {
+            updateTaskStatusMutation.mutate({ taskId, status });
+            setSelectedTaskForSlider((prev: any) => prev ? { ...prev, status } : null);
+          }}
+        />
+      )}
     </div>
   );
 };
+

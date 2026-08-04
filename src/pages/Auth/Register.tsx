@@ -34,14 +34,17 @@ export const Register: React.FC = () => {
       setStep(2);
     },
     onError: (err: any) => {
-      setError(err.response?.data?.message || t('auth.failedToSendOtp'));
+      const msg = err.response?.data?.message || t('auth.failedToSendOtp');
+      setError(msg);
+      toast.error(msg);
     }
   });
 
   const verifyOtpMutation = useMutation({
     mutationFn: (data: { email: string, otp: string }) => authService.verifyOtp({ ...data, context: 'REGISTER' }),
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       // Once OTP is verified, call register with challenge token
+      const token = data.challengeToken || data.challenge_token;
       registerMutation.mutate({
         data: {
           firstName: formData.firstName,
@@ -50,11 +53,13 @@ export const Register: React.FC = () => {
           email: formData.email,
           password: formData.password
         },
-        challengeToken: data.challenge_token
+        challengeToken: token
       });
     },
     onError: (err: any) => {
-      setError(err.response?.data?.message || t('auth.invalidOtp'));
+      const msg = err.response?.data?.message || t('auth.invalidOtp');
+      setError(msg);
+      toast.error(msg);
     }
   });
 
@@ -65,7 +70,9 @@ export const Register: React.FC = () => {
       navigate('/login');
     },
     onError: (err: any) => {
-      setError(err.response?.data?.message || 'Registration failed');
+      const msg = err.response?.data?.message || 'Registration failed';
+      setError(msg);
+      toast.error(msg);
     }
   });
 

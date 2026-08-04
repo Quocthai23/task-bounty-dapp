@@ -79,6 +79,28 @@ const SortableTask = ({ task, onTaskClick }: { task: any, onTaskClick: (task: an
 
   const budget = Number(task.budget || 0);
 
+  // Parse tags
+  let tagsList: string[] = [];
+  if (Array.isArray(task.tags)) tagsList = task.tags;
+  else if (typeof task.tags === 'string' && task.tags.trim()) {
+    try {
+      const p = JSON.parse(task.tags);
+      tagsList = Array.isArray(p) ? p : [task.tags];
+    } catch {
+      tagsList = task.tags.split(',').map((s: string) => s.trim()).filter(Boolean);
+    }
+  }
+
+  // Parse attachments
+  let attCount = 0;
+  if (Array.isArray(task.attachments)) attCount = task.attachments.length;
+  else if (typeof task.attachments === 'string' && task.attachments.trim()) {
+    try {
+      const p = JSON.parse(task.attachments);
+      attCount = Array.isArray(p) ? p.length : 1;
+    } catch {}
+  }
+
   return (
     <div
       ref={setNodeRef}
@@ -90,9 +112,14 @@ const SortableTask = ({ task, onTaskClick }: { task: any, onTaskClick: (task: an
     >
       {/* Top row: Priority / Bounty + Grip */}
       <div className="flex justify-between items-center mb-2">
-        <div className="flex items-center gap-1.5">
-          <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
-            {task.priority || 'Normal'}
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-md border ${
+            task.priority === 'Urgent' ? 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300' :
+            task.priority === 'High' ? 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300' :
+            task.priority === 'Low' ? 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400' :
+            'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/40 dark:text-blue-300'
+          }`}>
+            {task.priority || 'Moderate'}
           </span>
           {task.isEscrowed && (
             <span className="text-[10px] text-emerald-600 font-bold flex items-center gap-0.5">
@@ -112,14 +139,35 @@ const SortableTask = ({ task, onTaskClick }: { task: any, onTaskClick: (task: an
       </div>
 
       {/* Task Title */}
-      <h4 className="font-bold text-slate-900 dark:text-white text-xs sm:text-sm mb-2.5 leading-snug line-clamp-2">
+      <h4 className="font-bold text-slate-900 dark:text-white text-xs sm:text-sm mb-1.5 leading-snug line-clamp-2">
         {task.title}
       </h4>
 
-      {/* Footer: Bounty Amount + Assignee */}
+      {/* Tags preview */}
+      {tagsList.length > 0 && (
+        <div className="flex flex-wrap gap-1 mb-2">
+          {tagsList.slice(0, 2).map((t, idx) => (
+            <span key={idx} className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+              #{t}
+            </span>
+          ))}
+          {tagsList.length > 2 && (
+            <span className="text-[9px] text-slate-400 font-bold">+{tagsList.length - 2}</span>
+          )}
+        </div>
+      )}
+
+      {/* Footer: Bounty Amount + Attachments + Assignee */}
       <div className="flex justify-between items-center border-t border-slate-100 dark:border-slate-700/60 pt-2 text-xs">
-        <div className="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-xs">
-          {budget > 0 ? `${budget.toLocaleString()} ₫` : 'Bounty'}
+        <div className="flex items-center gap-2">
+          <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-xs">
+            {budget > 0 ? `${budget.toLocaleString()} ₫` : 'Bounty'}
+          </span>
+          {attCount > 0 && (
+            <span className="text-[10px] text-slate-400 font-semibold flex items-center gap-0.5" title={`${attCount} tệp đính kèm`}>
+              📎 {attCount}
+            </span>
+          )}
         </div>
 
         <div className="flex items-center gap-1 text-[11px] text-slate-400 font-semibold">

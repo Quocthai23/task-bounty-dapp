@@ -158,20 +158,54 @@ export const TaskDetailSlider: React.FC<TaskDetailSliderProps> = ({ task, onClos
         {/* ========================================================================= */}
         <div className="flex-1 overflow-y-auto custom-scrollbar p-6 sm:p-7 space-y-6">
           
-          {/* Title & Priority */}
+          {/* Title & Priority & Tags */}
           <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700">
-                Độ ưu tiên: {task.priority || 'Tiêu chuẩn'}
+            <div className="flex flex-wrap items-center gap-2 mb-2">
+              <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${
+                task.priority === 'Urgent' ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300 border-rose-200 dark:border-rose-800' :
+                task.priority === 'High' ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300 border-amber-200 dark:border-amber-800' :
+                task.priority === 'Low' ? 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-300 dark:border-slate-700' :
+                'bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300 border-blue-200 dark:border-blue-800'
+              }`}>
+                Ưu tiên: {task.priority || 'Moderate'}
               </span>
               <span className="text-[11px] text-slate-400">
                 Tạo {formattedCreated}
               </span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white leading-tight">
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white leading-tight mb-3">
               {task.title}
             </h1>
+
+            {/* Tags rendering */}
+            {(() => {
+              let parsedTags: string[] = [];
+              if (Array.isArray(task.tags)) {
+                parsedTags = task.tags;
+              } else if (typeof task.tags === 'string' && task.tags.trim()) {
+                try {
+                  const p = JSON.parse(task.tags);
+                  parsedTags = Array.isArray(p) ? p : [task.tags];
+                } catch {
+                  parsedTags = task.tags.split(',').map((s: string) => s.trim()).filter(Boolean);
+                }
+              }
+              if (parsedTags.length === 0) return null;
+              return (
+                <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                  {parsedTags.map((tag: string, idx: number) => (
+                    <span 
+                      key={idx}
+                      className="text-[11px] font-bold px-2.5 py-0.5 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60 flex items-center gap-1"
+                    >
+                      <Tag className="w-3 h-3 text-blue-500" />
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              );
+            })()}
           </div>
 
           {/* Status & Bounty Cards Grid */}
@@ -197,7 +231,7 @@ export const TaskDetailSlider: React.FC<TaskDetailSliderProps> = ({ task, onClos
             </div>
 
             {/* Bounty Card */}
-            <div className="p-4 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-teal-500/5 border border-emerald-500/30 space-y-1">
+            <div className="p-4 rounded-2xl bg-linear-to-br from-emerald-500/10 to-teal-500/5 border border-emerald-500/30 space-y-1">
               <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5">
                 <Coins className="w-3.5 h-3.5 text-emerald-600" /> Thù Lao Nhiệm Vụ
               </span>
@@ -250,7 +284,7 @@ export const TaskDetailSlider: React.FC<TaskDetailSliderProps> = ({ task, onClos
                   : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              <FileText className="w-3.5 h-3.5" /> Mô Tả Chi Tiết
+              <FileText className="w-3.5 h-3.5" /> Mô Tả Chi Tiết & Đính Kèm
             </button>
 
             <button
@@ -265,15 +299,71 @@ export const TaskDetailSlider: React.FC<TaskDetailSliderProps> = ({ task, onClos
             </button>
           </div>
 
-          {/* TAB 1: DETAILS */}
+          {/* TAB 1: DETAILS & ATTACHMENTS */}
           {activeTab === 'details' && (
-            <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/80 space-y-3 animate-in fade-in">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                Nội Dung Thực Hiện & Tiêu Chuẩn Nghiệm Thu
-              </h3>
-              <div className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
-                {task.description || <span className="text-slate-400 italic">Không có mô tả chi tiết cho nhiệm vụ này.</span>}
+            <div className="space-y-4 animate-in fade-in">
+              <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/80 space-y-3">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                  Nội Dung Thực Hiện & Tiêu Chuẩn Nghiệm Thu
+                </h3>
+                <div className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
+                  {task.description || <span className="text-slate-400 italic">Không có mô tả chi tiết cho nhiệm vụ này.</span>}
+                </div>
               </div>
+
+              {/* Attachments Gallery */}
+              {(() => {
+                let parsedAttachments: any[] = [];
+                if (Array.isArray(task.attachments)) {
+                  parsedAttachments = task.attachments;
+                } else if (typeof task.attachments === 'string' && task.attachments.trim()) {
+                  try {
+                    const p = JSON.parse(task.attachments);
+                    parsedAttachments = Array.isArray(p) ? p : [p];
+                  } catch {}
+                }
+
+                if (parsedAttachments.length === 0) return null;
+
+                return (
+                  <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/80 space-y-3">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                      <FileText className="w-3.5 h-3.5 text-blue-500" /> Tệp Đính Kèm & Hình Ảnh ({parsedAttachments.length})
+                    </h3>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {parsedAttachments.map((att: any, idx: number) => {
+                        const isImage = att.base64?.startsWith('data:image') || att.type?.startsWith('image') || att.url?.match(/\.(jpeg|jpg|gif|png|svg)$/i);
+                        return (
+                          <div 
+                            key={att.id || idx} 
+                            className="group relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2 flex flex-col items-center text-center overflow-hidden hover:shadow-md transition-all"
+                          >
+                            {isImage ? (
+                              <a href={att.base64 || att.url} target="_blank" rel="noreferrer" className="w-full h-24 mb-2 overflow-hidden rounded-lg block cursor-pointer">
+                                <img 
+                                  src={att.base64 || att.url} 
+                                  alt={att.name} 
+                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform" 
+                                />
+                              </a>
+                            ) : (
+                              <div className="w-full h-24 mb-2 bg-blue-50 dark:bg-blue-950/30 rounded-lg flex items-center justify-center text-blue-500">
+                                <FileText className="w-8 h-8" />
+                              </div>
+                            )}
+                            <p className="text-[11px] font-bold text-slate-800 dark:text-slate-200 truncate w-full" title={att.name}>
+                              {att.name || `Tệp đính kèm ${idx + 1}`}
+                            </p>
+                            {att.size && (
+                              <p className="text-[10px] text-slate-400">{(att.size / 1024).toFixed(0)} KB</p>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           )}
 

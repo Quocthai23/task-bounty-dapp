@@ -30,7 +30,11 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     
-    if (error.response?.status === 401 && !originalRequest._retry && originalRequest.url !== '/auth/login' && originalRequest.url !== '/auth/refresh') {
+    const isPublicAuthRoute = ['/auth/login', '/auth/register', '/auth/send-otp', '/auth/verify-otp', '/auth/refresh'].some(
+      (path) => originalRequest.url?.includes(path)
+    );
+
+    if (error.response?.status === 401 && !originalRequest._retry && !isPublicAuthRoute) {
       
       if (isRefreshing) {
         return new Promise(function(resolve, reject) {

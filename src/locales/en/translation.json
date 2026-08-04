@@ -646,5 +646,40 @@
     "collapseProfile": "Collapse",
     "loadingJobs": "Loading your jobs...",
     "noJobs": "No jobs found."
+  },
+  "createTaskModal": {
+    "title": "Create New Task (Task Bounty)",
+    "subtitle": "Break down workload and allocate guaranteed Escrow bounty",
+    "escrowLocked": "Total Locked Escrow",
+    "escrowAllocated": "Allocated to Tasks",
+    "escrowRemaining": "Available for New Tasks",
+    "taskName": "Task Title",
+    "taskNamePlaceholder": "e.g., Design Dashboard User Interface...",
+    "priority": "Priority Level",
+    "assignee": "Assignee",
+    "unassigned": "Unassigned",
+    "deadline": "Deadline",
+    "bounty": "Task Bounty",
+    "tags": "Tags",
+    "tagsPlaceholder": "Type a tag and press Enter (e.g., Frontend, UI/UX)",
+    "description": "Detailed Description & Acceptance Criteria",
+    "attachments": "Attachments & Mockups",
+    "uploadHint": "Drag & drop or click to upload files (Max 5MB per file)",
+    "submitBtn": "Create Task & Lock Bounty",
+    "submittingBtn": "Creating...",
+    "cancelBtn": "Cancel"
+  },
+  "completeProjectModal": {
+    "title": "Acceptance & Project Completion",
+    "bannerTitle": "100% Escrow Disbursement Guarantee",
+    "bannerDesc": "All remaining surplus escrow budget after deducting completed tasks will be automatically split evenly among all team members (excluding PM and Project Owner).",
+    "totalEscrow": "Total Locked Escrow",
+    "paidTasks": "Paid via Tasks",
+    "surplusFund": "Surplus Bonus Pool",
+    "eligibleMembers": "Bonus Eligible Members",
+    "confirmBtn": "Confirm Completion & Disburse Surplus",
+    "confirmingBtn": "Completing...",
+    "closeBtn": "Close"
   }
 }
+

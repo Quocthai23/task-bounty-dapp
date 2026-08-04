@@ -238,6 +238,15 @@ export interface ProjectMemberResponseDto {
   role: string;
 }
 
+export interface TaskAttachment {
+  id: string;
+  name: string;
+  base64?: string;
+  url?: string;
+  size?: number;
+  type?: string;
+}
+
 export interface CreateTaskDto {
   /** @example "Implement login" */
   title: string;
@@ -245,10 +254,20 @@ export interface CreateTaskDto {
   description: string;
   /** @example 500 */
   budget?: number;
+  /** @example "OPEN" */
+  status?: string;
+  /** @example "Moderate" */
+  priority?: string;
+  /** @example ["Frontend", "Bug"] */
+  tags?: string[] | string;
+  /** @example [{ id: "1", name: "spec.png", base64: "data:image/png;base64,..." }] */
+  attachments?: TaskAttachment[] | string;
   /** @example "2026-12-31T23:59:59Z" */
   deadline?: string;
   /** @example "parent-task-uuid" */
   parentId?: string;
+  /** @example "uuid-of-assignee" */
+  assigneeId?: string;
 }
 
 export interface TaskResponseDto {
@@ -260,10 +279,19 @@ export interface TaskResponseDto {
   title: string;
   /** @example "Implement the login flow using NestJS." */
   description: string;
-  /** @example "PENDING" */
+  /** @example "OPEN" */
   status: string;
   /** @example 500 */
   budget: number;
+  priority?: string;
+  tags?: string;
+  attachments?: string;
+  deadline?: string;
+  assigneeId?: string;
+  assignee?: any;
+  project?: any;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface PaginatedTaskResponseDto {
@@ -272,12 +300,20 @@ export interface PaginatedTaskResponseDto {
 }
 
 export interface UpdateTaskDto {
+  /** @example "Updated title" */
+  title?: string;
   /** @example "IN_PROGRESS" */
-  status?: "OPEN" | "IN_PROGRESS" | "REVIEW" | "DONE";
+  status?: "OPEN" | "IN_PROGRESS" | "REVIEW" | "DONE" | string;
   /** @example "uuid-of-assignee" */
   assigneeId?: string;
   /** @example "Updated description" */
   description?: string;
+  /** @example 500 */
+  budget?: number;
+  priority?: string;
+  tags?: string[] | string;
+  attachments?: TaskAttachment[] | string;
+  deadline?: string;
 }
 
 export interface CreateCommentDto {

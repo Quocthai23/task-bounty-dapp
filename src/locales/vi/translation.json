@@ -646,5 +646,40 @@
     "collapseProfile": "Thu Gọn",
     "loadingJobs": "Đang tải danh sách công việc...",
     "noJobs": "Chưa có công việc nào."
+  },
+  "createTaskModal": {
+    "title": "Tạo Nhiệm Vụ Mới (Task Bounty)",
+    "subtitle": "Phân chia công việc và cấp hạn mức thù lao bảo chứng từ quỹ Escrow",
+    "escrowLocked": "Tổng Escrow đã khóa",
+    "escrowAllocated": "Đã cấp cho các Task",
+    "escrowRemaining": "Khả dụng tạo Task mới",
+    "taskName": "Tiêu đề nhiệm vụ",
+    "taskNamePlaceholder": "Ví dụ: Thiết kế giao diện Dashboard...",
+    "priority": "Mức độ ưu tiên",
+    "assignee": "Người phụ trách",
+    "unassigned": "Chưa chỉ định",
+    "deadline": "Hạn hoàn thành",
+    "bounty": "Thù lao nhiệm vụ",
+    "tags": "Thẻ phân loại (Tags)",
+    "tagsPlaceholder": "Nhập tag rồi ấn Enter (VD: Frontend, UI/UX)",
+    "description": "Mô tả chi tiết & Tiêu chuẩn nghiệm thu",
+    "attachments": "Tệp đính kèm & Hình ảnh mô tả",
+    "uploadHint": "Kéo thả hoặc nhấp để tải ảnh/tài liệu (Tối đa 5MB mỗi tệp)",
+    "submitBtn": "Tạo Nhiệm Vụ & Khóa Thù Lao",
+    "submittingBtn": "Đang khởi tạo...",
+    "cancelBtn": "Hủy"
+  },
+  "completeProjectModal": {
+    "title": "Nghiệm Thu & Hoàn Thành Dự Án",
+    "bannerTitle": "Cam kết giải ngân 100% quỹ bảo chứng Escrow",
+    "bannerDesc": "Toàn bộ số dư ngân sách còn lại sau khi trừ các nhiệm vụ hoàn thành sẽ được chia đều tự động cho tất cả thành viên trong đội ngũ (ngoại trừ PM và Chủ dự án).",
+    "totalEscrow": "Tổng quỹ bảo chứng",
+    "paidTasks": "Đã trả qua các task",
+    "surplusFund": "Quỹ thặng dư phân phối (Surplus)",
+    "eligibleMembers": "Danh sách thành viên nhận thưởng",
+    "confirmBtn": "Xác Nhận Nghiệm Thu & Chia Thưởng",
+    "confirmingBtn": "Đang hoàn tất...",
+    "closeBtn": "Đóng"
   }
 }
+
