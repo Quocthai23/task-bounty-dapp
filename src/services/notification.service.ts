@@ -52,15 +52,25 @@ class NotificationService {
     }
     
     // Connect to the base URL of the API with /notifications namespace
-    const socketUrl = API_URL.replace(/\/api$/, '') + '/notifications';
+    const socketUrl = API_URL.replace(/\/api\/?$/, '') + '/notifications';
     
     this.socket = io(socketUrl, {
-      transports: ['websocket'],
-      withCredentials: true
+      transports: ['websocket', 'polling'],
+      withCredentials: true,
+      extraHeaders: {
+        'ngrok-skip-browser-warning': 'true',
+      },
+      auth: {
+        userId: userId || undefined,
+      },
     });
 
     this.socket.on('connect', () => {
       console.log('Socket connected for notifications');
+    });
+
+    this.socket.on('connect_error', (err) => {
+      console.warn('Notification socket connect error:', err.message);
     });
 
     this.socket.on('disconnect', () => {

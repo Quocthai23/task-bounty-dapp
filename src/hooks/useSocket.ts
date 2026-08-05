@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useQueryClient } from '@tanstack/react-query';
 
-const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const SOCKET_URL = import.meta.env.VITE_WS_URL || (import.meta.env.VITE_API_URL || 'https://solubly-postinfective-mamie.ngrok-free.dev').replace(/\/api\/?$/, '');
 
 export const useSocket = (roomId?: string) => {
   const [socket, setSocket] = useState<Socket | null>(null);
@@ -11,7 +11,10 @@ export const useSocket = (roomId?: string) => {
   useEffect(() => {
     const newSocket = io(SOCKET_URL, {
       withCredentials: true,
-      transports: ['websocket'],
+      transports: ['websocket', 'polling'],
+      extraHeaders: {
+        'ngrok-skip-browser-warning': 'true',
+      },
     });
 
     setSocket(newSocket);
@@ -21,6 +24,10 @@ export const useSocket = (roomId?: string) => {
       if (roomId) {
         newSocket.emit('joinRoom', roomId);
       }
+    });
+
+    newSocket.on('connect_error', (err) => {
+      console.warn('Socket connect error:', err.message);
     });
 
     // Listen for generic task updates to invalidate cache

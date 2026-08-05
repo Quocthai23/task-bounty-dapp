@@ -3,6 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { authService } from '@/services/auth.service';
+import { useAuthStore } from '@/store/authStore';
 import { Input } from '@/components/shared/atoms/input';
 import { Button } from '@/components/shared/atoms/button';
 import { User, Lock, Eye, EyeOff } from 'lucide-react';
@@ -20,12 +21,11 @@ export const Login: React.FC = () => {
   const loginMutation = useMutation({
     mutationFn: (data: any) => authService.login(data),
     onSuccess: (data) => {
-      localStorage.setItem('access_token', data.access_token);
-      if (data.refresh_token) {
-        localStorage.setItem('refresh_token', data.refresh_token);
+      if (data?.user) {
+        useAuthStore.getState().login(data.user);
       }
       toast.success(t('auth.loginSuccess'));
-      window.location.href = '/dashboard';
+      navigate('/dashboard');
     },
     onError: (err: any) => {
       setError(err.response?.data?.message || t('auth.loginFailed'));

@@ -1,15 +1,24 @@
 import axios from 'axios';
 import { useAuthStore } from '../store/authStore';
 
-export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+export const API_URL = import.meta.env.VITE_API_URL || 'https://solubly-postinfective-mamie.ngrok-free.dev/api';
 
 export const api = axios.create({
   baseURL: API_URL,
   withCredentials: true, // Send cookies automatically
   headers: {
     'Content-Type': 'application/json',
+    'ngrok-skip-browser-warning': 'true',
   },
 });
+
+api.interceptors.request.use(
+  (config) => {
+    config.headers['ngrok-skip-browser-warning'] = 'true';
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 let isRefreshing = false;
 let failedQueue: any[] = [];
@@ -31,15 +40,15 @@ api.interceptors.response.use(
     const originalRequest = error.config;
     
     const isPublicAuthRoute = ['/auth/login', '/auth/register', '/auth/send-otp', '/auth/verify-otp', '/auth/refresh'].some(
-      (path) => originalRequest.url?.includes(path)
+      (path) => originalRequest?.url?.includes(path)
     );
 
-    if (error.response?.status === 401 && !originalRequest._retry && !isPublicAuthRoute) {
+    if (error.response?.status === 401 && !originalRequest?._retry && !isPublicAuthRoute) {
       
       if (isRefreshing) {
         return new Promise(function(resolve, reject) {
           failedQueue.push({ resolve, reject });
-        }).then(token => {
+        }).then(() => {
           return api(originalRequest);
         }).catch(err => {
           return Promise.reject(err);
@@ -50,7 +59,18 @@ api.interceptors.response.use(
       isRefreshing = true;
       
       try {
-        await axios.post(`${API_URL}/auth/refresh`, {}, { withCredentials: true });
+        await axios.post(
+          `${API_URL}/auth/refresh`,
+          {},
+          {
+            withCredentials: true,
+            headers: {
+              'Content-Type': 'application/json',
+              'ngrok-skip-browser-warning': 'true',
+            },
+          }
+        );
+
         isRefreshing = false;
         processQueue(null, 'refreshed');
         return api(originalRequest);

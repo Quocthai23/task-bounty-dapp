@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+import { api } from './api';
 
 const DEFAULT_SKILLS = [
   'Reactjs', 'TypeScript', 'Nodejs', 'Solidity', 'Web3.js', 'Nextjs',
@@ -16,7 +14,7 @@ const DEFAULT_POSITIONS = [
 export const metadataService = {
   async getSkills(): Promise<string[]> {
     try {
-      const res = await axios.get(`${API_URL}/metadata/skills`, { timeout: 3000 });
+      const res = await api.get('/metadata/skills', { timeout: 3000 });
       return (Array.isArray(res.data) && res.data.length > 0) ? res.data : DEFAULT_SKILLS;
     } catch {
       return DEFAULT_SKILLS;
@@ -25,7 +23,7 @@ export const metadataService = {
 
   async getPositions(): Promise<string[]> {
     try {
-      const res = await axios.get(`${API_URL}/metadata/positions`, { timeout: 3000 });
+      const res = await api.get('/metadata/positions', { timeout: 3000 });
       return (Array.isArray(res.data) && res.data.length > 0) ? res.data : DEFAULT_POSITIONS;
     } catch {
       return DEFAULT_POSITIONS;
@@ -34,7 +32,7 @@ export const metadataService = {
 
   async getBudgetRanges(): Promise<{ min: number; max: number; presets: { label: string; min: string; max: string }[] }> {
     try {
-      const res = await axios.get(`${API_URL}/metadata/budget-ranges`, { timeout: 3000 });
+      const res = await api.get('/metadata/budget-ranges', { timeout: 3000 });
       if (res.data && res.data.presets) {
         return res.data;
       }
